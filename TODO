@@ -1,6 +1,6 @@
 Maybe have command switch to include bridges?
 Reject invalid element name
-Refactor extractor code to make it more extensible
+Refactor creator code to make it more extensible  (split into files??)
 Add update function for pci.ids
 Make more code testable: Add arguments in functions
 Add warnings for when any file cannot be read

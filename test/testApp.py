@@ -1,18 +1,21 @@
 #Module that runs test cases with PyUnit
+import sys; sys.dont_write_bytecode = True
 import unittest
-import paths
 import os
-import schemadata
-import customExceptions
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import paths
+import testpaths
+from src import schemadata
+from src import customExceptions
 # == Class that tests extractor.py ==
-import extractor
+import src.extractor as extractor
 class ExtractorTestCase(unittest.TestCase):
 	
 	"Tests the extractor file"
 	def setUp(self):
 		"""Setup code"""
 		print "<> ExtractorTestCase:setUp - begin"
-		self.testdir = paths.PATH_TEST_EXTRACTOR
+		self.testdir = testpaths.PATH_TEST_EXTRACTOR
 		
 	def tearDown(self):
 		"""Cleanup code"""
@@ -71,13 +74,13 @@ class ExtractorTestCase(unittest.TestCase):
 
 
 # == Class that tests creator.py ==
-import creator
+import src.creator as creator
 class CreatorTestCase(unittest.TestCase):
 	"Tests the creator.py file"
 
 	def setUp(self):
 		print "<> CreatorTestCase:setUp - begin"
-		self.testdir = paths.PATH_TEST_CREATOR
+		self.testdir = testpaths.PATH_TEST_CREATOR
 
 	def tearDown(self):
 		print "<> CreatorTestCase:tearDown - begin"
@@ -137,8 +140,8 @@ class CreatorTestCase(unittest.TestCase):
 
 
 # == Tests schemadata.py ==
-from schemadata import Element
-import test.schemadata.testschema as schema
+from src.schemadata import Element
+import schemadata.testschema as schema
 import copy
 
 class SchemaDataTestCase(unittest.TestCase):
@@ -317,7 +320,7 @@ class SchemaDataTestCase(unittest.TestCase):
 
 
 # == Class that tests devicecap.py ==
-import devicecap
+import src.devicecap as devicecap
 class DevicecapTestCase(unittest.TestCase):
 	"Tests the devicecap file"
 	def setUp(self):
@@ -334,7 +337,7 @@ class DevicecapTestCase(unittest.TestCase):
 			
 
 # == Class that tests util.py ==
-import util
+import src.util as util
 
 class UtilTestCase(unittest.TestCase):
 	"Tests the util file"
@@ -421,13 +424,13 @@ class UtilTestCase(unittest.TestCase):
 
 
 # == Class that tests parseutil.py ==
-import parseutil
+from src import parseutil
 class ParseUtilTestCase(unittest.TestCase):
 	"Tests the parseutil file"
 	def setUp(self):
 		"Setup code"
 		print "<> ParseUtilTestCase:setUp - begin"
-		self.testdir = paths.PATH_TEST_PARSEUTIL
+		self.testdir = testpaths.PATH_TEST_PARSEUTIL
 
 	def tearDown(self):
 		"Cleanup code"
@@ -561,9 +564,9 @@ class ParseUtilTestCase(unittest.TestCase):
 	def test_PciIdsParser(self):
 		"Tests the PciIdsParser class"
 		print "ParseUtilTestCase:test_PciIdsParser - begin"
-		pciIdsLoc = paths.PATH_TEST_PARSEUTIL + "testpciids"
-		pciIdsLocMultiple = paths.PATH_TEST_PARSEUTIL + "testpciids_multiple"	
-		pciIdsLocInit = paths.PATH_TEST_PARSEUTIL + "testpciids_init"	
+		pciIdsLoc = testpaths.PATH_TEST_PARSEUTIL + "testpciids"
+		pciIdsLocMultiple = testpaths.PATH_TEST_PARSEUTIL + "testpciids_multiple"	
+		pciIdsLocInit = testpaths.PATH_TEST_PARSEUTIL + "testpciids_init"	
 		parser = parseutil.PciIdsParser(pciIdsLoc)
 		
 		#isValidCode function

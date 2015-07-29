@@ -30,8 +30,3 @@ class SchemaConfigFileNotFound(CustomException):
 
 class KeyNotFound(CustomException):
 	pass
-#class InvalidPyxbAttribute(CustomException):
-#	pass
-
-#class WrongMemPathFormat(CustomException):
-#	pass

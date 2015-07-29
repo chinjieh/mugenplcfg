@@ -4,7 +4,9 @@ import copy
 import util
 import customExceptions
 import paths
-schema = __import__(paths.SCHEMACONFIG)
+import sys
+sys.path.append(paths.SCHEMACONFIGPATH)
+from schemaconfig import schemaconfig as schema
 
 
 class Element():

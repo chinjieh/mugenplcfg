@@ -1,7 +1,7 @@
+import sys; sys.dont_write_bytecode = True
 import paths
-import warningmod
 import os
-import customExceptions
+from src import customExceptions, creator, warningmod
 
 #
 #	ConfigTool is developed to support the Muen Project. It produces a system policy file to be used by the Muen kernel.
@@ -46,7 +46,6 @@ def main():
 		runTests()
 
 		print "> Extracting data from schema bindings..."
-		import creator
 		elemtree = creator.createElements()
 		xml = generateXML(elemtree)
 
@@ -59,7 +58,7 @@ def main():
 			print "=== ConfigTool completed with %d warning(s) ===" % len(warningmod.warnings)
 
 	except customExceptions.SchemaConfigFileNotFound:
-		print "Could not find required PyXB binding file '%s.py' in tool directory.\nPlease ensure that the file is there and try again." % paths.SCHEMACONFIG
+		print "Could not find required PyXB binding file 'schemaconfig.py' in location: %s.\nPlease ensure that the file is there and try again." % (paths.SCHEMACONFIG)
 	
 if __name__ == "__main__":
 	main()
