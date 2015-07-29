@@ -1,0 +1,13 @@
+Maybe have command switch to include bridges?
+Reject invalid element name
+Refactor extractor code to make it more extensible
+Add update function for pci.ids
+Make more code testable: Add arguments in functions
+Add warnings for when any file cannot be read
+Double check info obtained
+
+Dependencies:
+--------
+Pyxb
+Pci.ids
+vmxcap

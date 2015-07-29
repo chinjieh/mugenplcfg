@@ -1,0 +1,67 @@
+#
+#	List of PCI ID's
+#
+#	Version: 2015.07.22
+#	Date:    2015-07-22 03:15:01
+#
+#	Maintained by Martin Mares <mj@ucw.cz> and other volunteers from the
+#	PCI ID Project at http://pci-ids.ucw.cz/.
+#
+#	New data are always welcome, especially if they are accurate. If you have
+#	anything to contribute, please follow the instructions at the web site.
+#
+#	This file can be distributed under either the GNU General Public License
+#	(version 2 or higher) or the 3-clause BSD License.
+#
+
+# Vendors, devices and subsystems. Please keep sorted.
+
+# Syntax:
+# vendor  vendor_name
+#	device  device_name				<-- single tab
+#		subvendor subdevice  subsystem_name	<-- two tabs
+
+0010  Allied Telesis, Inc (Wrong ID)
+# This is a relabelled RTL-8139
+	8139  AT-2500TX V3 Ethernet
+001c  PEAK-System Technik GmbH
+	0001  PCAN-PCI CAN-Bus controller
+		001c 0004  2 Channel CAN Bus SJC1000
+		001c 0005  2 Channel CAN Bus SJC1000 (Optically Isolated)
+003d  Lockheed Martin-Marietta Corp
+# Real TJN ID is e159, but they got it wrong several times --mj
+0059  Tiger Jet Network Inc. (Wrong ID)
+0070  Hauppauge computer works Inc.
+	7801  WinTV HVR-1800 MCE
+0071  Nebula Electronics Ltd.
+0071  Nebula Siblings Ltd.
+0095  Silicon Image, Inc. (Wrong ID)
+	0680  Ultra ATA/133 IDE RAID CONTROLLER CARD
+# Wrong ID used in subsystem ID of the TELES.S0/PCI 2.x ISDN adapter
+00a7  Teles AG (Wrong ID)
+0100  Ncipher Corp Ltd
+0123  General Dynamics
+# 018a is not LevelOne but there is a board misprogrammed
+018a  LevelOne
+	0106  FPC-0106TX misprogrammed [RTL81xx]
+# 021b is not Compaq but there is a board misprogrammed
+021b  Compaq Computer Corporation
+	8139  HNE-300 (RealTek RTL8139c) [iPaq Networking]
+0270  Hauppauge computer works Inc. (Wrong ID)
+# SpeedStream is Efficient Networks, Inc, a Siemens Company
+02ac  SpeedStream
+	1012  1012 PCMCIA 10/100 Ethernet Card [RTL81xx]
+0303  Hewlett-Packard Company (Wrong ID)
+0308  ZyXEL Communications Corporation (Wrong ID)
+0315  SK-Electronics Co., Ltd.
+0357  TTTech Computertechnik AG (Wrong ID)
+	000a  TTP-Monitoring Card V2.0
+0432  SCM Microsystems, Inc.
+	0001  Pluto2 DVB-T Receiver for PCMCIA [EasyWatch MobilSet]
+0675  Dynalink
+	1700  IS64PH ISDN Adapter
+	1702  IS64PH ISDN Adapter
+	1703  ISDN Adapter (PCI Bus, DV, W)
+	1704  ISDN Adapter (PCI Bus, D, C)
+	1704  ISDN Adapter2 (PCI Bus, D, C)
+
