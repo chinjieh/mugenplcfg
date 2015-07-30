@@ -33,7 +33,8 @@ def generateXML(elemtree):
 
 def output(xml):
 	OUTPUT_NAME = "output.xml"
-	print "> XML file '%s' generated to location: %s" % (OUTPUT_NAME, paths.OUTPUT)
+	print "> XML file '%s' generated to location: %s" % (	OUTPUT_NAME, 
+								paths.OUTPUT )
 
 	xml = xml.replace('><','>\n<')
 	with open(os.path.join(paths.OUTPUT, OUTPUT_NAME), "w") as f:
@@ -78,10 +79,13 @@ def main():
 			output(xml)
 
 	except customExceptions.SchemaConfigFileNotFound:
-		print "Could not find required PyXB binding file 'schemaconfig.py' in location: %s.\nPlease ensure that the file is there and try again." % (paths.SCHEMACONFIG)
+		print ("Could not find required PyXB binding file 'schemaconfig.py' " +
+			"in location: %s.\nPlease ensure that the file is there " + 
+			"and try again." % (paths.SCHEMACONFIG) )
 
 	except customExceptions.NoPermissions:
-		print "ERROR: ConfigTool cannot be run without the proper permissions. "
+		print 	"ERROR: ConfigTool cannot be run without the proper " + \
+			"permissions. Try running with 'sudo'."
 if __name__ == "__main__":
 	main()
 

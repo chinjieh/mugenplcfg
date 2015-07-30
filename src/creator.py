@@ -309,63 +309,42 @@ class DevicesCreator():
 				try:
 					classname = pciIdsParser.getClassName(classcode)
 				
-				except customExceptions.PciIdsFailedSearch:
-					message.addWarning("Name for Device at: ",
-							devicepath,
-							" cannot be found. It would " +
-							"be a good idea to update pci.ids"
+				except (customExceptions.PciIdsFailedSearch,
+					customExceptions.PciIdsSubclassNotFound):
+					message.addWarning(("Name for Device at: %s" % devicepath +
+							" cannot be found. It would " + 
+							"be a good idea to update pci.ids")
 							)
+
+				classname = util.spacesToUnderscores(classname.lower())
 
 				#Add class name to namecount
 				if classname not in namecount:
-					namecount[classname] = 0
+					namecount[classname] = 1
 				else:
 					namecount[classname] += 1
-
-				#Appends number if name exists in schema already
-				classname = "%s_%d" % (classname,namecount[classname])
-				classname = util.spacesToUnderscores(classname.lower())
 
 				#Add entry to dictionary
 				shortnames[devicepath] = classname
 
-		return shortnames
-	"""
-	@staticmethod
-	def getDeviceShortName(devicepath):
-		#Get class code from "class file"
-		classcode = extractor.extractData(os.path.join(devicepath, "class"))[0:6]
-		shortname = classcode
 		
-		#Lookup class code from PciIdsParser
-		try:
-			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS + "pci.ids")
-		
-		except customExceptions.PciIdsFileNotFound:
-			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
-			"Please ensure that the file is in the directory." )
-		
-		else:
-			try:
-				classname = pciIdsParser.getClassName(classcode)
-			except customExceptions.PciIdsFailedSearch:
-				message.addWarning("Name for Device at: ",
-						devicepath,
-						" cannot be found. It would " +
-						"be a good idea to update pci.ids"
-						)
+		#Find repeated class names
+		repeatednames = []
+		shortnamesno = shortnames.copy()
+		for item in namecount.items():
+			if item[1] > 1:
+				if item[0] not in repeatednames:
+					repeatednames.append(item[0])
 
-			if classname not in DevicesCreator.deviceShortNames:
-				DevicesCreator.deviceShortNames[classname] = 0
-			else:
-				DevicesCreator.deviceShortNames[classname] += 1
-			
-			#Appends number if name exists in schema already
-			shortname = "%s%d" % (classname,DevicesCreator.deviceShortNames[classname])
-			shortname = util.spacesToUnderscores(shortname.lower())
+		#Append numbers to repeated names
+		for repeatedname in repeatednames:
+			counter = 1
+			for dev in devicepaths:
+				if shortnames[dev] == repeatedname:
+					shortnamesno[dev] = "%s_%d" % (shortnames[dev], counter)
+					counter += 1
 
-		return shortname
-	"""
+		return shortnamesno
 
 	@staticmethod
 	def createDeviceFromPath(devicepath):
