@@ -5,12 +5,12 @@ import customExceptions
 import util
 import paths
 import os
-import warningmod
+import message
 import devicecap
 import extractor
 
 class ProcessorCreator():
-	
+
 	@staticmethod
 	def createElem():
 		print "Creating element: processor"
@@ -47,7 +47,7 @@ class ProcessorCreator():
 
 			errormsg += "vmxTimerRate could not be found. Please add it manually, or try 'modprobe msr' to probe for MSR, then run the tool again.\n" + \
 			"Alternatively, run the tool again with the proper permissions."
-			warningmod.addWarning(errormsg)
+			message.addError(errormsg)
 		else:
 			vmxbits = 0
 			#Get bits from VMX_BITS_START to VMX_BITS_END
@@ -84,7 +84,7 @@ class MemoryCreator():
 				try:
 					memoryBlock = MemoryCreator.generateMemoryBlock(endfile,typefile,startfile)
 				except IOError:
-					warningmod.addWarning("Could not retrieve complete memory data")
+					message.addError("Could not retrieve complete memory data")
 				#Adds newly created memoryBlock element to memoryBlockList			
 				memoryBlockList.append(memoryBlock)
 
@@ -119,6 +119,7 @@ class DevicesCreator():
 	devicepaths = []
 	capabilities = {} #devicepath = capabilitylist
 	devicenames = {} #devicepath = name
+	deviceNumNames = {} #devicename = numoftimes
 
 	@staticmethod
 	def createElem():
@@ -156,7 +157,7 @@ class DevicesCreator():
 			pciconfigaddr = keyline.split("-")[0]
 		
 		except (customExceptions.KeyNotFound, IOError):
-			warningmod.addWarning("Could not obtain pciConfigAddress from %s." % path)
+			message.addError("Could not obtain pciConfigAddress from %s." % path)
 
 		return pciconfigaddr
 
@@ -199,7 +200,6 @@ class DevicesCreator():
 			if DevicesCreator.isPciExpress(bridgedDevice) is False:
 				nonPciExpressPaths.append(bridgedDevice) 
 
-					
 		print "Devices found: %d\n------------------" % len(DevicesCreator.devicepaths)
 		print "> PCI Bridges: ", len(bridgePaths)
 		for item in bridgePaths:
@@ -249,10 +249,11 @@ class DevicesCreator():
 			for devicepath in devicepaths:
 				capabilities[devicepath] = devicecap.getCapability(devicepath)
 		except customExceptions.NoAccessToFile:
-			warningmod.addWarning("Not enough permissions to access capabilities of devices, results might be inaccurate."\
+			message.addError("Not enough permissions to access capabilities of devices. "\
 			"It is advised to run the tool again with the proper permissions.")		
 
 		return capabilities
+
 
 	@staticmethod
 	def getDeviceNames(devicepaths):
@@ -267,7 +268,7 @@ class DevicesCreator():
 			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS + "pci.ids")
 
 		except customExceptions.PciIdsFileNotFound:
-			warningmod.addWarning("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
+			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
 			"Please ensure that the file is in the directory." )
 		
 		else:
@@ -277,19 +278,29 @@ class DevicesCreator():
 					devhex = extractor.extractData(os.path.join(devicepath,"device") ) 
 					names[devicepath] = pciIdsParser.getVendorName(venhex) #TODO Name constraint
 				except customExceptions.PciIdsFailedSearch as e:
-					warningmod.addWarning("Names for Device %s of Vendor %s could not be found. It would be a good idea to update pci.ids")			
+					message.addWarning("Names for Device %s of Vendor %s could not be found. It would be a good idea to update pci.ids")			
 
 				except customExceptions.PciIdsMultipleEntries as e:
-					warningmod.addWarning("Multiple names for Device %s of Vendor %s were found. Please insert the correct names manually in the XML " +
-					"file.")	
+					message.addWarning("Multiple names for Device %s of Vendor %s were found. Please insert the correct names manually in the XML " +
+					"file.")
 
 		return names
+
+
+	@staticmethod
+	def getDeviceShortName(devicepath):
+		#TODO
+		#raise ValueError("Finish me!")
+		return 3
+
 
 	@staticmethod
 	def createDeviceFromPath(devicepath):
 		pcistr = os.path.basename(devicepath)
 		device = Element("device", "deviceType")
-		device["name"] = DevicesCreator.devicenames[devicepath]
+		#Old code that gets device name as Vendor DeviceName
+		#device["name"] = DevicesCreator.devicenames[devicepath]
+		device["name"] = DevicesCreator.getDeviceShortName(devicepath)
 		device["shared"] = "false" #TODO Check for shared status sometime in the future
 
 		#pci
@@ -306,7 +317,7 @@ class DevicesCreator():
 				device.appendChild(irq)
 
 		except IOError:
-			warningmod.addWarning("Could not obtain irq number for device: %s" % pcistr)
+			message.addError("Could not obtain irq number for device: %s" % pcistr)
 		
 		#memory, includes expansion roms
 		try:
@@ -325,7 +336,7 @@ class DevicesCreator():
 					device.appendChild(memory)
 		
 		except IOError:
-			warningmod.addWarning("Could not obtain memory information for device: %s" % pcistr)
+			message.addError("Could not obtain memory information for device: %s" % pcistr)
 
 		#ioports
 		try:
@@ -343,7 +354,7 @@ class DevicesCreator():
 					device.appendChild(ioPort)
 
 		except IOError:
-			warningmod.addWarning("Could not obtain ioport information for device: %s" % pcistr)
+			message.addError("Could not obtain ioport information for device: %s" % pcistr)
 	
 		#capabilities	
 		caplist = DevicesCreator.capabilities[devicepath]
@@ -356,7 +367,7 @@ class DevicesCreator():
 				try:
 					capability.setContent(devicecap.translate(cap))
 				except customExceptions.CapabilityUnknown:
-					warningmod.addWarning("Capability code: %s is unknown. It might be a good idea to update 'devicecap.py'." % cap)
+					message.addWarning("Capability code: %s is unknown. It might be a good idea to update 'devicecap.py'." % cap)
 					capability.setContent(cap)
 
 				capabilities.appendChild(capability)

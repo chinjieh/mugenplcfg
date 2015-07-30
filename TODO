@@ -6,6 +6,14 @@ Make more code testable: Add arguments in functions
 Add warnings for when any file cannot be read
 Double check info obtained
 
+[High Priority]
+Non-PCI devices
+Names for devices
+Enforce Sudo
+Remove whitespaces
+Default: Strict mode
+Option: Flexible mode
+
 Dependencies:
 --------
 Pyxb

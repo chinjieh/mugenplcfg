@@ -1,15 +1,20 @@
 import sys; sys.dont_write_bytecode = True
 import paths
 import os
-from src import customExceptions, creator, warningmod
+from src import customExceptions, creator, message
 
 #
-#	ConfigTool is developed to support the Muen Project. It produces a system policy file to be used by the Muen kernel.
+# ConfigTool is developed to support the Muen Project. It produces a system
+# policy file to be used by the Muen kernel.
 #
-#	ConfigTool utilises a binding configuration file generated using the library PyXB, as a representation of the XSD schema. This file is to be named 'schemaconfig.py'.
-#	It also utilises pci.ids, a repository of PCI identification numbers obtained from https://pci-ids.ucw.cz/
+# ConfigTool utilises a binding configuration file generated using the library 
+# PyXB, as a representation of the XSD schema. This file is to be named 
+# 'schemaconfig.py'.
 #
-##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+# It also utilises pci.ids, a repository of PCI identification numbers obtained 
+# from https://pci-ids.ucw.cz/
+#
+##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
 def init():
 	#Check for Pyxb binding configuration file
@@ -18,48 +23,57 @@ def init():
 	except IOError:
 		raise customExceptions.SchemaConfigFileNotFound()
 
-def runTests():
-	pass
-
 def generateXML(elemtree):
 	return elemtree.toXML("utf-8")
 
 def output(xml):
 	OUTPUT_NAME = "output.xml"
-	print "> Generating XML file: '%s' to location: %s" % (OUTPUT_NAME, paths.OUTPUT)
-	
+	print "> XML file '%s' generated to location: %s" % (OUTPUT_NAME, paths.OUTPUT)
+
 	xml = xml.replace('><','>\n<')
-		
 	with open(os.path.join(paths.OUTPUT, OUTPUT_NAME), "w") as f:
 		indents = 0
-		for line in xml.splitlines(True):		
+		for line in xml.splitlines(True):
 			f.write(line)
+
+def hasErrors():
+	hasErrors = False
+	for key in message.messagecount:
+		if key is message.ErrorMessage:
+			hasErrors = True
+
+	return hasErrors
+
 
 def main():
 	print "=== ConfigTool Start ==="
 
 	try:
-		print "> Initializing..."		
+		print "> Initializing..."
 		init()
-
-		print "> Running tests..."
-		runTests()
 
 		print "> Extracting data from schema bindings..."
 		elemtree = creator.createElements()
 		xml = generateXML(elemtree)
 
-		output(xml)
-		warningmod.printWarnings()
+		message.printMessages()
 
-		if len(warningmod.warnings) is 0:
+		if len(message.messagequeue) is 0:
 			print "=== ConfigTool completed successfully ==="
 		else:
-			print "=== ConfigTool completed with %d warning(s) ===" % len(warningmod.warnings)
+			print "ConfigTool finished with: "
+			for key in message.messagecount:
+				print "%d %s" % (message.messagecount[key],
+						key.shortname)
+
+		if hasErrors():
+			print "> XML File could not be generated."
+		else:
+			output(xml)
 
 	except customExceptions.SchemaConfigFileNotFound:
 		print "Could not find required PyXB binding file 'schemaconfig.py' in location: %s.\nPlease ensure that the file is there and try again." % (paths.SCHEMACONFIG)
-	
+
 if __name__ == "__main__":
 	main()
 
