@@ -25,6 +25,9 @@ class PciIdsFailedSearch(CustomException):
 class PciIdsMultipleEntries(CustomException):
 	pass
 
+class PciIdsSubclassNotFound(CustomException):
+	pass
+
 class SchemaConfigFileNotFound(CustomException):
 	pass
 

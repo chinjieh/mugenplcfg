@@ -389,6 +389,11 @@ class UtilTestCase(unittest.TestCase):
 		self.assertEqual(util.wrap16("1234"), "16#1234#", "wrap16 function not working")
 		self.assertEqual(util.wrap16(""), "16##", "wrap16 function not working")
 
+	def test_spacesToUnderscores(self):
+		"Tests the spacesToUnderscores function"
+		print "UtilTestCase: test_spacesToUnderscores - begin"
+		self.assertEqual(util.spacesToUnderscores("asd def"), "asd_def", "spacestoUnderscores function not working")
+
 	def test_sizeOf(self):
 		"Tests the sizeOf function"
 		print "UtilTestCase: test_sizeOf - begin"
@@ -415,7 +420,6 @@ class UtilTestCase(unittest.TestCase):
 		"Tests the getDeviceNo function"
 		print "UtilTestCase:test_getDeviceNo - begin"
 		self.assertEqual(util.getDeviceNo("0000:01:02.3"), "02", "getDeviceNo function not working")
-
 
 	def test_getDeviceFunction(self):
 		"Tests the getDeviceFunction function"
@@ -569,10 +573,25 @@ class ParseUtilTestCase(unittest.TestCase):
 		pciIdsLocInit = testpaths.PATH_TEST_PARSEUTIL + "testpciids_init"	
 		parser = parseutil.PciIdsParser(pciIdsLoc)
 		
-		#isValidCode function
-		self.assertEqual(parser.isValidCode("0000"), True, "isValidHex function not working")
-		self.assertEqual(parser.isValidCode("a0102"), False, "isValidHex function not working")
-		self.assertEqual(parser.isValidCode("#"), False, "isValidHex function not working")
+		#isValidVendorCode function
+		self.assertEqual(parser.isValidVendorCode("0000"), True, "isValidVendorCode function not working")
+		self.assertEqual(parser.isValidVendorCode("a0102"), False, "isValidVendorCodefunction not working")
+		self.assertEqual(parser.isValidVendorCode("#"), False, "isValidVendorCode function not working")
+
+		#isValidDeviceCode function
+		self.assertEqual(parser.isValidVendorCode("0000"), True, "isValidDeviceCode function not working")
+		self.assertEqual(parser.isValidVendorCode("12"), False, "isValidDeviceCodefunction not working")
+		self.assertEqual(parser.isValidVendorCode("#"), False, "isValidDeviceCode function not working")
+
+		#isValidClassCode function
+		self.assertEqual(parser.isValidClassCode("02"), True, "isValidClassCode function not working")
+		self.assertEqual(parser.isValidClassCode("0301"), False, "isValidClassCodefunction not working")
+		self.assertEqual(parser.isValidClassCode("#"), False, "isValidClassCode function not working")
+
+		#isValidSubclassCode function
+		self.assertEqual(parser.isValidSubclassCode("01"), True, "isValidSubclassCode function not working")
+		self.assertEqual(parser.isValidSubclassCode("a12"), False, "isValidSubclassCodefunction not working")
+		self.assertEqual(parser.isValidSubclassCode("#"), False, "isValidSubclassCode function not working")
 		
 		#isVendor function
 		self.assertEqual(parser.isVendor("0a12  Vendor1"), True, "isVendor function not working")
@@ -584,10 +603,19 @@ class ParseUtilTestCase(unittest.TestCase):
 		self.assertEqual(parser.isDevice("      0203  Device1_spacenottab"), False, "isDevice function not working")
 		self.assertEqual(parser.isDevice("		0232  Device1"), False, "isDevice function not working")
 
+		#isClass function
+		self.assertEqual(parser.isClass("C 01  Class1"), True, "isClass function not working")
+		self.assertEqual(parser.isClass("0a12 Vendor1"), False, "isClass function not working")
+
+		#isSubclass function
+		self.assertEqual(parser.isSubclass("	02  Subclass1"), True, "isSubclass function not working")
+		self.assertEqual(parser.isSubclass("		02  Subsubclass"), False, "isSubclass function not working")
+
 		#init function
 		parser_init = parseutil.PciIdsParser(pciIdsLocInit)
 		self.assertEqual(len(parser_init.vendorData), 6, "PciIdsParser not initialised properly")
 		self.assertEqual(len(parser_init.deviceData), 3, "PciIdsParser not initialised properly")
+		self.assertEqual(len(parser_init.classData), 10, "PciIdsParser not initialised properly")
 		
 		self.assertRaises(customExceptions.PciIdsMultipleEntries, parseutil.PciIdsParser, pciIdsLocMultiple)
 
@@ -600,6 +628,14 @@ class ParseUtilTestCase(unittest.TestCase):
 		self.assertEqual(parser.getDeviceName("0x0675", "0x1704"), "ISDN Adapter (PCI Bus, D, C)", "getDeviceName function not working")
 		self.assertEqual(parser.getDeviceName("0x8086", "0x0108"), "Xeon E3-1200 Processor Family DRAM Controller", "getDeviceName function not working")
 		self.assertRaises(customExceptions.PciIdsFailedSearch, parser.getDeviceName, "0x0675", "0x2000")
+
+		#getClassName function
+		self.assertEqual(parser.getClassName("0x0604"), "PCI bridge", "getClassName function not working")
+		self.assertEqual(parser.getClassName("0x0c06"), "InfiniBand", "getClassName function not working")
+		self.assertEqual(parser.getClassName("0x0608"), "RACEway bridge", "getClassName function not working")
+		self.assertEqual(parser.getClassName("0x0600"), "Host bridge", "getClassName function not working")
+		self.assertRaises(customExceptions.PciIdsSubclassNotFound, parser.getClassName, "0x0685")
+		self.assertRaises(customExceptions.PciIdsFailedSearch, parser.getClassName, "0x1400")
 
 # == Runs the Unit Test ==
 if __name__ == "__main__":

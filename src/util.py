@@ -52,6 +52,12 @@ def isDeviceName(value):
 
 	return True
 
+def isHex(value):
+	if isinstance(value,basestring):
+		return value.startswith("0x")
+	else:
+		return False
+
 def getDeviceBus(devicestr):
 	return devicestr.split(':')[1]
 
@@ -82,11 +88,9 @@ def wrap16(value):
 	wrapper = "16#_#"
 	return wrapper.replace("_", value)
 
-def isHex(value):
-	if isinstance(value,basestring):
-		return value.startswith("0x")
-	else:
-		return False
+def spacesToUnderscores(value):
+	"Converts spaces to underscores"
+	return value.replace(" ", "_")
 
 def stripvalue(value, retainzeros = False):
 	"Strips a number to obtain the raw value with/without leading 0s"

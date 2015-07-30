@@ -5,21 +5,51 @@ import customExceptions
 
 class PciIdsParser():
 	"Class used to parse pci.ids file"
+	VENDOR_LENGTH = 4
+	DEVICE_LENGTH = 4
+	CLASS_LENGTH = 2
+	SUBCLASS_LENGTH = 2
 	def __init__(self, pciIdsLoc):
 		#initialise personal dictionary to decode vendor and device codes
 		self.vendorData = {} #vencode = venname
 		self.deviceData = {} #(vencode, devcode) = devname
+		self.classData = {} #classcode = classname
 		self.init(pciIdsLoc)
 	
-	def isValidCode(self,code):
-		if len(code) is not 4:
-			return False
+	def isValidVendorCode(self,code):
+		result = True
+		if len(code) is not PciIdsParser.VENDOR_LENGTH:
+			result = False
 		if code.isalnum() is False:
-			return False
-		return True
+			result = False
+		return result
+
+	def isValidDeviceCode(self,code):
+		result = True
+		if len(code) is not PciIdsParser.DEVICE_LENGTH:
+			result = False
+		if code.isalnum() is False:
+			result = False
+		return result
+
+	def isValidClassCode(self,code):
+		result = True
+		if len(code) is not PciIdsParser.CLASS_LENGTH:
+			result = False
+		if code.isalnum() is False:
+			result = False
+		return result
+
+	def isValidSubclassCode(self,code):
+		result = True
+		if len(code) is not PciIdsParser.SUBCLASS_LENGTH:
+			result = False
+		if code.isalnum() is False:
+			result = False
+		return result
 
 	def isVendor(self,line):
-		if self.isValidCode(line.partition("  ")[0]):
+		if self.isValidVendorCode(line.partition("  ")[0]):
 			return True
 		else: 
 			return False
@@ -29,8 +59,23 @@ class PciIdsParser():
 		if self.isVendor(line) is False:
 			if line.startswith("\t") :
 				if line.count("\t") is 1:
-					if self.isValidCode(line.partition("  ")[0].lstrip()) is True:
+					if self.isValidDeviceCode(line.partition("  ")[0].lstrip()):
 				 		result = True				
+		return result
+
+	def isClass(self,line):
+		result = False
+		if line.startswith("C"):
+			if self.isValidClassCode(line.split(" ")[1]):
+				result = True
+		return result
+
+	def isSubclass(self,line):
+		result = False
+		if line.startswith("\t"):
+			if not line.startswith("\t\t"):
+				if self.isValidSubclassCode(line.lstrip().partition("  ")[0]):
+					result = True
 		return result
 
 	def init(self,pciIdsLoc):
@@ -38,6 +83,7 @@ class PciIdsParser():
 		try:
 			data = extractor.extractData(pciIdsLoc)
 			lastVendor = ""
+			lastClass = ""
 			for line in data.splitlines():
 				#find Vendor
 				if self.isVendor(line):
@@ -62,6 +108,17 @@ class PciIdsParser():
 						self.deviceData[(lastVendor, devicecode)] = tokens[2].strip()
 						raise customExceptions.PciIdsMultipleEntries("Multiple instances of device with the same id and vendor detected")
 
+				#find Class
+				if self.isClass(line):
+					lastClass = line.split(" ")[1] #gets class code
+					self.classData["%s" % lastClass] = line.split("  ")[1] #gets class name
+
+				#if find Subclass, refer to last Class
+				if self.isSubclass(line):
+					tokens = line.lstrip().partition("  ")
+					subclassname = tokens[2]
+					self.classData["%s%s" % (lastClass,tokens[0])] = subclassname
+					
 		except IOError:
 			raise customExceptions.PciIdsFileNotFound("pci.ids file could not be located in directory")
 
@@ -83,7 +140,21 @@ class PciIdsParser():
 		except KeyError:
 			raise customExceptions.PciIdsFailedSearch("Could not find device: %s of vendor: %s" % (devhex, venhex))
 
+	def getClassName(self,clshex):
+		clscode = util.stripvalue(clshex, True)
+		result = ""		
+		try:
+			result = self.classData[clscode]
 
+		except KeyError: #Could not find subclass, trying to find class...
+			try:
+				result = self.classData[clscode[:PciIdsParser.CLASS_LENGTH]]
+				raise customExceptions.PciIdsSubclassNotFound("Could not find subclass: %s" % clshex)
+
+			except KeyError:			
+				raise customExceptions.PciIdsFailedSearch("Could not find class: %s" % clshex)
+
+		return result
 
 def parseLine_Sep(line, key, separatorList=""):
 	"""Reads single line, gets value from key-value pair delimited by separator

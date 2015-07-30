@@ -119,7 +119,7 @@ class DevicesCreator():
 	devicepaths = []
 	capabilities = {} #devicepath = capabilitylist
 	devicenames = {} #devicepath = name
-	deviceNumNames = {} #devicename = numoftimes
+	deviceShortNames = {} #devicepath = shortname
 
 	@staticmethod
 	def createElem():
@@ -145,7 +145,8 @@ class DevicesCreator():
 	def getDependencies():
 		"Checks whether dependencies are fulfilled and fills up the class attributes"
 		DevicesCreator.capabilities = DevicesCreator.getCapabilities(DevicesCreator.devicepaths)
-		DevicesCreator.devicenames = DevicesCreator.getDeviceNames(DevicesCreator.devicepaths)
+		#DevicesCreator.devicenames = DevicesCreator.getDeviceNames(DevicesCreator.devicepaths)
+		DevicesCreator.deviceShortNames = DevicesCreator.getDeviceShortNames(DevicesCreator.devicepaths)
 
 	@staticmethod
 	def getPciConfigAddress(path):
@@ -249,12 +250,13 @@ class DevicesCreator():
 			for devicepath in devicepaths:
 				capabilities[devicepath] = devicecap.getCapability(devicepath)
 		except customExceptions.NoAccessToFile:
-			message.addError("Not enough permissions to access capabilities of devices. "\
+			message.addError("Not enough permissions to access capabilities of devices. " +
 			"It is advised to run the tool again with the proper permissions.")		
 
 		return capabilities
 
-
+	#TODO Unused for now, while device names are relying on class codes and not Vendor and Device pairs
+	"""
 	@staticmethod
 	def getDeviceNames(devicepaths):
 		"Gets device names from pci.ids"
@@ -285,14 +287,85 @@ class DevicesCreator():
 					"file.")
 
 		return names
-
+	"""
 
 	@staticmethod
-	def getDeviceShortName(devicepath):
-		#TODO
-		#raise ValueError("Finish me!")
-		return 3
+	def getDeviceShortNames(devicepaths):
+		shortnames = {}
+		namecount = {}
+		#Initialise PciIdsParser
+		try:
+			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS + "pci.ids")
+		
+		except customExceptions.PciIdsFileNotFound:
+			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
+			"Please ensure that the file is in the directory." )
+		
+		else:
+			for devicepath in devicepaths:
+				#Get class code from "class" file"
+				classcode = extractor.extractData(os.path.join(devicepath, "class"))[0:6]
+				classname = classcode
+				try:
+					classname = pciIdsParser.getClassName(classcode)
+				
+				except customExceptions.PciIdsFailedSearch:
+					message.addWarning("Name for Device at: ",
+							devicepath,
+							" cannot be found. It would " +
+							"be a good idea to update pci.ids"
+							)
 
+				#Add class name to namecount
+				if classname not in namecount:
+					namecount[classname] = 0
+				else:
+					namecount[classname] += 1
+
+				#Appends number if name exists in schema already
+				classname = "%s_%d" % (classname,namecount[classname])
+				classname = util.spacesToUnderscores(classname.lower())
+
+				#Add entry to dictionary
+				shortnames[devicepath] = classname
+
+		return shortnames
+	"""
+	@staticmethod
+	def getDeviceShortName(devicepath):
+		#Get class code from "class file"
+		classcode = extractor.extractData(os.path.join(devicepath, "class"))[0:6]
+		shortname = classcode
+		
+		#Lookup class code from PciIdsParser
+		try:
+			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS + "pci.ids")
+		
+		except customExceptions.PciIdsFileNotFound:
+			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
+			"Please ensure that the file is in the directory." )
+		
+		else:
+			try:
+				classname = pciIdsParser.getClassName(classcode)
+			except customExceptions.PciIdsFailedSearch:
+				message.addWarning("Name for Device at: ",
+						devicepath,
+						" cannot be found. It would " +
+						"be a good idea to update pci.ids"
+						)
+
+			if classname not in DevicesCreator.deviceShortNames:
+				DevicesCreator.deviceShortNames[classname] = 0
+			else:
+				DevicesCreator.deviceShortNames[classname] += 1
+			
+			#Appends number if name exists in schema already
+			shortname = "%s%d" % (classname,DevicesCreator.deviceShortNames[classname])
+			shortname = util.spacesToUnderscores(shortname.lower())
+
+		return shortname
+	"""
 
 	@staticmethod
 	def createDeviceFromPath(devicepath):
@@ -300,7 +373,7 @@ class DevicesCreator():
 		device = Element("device", "deviceType")
 		#Old code that gets device name as Vendor DeviceName
 		#device["name"] = DevicesCreator.devicenames[devicepath]
-		device["name"] = DevicesCreator.getDeviceShortName(devicepath)
+		device["name"] = DevicesCreator.deviceShortNames[devicepath]
 		device["shared"] = "false" #TODO Check for shared status sometime in the future
 
 		#pci

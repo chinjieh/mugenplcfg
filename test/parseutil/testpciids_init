@@ -36,3 +36,15 @@
 0071  Nebula Electronics Ltd.
 
 
+C 05  Memory controller
+	00  RAM memory
+	01  FLASH memory
+	80  Memory controller
+C 06  Bridge
+	00  Host bridge
+	01  ISA bridge
+	02  EISA bridge
+	03  MicroChannel bridge
+	04  PCI bridge
+		00  Normal decode
+		01  Subtractive decode
