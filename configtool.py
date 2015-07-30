@@ -23,6 +23,11 @@ def init():
 	except IOError:
 		raise customExceptions.SchemaConfigFileNotFound()
 
+def checkPermissions():
+	"Check user permissions"
+	if not os.access("/sys", os.W_OK):
+		raise customExceptions.NoPermissions
+		
 def generateXML(elemtree):
 	return elemtree.toXML("utf-8")
 
@@ -49,6 +54,7 @@ def main():
 	print "=== ConfigTool Start ==="
 
 	try:
+		checkPermissions()
 		print "> Initializing..."
 		init()
 
@@ -74,6 +80,8 @@ def main():
 	except customExceptions.SchemaConfigFileNotFound:
 		print "Could not find required PyXB binding file 'schemaconfig.py' in location: %s.\nPlease ensure that the file is there and try again." % (paths.SCHEMACONFIG)
 
+	except customExceptions.NoPermissions:
+		print "ERROR: ConfigTool cannot be run without the proper permissions. "
 if __name__ == "__main__":
 	main()
 

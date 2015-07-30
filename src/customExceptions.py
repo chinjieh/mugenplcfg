@@ -33,3 +33,6 @@ class SchemaConfigFileNotFound(CustomException):
 
 class KeyNotFound(CustomException):
 	pass
+
+class NoPermissions(CustomException):
+	pass
