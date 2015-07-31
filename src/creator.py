@@ -123,10 +123,10 @@ class DevicesCreator():
 		devices["pciConfigAddress"] = util.toWord64(DevicesCreator.getPciConfigAddress(paths.IOMEM))
 		
 		#Add Pci Devices
-		devices.appendChild(PCIDeviceCreator().createElems())
+		devices.appendChild(PciDevicesCreator().createElems())
 
 		#Add Tty Devices
-		devices.appendChild(TtyDeviceCreator().createElems())
+		devices.appendChild(TtyDevicesCreator().createElems())
 
 		print "Element created: devices"
 	
@@ -146,7 +146,8 @@ class DevicesCreator():
 
 		return pciconfigaddr
 
-class PCIDeviceCreator():
+
+class PciDevicesCreator():
 	"Helper function of DevicesCreator"
 	def __init__(self):	
 		self.devicepaths = []
@@ -176,12 +177,12 @@ class PCIDeviceCreator():
 		self.deviceShortNames = self.getDeviceShortNames(self.devicepaths)
 
 	def findDevicePaths(self, path):
-		"Gets paths to all devices in system"
+		"Gets paths to all PCI devices in system"
 		devicePaths = []
 
 		files = os.listdir(path)
 		for file in files:
-			if util.isDeviceName(file):
+			if self.isDeviceName(file):
 				#Get the absolute location of symbolic links in path
 				filePath = os.path.join(path,file)
 				relativeLink = os.readlink(filePath)
@@ -205,12 +206,12 @@ class PCIDeviceCreator():
 				bridgePaths.append(devicepath)
 				for root, subdirs, files in os.walk(devicepath):
 					for subdir in subdirs:
-						if util.isDeviceName(subdir):
+						if self.isDeviceName(subdir):
 							bridgedDevicePaths.append(os.path.join(root,subdir))
 		
 		for bridgedDevice in bridgedDevicePaths:
 			if self.isPciExpress(bridgedDevice) is False:
-				nonPciExpressPaths.append(bridgedDevice) 
+				nonPciExpressPaths.append(bridgedDevice)
 
 		print "Devices found: %d\n------------------" % len(self.devicepaths)
 		print "> PCI Bridges: ", len(bridgePaths)
@@ -244,6 +245,29 @@ class PCIDeviceCreator():
 			isPciExpress = True
 		
 		return isPciExpress
+
+	def isDeviceName(self, value):
+		"Checks for format: ####:##[#]:##[#].#[#]"
+		splitcolon = value.split(':')
+		if len(splitcolon) != 3:
+			return False
+	
+		if '.' not in splitcolon[2]:
+			return False
+
+		if len(splitcolon[0]) != 4:
+			return False
+
+		return True
+
+	def getDeviceBus(self, devicestr):
+		return devicestr.split(':')[1]
+
+	def getDeviceNo(self, devicestr):
+		return (devicestr.split(':')[2] ).split('.')[0]
+
+	def getDeviceFunction(self, devicestr):
+		return (devicestr.split(':')[2] ).split('.')[1]	
 
 	def getCapabilities(self, devicepaths):	
 		"Checks if device capabilities can be found"
@@ -363,7 +387,7 @@ class PCIDeviceCreator():
 
 		#pci
 		pci = Element("pci", "pciType")
-		pci["bus", "device", "function"] = util.wrap16(util.getDeviceBus(pcistr)), util.wrap16(util.getDeviceNo(pcistr)), util.getDeviceFunction(pcistr)
+		pci["bus", "device", "function"] = util.wrap16(self.getDeviceBus(pcistr)), util.wrap16(self.getDeviceNo(pcistr)), self.getDeviceFunction(pcistr)
 		device.appendChild(pci)
 		
 		#irq
@@ -434,16 +458,32 @@ class PCIDeviceCreator():
 
 		return device
 
-class TtyDeviceCreator():
-	
+class TtyDevicesCreator():
+	"Helper function of DevicesCreator"
 	def __init__(self):
-		pass
+		self.devicepaths = []
 
 	def createElems(self):
 		ttydevicelist = []
-
+		self.devicepaths = self.getDevicePaths(paths.TTY)
+		
 		return ttydevicelist
 
+	def getDevicePaths(self, path):
+		"Finds paths to related Tty Devices"
+		SEARCH_STRING = "ttyS"
+		devicePaths = []
+		"""
+		files = os.listdir(path)
+		for file in files:
+			if util.isPCIDeviceName(file):
+				#Get the absolute location of symbolic links in path
+				filePath = os.path.join(path,file)
+				relativeLink = os.readlink(filePath)
+				absLink = os.path.join(os.path.dirname(filePath), relativeLink)			
+				devicePaths.append(absLink)
+		"""
+		return devicePaths	
 def createElements():
 	"Creates the element tree and returns top element"
 	platform = Element("platform", "platformType")

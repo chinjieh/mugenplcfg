@@ -38,34 +38,11 @@ def getBit(number, bitno):
 # == Functions to support generation of schema ==
 
 
-def isDeviceName(value):
-	"Checks for format: ####:##[#]:##[#].#[#]"
-	splitcolon = value.split(':')
-	if len(splitcolon) != 3:
-		return False
-	
-	if '.' not in splitcolon[2]:
-		return False
-
-	if len(splitcolon[0]) != 4:
-		return False
-
-	return True
-
 def isHex(value):
 	if isinstance(value,basestring):
 		return value.startswith("0x")
 	else:
 		return False
-
-def getDeviceBus(devicestr):
-	return devicestr.split(':')[1]
-
-def getDeviceNo(devicestr):
-	return (devicestr.split(':')[2] ).split('.')[0]
-
-def getDeviceFunction(devicestr):
-	return (devicestr.split(':')[2] ).split('.')[1]	
 
 def toWord64(value):
 	"Converts to Word64 Type"

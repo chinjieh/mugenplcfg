@@ -84,9 +84,9 @@ class CreatorTestCase(unittest.TestCase):
 	def tearDown(self):
 		print "<> CreatorTestCase:tearDown - begin"
 	
-	## -- DevicesCreator class testcases
+	## -- DevicesCreator testcases
 	def test_DevicesCreator(self):
-		"Tests the DevicesCreator function"
+		"Tests the DevicesCreator class"
 		print "CreatorTestCase:test_DevicesCreator - begin"
 
 		#Test getPciConfigAddress function
@@ -96,10 +96,32 @@ class CreatorTestCase(unittest.TestCase):
 		creator.DevicesCreator.createElem()
 		#TODO
 
+	## -- PciDevicesCreator testcases
+	def test_PciDevicesCreator(self):
+		"Tests the PciDevicesCreator class"
+		
+		pcicreator = creator.PciDevicesCreator()
+
+		#Test isDeviceName function
+		self.assertEqual(pcicreator.isDeviceName("0000:01:00.0"), True, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("0000:00:01.2"), True, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("0001:17:02.5"), True, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("010:10:01.2"), False, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("0000:10:01"), False, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("000:10:01.1"), False, "isDeviceName function not working")
+
+		#Test getDeviceBus function
+		self.assertEqual(pcicreator.getDeviceBus("0011:01:02.3"), "01", "getDeviceBus function not working")
+
+		#Test getDeviceNo function
+		self.assertEqual(pcicreator.getDeviceNo("0000:01:02.3"), "02", "getDeviceNo function not working")
+
+		#Test getDeviceFunction function
+		self.assertEqual(pcicreator.getDeviceFunction("0000:01:02.3"), "3", "getDeviceFunction function not working")
 
 	## -- ProcessorCreator testcases
 	def test_ProcessorCreator(self):
-		"Tests the ProcessorCreator function"
+		"Tests the ProcessorCreator class"
 		print "CreatorTestCase:test_ProcessorCreator - begin"
 
 		creator.ProcessorCreator.createElem()
@@ -107,7 +129,7 @@ class CreatorTestCase(unittest.TestCase):
 
 	## -- MemoryCreator testcases
 	def test_MemoryCreator(self):
-		"Tests the MemoryCreator function"
+		"Tests the MemoryCreator class"
 		print "ExtractorTestCase:test_MemoryCreator - begin"
 
 		loc = self.testdir + "memorycreator/"
@@ -134,8 +156,6 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(memoryBlock_pyxb.physicalAddress, "16#000a#", "generateMemoryBlock not working")
 
 		creator.MemoryCreator.createElem()
-	
-	
 
 
 # == Tests schemadata.py ==
@@ -399,31 +419,6 @@ class UtilTestCase(unittest.TestCase):
 		self.assertEqual(util.sizeOf("0x0002", "0x0001"), "0x2", "sizeOf function not working")
 		self.assertEqual(util.sizeOf("0xe000", "0xe07f"), "0x80", "sizeOf function not working")		
 		self.assertRaises(ValueError, util.sizeOf, "0x1000", 2)
-	
-	def test_isDeviceName(self):
-		"Tests the isDeviceName function"
-		print "UtilTestCase:test_isDeviceName - begin"
-		self.assertEqual(util.isDeviceName("0000:01:00.0"), True, "isDeviceName function not working")
-		self.assertEqual(util.isDeviceName("0000:00:01.2"), True, "isDeviceName function not working")
-		self.assertEqual(util.isDeviceName("0001:17:02.5"), True, "isDeviceName function not working")
-		self.assertEqual(util.isDeviceName("010:10:01.2"), False, "isDeviceName function not working")
-		self.assertEqual(util.isDeviceName("0000:10:01"), False, "isDeviceName function not working")
-		self.assertEqual(util.isDeviceName("000:10:01.1"), False, "isDeviceName function not working")
-
-	def test_getDeviceBus(self):
-		"Tests the getDeviceBus function"
-		print "UtilTestCase:test_getDeviceBus - begin"
-		self.assertEqual(util.getDeviceBus("0011:01:02.3"), "01", "getDeviceBus function not working")
-
-	def test_getDeviceNo(self):
-		"Tests the getDeviceNo function"
-		print "UtilTestCase:test_getDeviceNo - begin"
-		self.assertEqual(util.getDeviceNo("0000:01:02.3"), "02", "getDeviceNo function not working")
-
-	def test_getDeviceFunction(self):
-		"Tests the getDeviceFunction function"
-		print "UtilTestCase:test_getDeviceFunction - begin"
-		self.assertEqual(util.getDeviceFunction("0000:01:02.3"), "3", "getDeviceFunction function not working")
 
 
 # == Class that tests parseutil.py ==

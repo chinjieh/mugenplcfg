@@ -9,6 +9,7 @@ MEMMAP = "/sys/firmware/memmap/"
 DEVICES = "/sys/bus/pci/devices/"
 IOMEM = "/proc/iomem"
 MSR = ["/dev/cpu/0/msr", "/dev/msr0"]
+TTY = "/sys/class/tty/"
 
 ## Location of pci.ids
 PCIIDS = CURRENTDIR + "/data/"
