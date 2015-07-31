@@ -122,11 +122,10 @@ class CreatorTestCase(unittest.TestCase):
 	def test_TtyDevicesCreator(self):
 		"Tests the TtyDevicesCreator class"
 		ttycreator = creator.TtyDevicesCreator()
-
-		#Test isTtyDeviceName function
-		self.assertEqual(ttycreator.isTtyDeviceName("ttyS0"), True, "isTtyDeviceName function not working")
-		self.assertEqual(ttycreator.isTtyDeviceName("tty2"), False, "isTtyDeviceName function not working")
-		self.assertEqual(ttycreator.isTtyDeviceName("tty"), False, "isTtyDeviceName function not working")
+		
+		#Test getAddressFromLine function
+		self.assertEqual(ttycreator.getAddressFromLine("  3e0f-3e50 : serial"), ("3e0f", "3e50"), "getAddressFromLine function not working")
+		self.assertEqual(ttycreator.getAddressFromLine("    3e05-3e10 : serial"), ("3e05", "3e10"), "getAddressFromLine function not working")
 
 	## -- ProcessorCreator testcases
 	def test_ProcessorCreator(self):
@@ -569,12 +568,12 @@ class ParseUtilTestCase(unittest.TestCase):
 		data = extractor.extractData(loc)
 		self.assertEqual(parseutil.parseData_Sep(data,"testKey", ":"), "NO_VALUE", "Value obtained from file "+ loc +" is incorrect.")
 
-	# -- findLine tests
-		"Tests findLine function"
-		print "ParseUtilTestCase:test_findLine - begin"
+	# -- findLines tests
+		"Tests findLines function"
+		print "ParseUtilTestCase:test_findLines - begin"
 		loc = self.testdir + "testParseUtil.txt"
 		data = extractor.extractData(loc)
-		self.assertEqual(parseutil.findLine(data, "testValue4"), "testKey4 : testValue4", "findLine function not working")
+		self.assertEqual(parseutil.findLines(data, "testValue4")[0], "testKey4 : testValue4", "findLine function not working")
 
 	# -- count tests
 	def test_count(self):

@@ -213,16 +213,19 @@ def parseData_Sep(data, key, separatorList=""):
 		return value
 
 
-def findLine(data, key):
-	"Searches data for key, and returns line which contains key"
+def findLines(data, key):
+	"Searches data for key, and returns lines which contain key"
+	result = []	
 	found = False	
 	for line in data.splitlines():
 		if key in line:
 			found = True
-			return line
+			result.append(line)
 	if found is False:
 		raise customExceptions.KeyNotFound("Key %s not found in data" % key)
 		return ""
+	
+	return result
 	
 
 def count(data, key):

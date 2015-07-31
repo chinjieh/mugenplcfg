@@ -8,6 +8,7 @@ import os
 import message
 import devicecap
 import extractor
+from collections import namedtuple
 
 class ProcessorCreator():
 
@@ -138,7 +139,7 @@ class DevicesCreator():
 		key = "PCI MMCONFIG"
 		try:
 			iomemdata = extractor.extractData(path)
-			keyline = parseutil.findLine(iomemdata, key)
+			keyline = parseutil.findLines(iomemdata, key)[0]
 			pciconfigaddr = keyline.split("-")[0]
 		
 		except (customExceptions.KeyNotFound, IOError):
@@ -452,27 +453,60 @@ class PciDevicesCreator():
 class TtyDevicesCreator():
 	"Helper function of DevicesCreator"
 	def __init__(self):
-		self.devicepaths = []
+		self.addresses = []
+		self.ComAddresses = {
+					("03f8", "03ff") : "com_1",
+					("02f8", "02ff") : "com_2",
+					("03e8", "03ef") : "com_3",
+					("02e8", "02ef") : "com_4"
+							} #TODO Check
 
 	def createElems(self):
 		ttydevicelist = []
-		self.devicepaths = self.getDevicePaths(paths.TTY)
-		#TODO
+		self.addresses = self.getSerialAddresses()
+		ttydevicelist.append(self.createComDevices(self.ComAddresses))
+		#Filter COM devices from list
+		filteredlist = util.removeListsFromList(self.addresses, self.ComAddresses.iterkeys())
+		print filteredlist
+		ttydevicelist.append(self.createSerialDevices(filteredlist))
 		return ttydevicelist
 
-	def getDevicePaths(self, path):
-		"Finds paths to related Tty Devices"
-		devicePaths = []
-		devicePaths = util.getLinks(path, self.isTtyDeviceName)
-		print devicePaths
-		return devicePaths
+	def getSerialAddresses(self):
+		"Gets serial addresses in form (startaddr, endaddr)"
+		serialAddresses = []
+		KEYWORD = "serial"
 
-	def isTtyDeviceName(self, name):
-		SEARCH_STRING = "ttyS"
-		result = False
-		if name.startswith(SEARCH_STRING):
-			result = True
-		return result
+		#Get all lines which include KEYWORD
+		try:
+			ioportdata = extractor.extractData(paths.TTY)
+		except IOError:
+			message.addError("Could not access %s." % paths.TTY)
+		else:
+			lines = parseutil.findLines(ioportdata, KEYWORD)
+			#Retrieve (start,end) data for serial devices		
+			for line in lines:
+				serialAddresses.append(self.getAddressFromLine(line))
+		
+		return serialAddresses
+
+	def getAddressFromLine(self, line):
+		"Parses line to obtain (start,end)"		
+		Address = namedtuple("Address", "start end")
+		addrInfo = line.partition(":")[0].strip()
+		start = addrInfo.partition("-")[0]
+		end = addrInfo.partition("-")[2]
+		addr = Address(start, end)
+		return addr
+
+	def createComDevices(self,comAddresses):
+		comdevices = []
+		#TODO return list of device elements
+		return comdevices
+
+	def createSerialDevices(self,addresses):
+		devices = []
+		#TODO return list of device elements
+		return devices
 
 def createElements():
 	"Creates the element tree and returns top element"

@@ -7,8 +7,10 @@ Add warnings for when any file cannot be read
 Double check info obtained
 
 [High Priority]
-Non-PCI devices
+Tty
+Iommu
 Remove whitespaces
+Package Pyxb with Project
 Default: Strict mode
 Option: Flexible mode
 
