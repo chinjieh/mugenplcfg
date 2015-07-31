@@ -114,39 +114,23 @@ class MemoryCreator():
 		else: 
 			return False
 
-
 class DevicesCreator():
-	devicepaths = []
-	capabilities = {} #devicepath = capabilitylist
-	devicenames = {} #devicepath = name
-	deviceShortNames = {} #devicepath = shortname
 
 	@staticmethod
 	def createElem():
 		print "Creating element: devices"
 		devices = Element("devices", "devicesType")
 		devices["pciConfigAddress"] = util.toWord64(DevicesCreator.getPciConfigAddress(paths.IOMEM))
-		print "Finding devices..."
-		DevicesCreator.devicepaths = DevicesCreator.findDevicePaths(paths.DEVICES)
-		print "Checking Dependencies..."
-		DevicesCreator.getDependencies()
-		print "Examining devices..."
-		filteredpaths = DevicesCreator.filterDevicePaths(DevicesCreator.devicepaths)
-		print "Extracting device information from %d devices (excluding PCI bridges and non PCI-Express devices)..." % len(filteredpaths)
-		for devicepath in filteredpaths:	
-			device = DevicesCreator.createDeviceFromPath(devicepath)
-			devices.appendChild(device)
+		
+		#Add Pci Devices
+		devices.appendChild(PCIDeviceCreator().createElems())
+
+		#Add Tty Devices
+		devices.appendChild(TtyDeviceCreator().createElems())
 
 		print "Element created: devices"
 	
 		return devices
-
-	@staticmethod
-	def getDependencies():
-		"Checks whether dependencies are fulfilled and fills up the class attributes"
-		DevicesCreator.capabilities = DevicesCreator.getCapabilities(DevicesCreator.devicepaths)
-		#DevicesCreator.devicenames = DevicesCreator.getDeviceNames(DevicesCreator.devicepaths)
-		DevicesCreator.deviceShortNames = DevicesCreator.getDeviceShortNames(DevicesCreator.devicepaths)
 
 	@staticmethod
 	def getPciConfigAddress(path):
@@ -162,8 +146,36 @@ class DevicesCreator():
 
 		return pciconfigaddr
 
-	@staticmethod
-	def findDevicePaths(path):
+class PCIDeviceCreator():
+	"Helper function of DevicesCreator"
+	def __init__(self):	
+		self.devicepaths = []
+		self.capabilities = {} #devicepath = capabilitylist
+		self.devicenames = {} #devicepath = name
+		self.deviceShortNames = {} #devicepath = shortname
+
+	def createElems(self):
+		pcidevicelist = []
+		print "Finding PCI devices..."
+		self.devicepaths = self.findDevicePaths(paths.DEVICES)
+		print "Checking Dependencies..."
+		self.getDependencies()
+		print "Examining PCI devices..."
+		filteredpaths = self.filterDevicePaths(self.devicepaths)
+		print "Extracting device information from %d PCI devices (excluding PCI bridges and non PCI-Express devices)..." % len(filteredpaths)
+		for devicepath in filteredpaths:	
+			device = self.createDeviceFromPath(devicepath)
+			pcidevicelist.append(device)
+
+		return pcidevicelist
+	
+	def getDependencies(self):
+		"Checks whether dependencies are fulfilled and fills up the class attributes"
+		self.capabilities = self.getCapabilities(self.devicepaths)
+		#self.devicenames = self.getDeviceNames(self.devicepaths)
+		self.deviceShortNames = self.getDeviceShortNames(self.devicepaths)
+
+	def findDevicePaths(self, path):
 		"Gets paths to all devices in system"
 		devicePaths = []
 
@@ -178,8 +190,7 @@ class DevicesCreator():
 
 		return devicePaths	
 	
-	@staticmethod
-	def filterDevicePaths(devicePaths):
+	def filterDevicePaths(self, devicePaths):
 		"Returns filtered list of paths of devices"
 		bridgePaths = []
 		pciExpressPaths = []
@@ -187,10 +198,10 @@ class DevicesCreator():
 		nonPciExpressPaths = []
 		resultPaths = []
 		for devicepath in devicePaths:
-			if DevicesCreator.isPciExpress(devicepath):
+			if self.isPciExpress(devicepath):
 				pciExpressPaths.append(devicepath)
 
-			if DevicesCreator.isBridge(devicepath):
+			if self.isBridge(devicepath):
 				bridgePaths.append(devicepath)
 				for root, subdirs, files in os.walk(devicepath):
 					for subdir in subdirs:
@@ -198,10 +209,10 @@ class DevicesCreator():
 							bridgedDevicePaths.append(os.path.join(root,subdir))
 		
 		for bridgedDevice in bridgedDevicePaths:
-			if DevicesCreator.isPciExpress(bridgedDevice) is False:
+			if self.isPciExpress(bridgedDevice) is False:
 				nonPciExpressPaths.append(bridgedDevice) 
 
-		print "Devices found: %d\n------------------" % len(DevicesCreator.devicepaths)
+		print "Devices found: %d\n------------------" % len(self.devicepaths)
 		print "> PCI Bridges: ", len(bridgePaths)
 		for item in bridgePaths:
 			print "  ", os.path.basename(item)
@@ -217,9 +228,7 @@ class DevicesCreator():
 		resultPaths = util.removeListsFromList(devicePaths, bridgePaths, nonPciExpressPaths)
 		return resultPaths
 
-
-	@staticmethod
-	def isBridge(devicepath):
+	def isBridge(self, devicepath):
 		isBridge = False
 		PCI_BRIDGE = "0x0604"
 		if extractor.extractData(os.path.join(devicepath, "class"))[0:6] == PCI_BRIDGE:
@@ -227,17 +236,16 @@ class DevicesCreator():
 
 		return isBridge
 
-	@staticmethod
-	def isPciExpress(devicepath):
+	def isPciExpress(self, devicepath):
 		isPciExpress = False
 		PCI_EXPRESS = "0x10"
 		
-		if PCI_EXPRESS in DevicesCreator.capabilities[devicepath]:
+		if PCI_EXPRESS in self.capabilities[devicepath]:
 			isPciExpress = True
 		
 		return isPciExpress
-	@staticmethod
-	def getCapabilities(devicepaths):	
+
+	def getCapabilities(self, devicepaths):	
 		"Checks if device capabilities can be found"
 		capabilities = {}
 
@@ -289,8 +297,7 @@ class DevicesCreator():
 		return names
 	"""
 
-	@staticmethod
-	def getDeviceShortNames(devicepaths):
+	def getDeviceShortNames(self, devicepaths):
 		shortnames = {}
 		namecount = {}
 		#Initialise PciIdsParser
@@ -346,13 +353,12 @@ class DevicesCreator():
 
 		return shortnamesno
 
-	@staticmethod
-	def createDeviceFromPath(devicepath):
+	def createDeviceFromPath(self, devicepath):
 		pcistr = os.path.basename(devicepath)
 		device = Element("device", "deviceType")
 		#Old code that gets device name as Vendor DeviceName
-		#device["name"] = DevicesCreator.devicenames[devicepath]
-		device["name"] = DevicesCreator.deviceShortNames[devicepath]
+		#device["name"] = self.devicenames[devicepath]
+		device["name"] = self.deviceShortNames[devicepath]
 		device["shared"] = "false" #TODO Check for shared status sometime in the future
 
 		#pci
@@ -409,7 +415,7 @@ class DevicesCreator():
 			message.addError("Could not obtain ioport information for device: %s" % pcistr)
 	
 		#capabilities	
-		caplist = DevicesCreator.capabilities[devicepath]
+		caplist = self.capabilities[devicepath]
 		if caplist:
 			capabilities = Element("capabilities", "capabilitiesType")
 			for cap in caplist:
@@ -427,6 +433,16 @@ class DevicesCreator():
 			device.appendChild(capabilities)
 
 		return device
+
+class TtyDeviceCreator():
+	
+	def __init__(self):
+		pass
+
+	def createElems(self):
+		ttydevicelist = []
+
+		return ttydevicelist
 
 def createElements():
 	"Creates the element tree and returns top element"
