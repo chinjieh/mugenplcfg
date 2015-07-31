@@ -1,5 +1,6 @@
 #Module to contain utility functions
 import math
+import os
 
 # == Misc functions ==
 def toList(keylist):
@@ -22,7 +23,7 @@ def removeListsFromList(mainList, *removelists):
 			for removelist in removelists:
 				if item in removelist:
 					toremove.append(mainList.index(item))
-	#Add elements to result while ignoring those in toremove	
+	#Add elements to result while ignoring those in toremove
 	for item in mainList:
 		if mainList.index(item) not in toremove:	
 			result.append(item)
@@ -34,7 +35,27 @@ def getBit(number, bitno):
 		return 1
 	else:
 		return 0
-	
+
+def getLinks(path, filterexp=None):
+	"Returns list of absolute links in path (with optional filter)"
+	filelist = []
+
+	if filterexp is None:
+		def filterexp(filename):
+			return True
+
+	files = sorted(os.listdir(path))
+
+	for filename in files:
+		if filterexp(filename):
+			#Get the absolute location of symbolic links in path
+			filePath = os.path.join(path,filename)
+			relativeLink = os.readlink(filePath)
+			absLink = os.path.join(os.path.dirname(filePath), relativeLink)			
+			filelist.append(absLink)
+
+	return filelist
+
 # == Functions to support generation of schema ==
 
 

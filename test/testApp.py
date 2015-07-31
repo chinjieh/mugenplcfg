@@ -99,7 +99,6 @@ class CreatorTestCase(unittest.TestCase):
 	## -- PciDevicesCreator testcases
 	def test_PciDevicesCreator(self):
 		"Tests the PciDevicesCreator class"
-		
 		pcicreator = creator.PciDevicesCreator()
 
 		#Test isDeviceName function
@@ -118,6 +117,16 @@ class CreatorTestCase(unittest.TestCase):
 
 		#Test getDeviceFunction function
 		self.assertEqual(pcicreator.getDeviceFunction("0000:01:02.3"), "3", "getDeviceFunction function not working")
+
+	## -- TtyDevicesCreator testcases
+	def test_TtyDevicesCreator(self):
+		"Tests the TtyDevicesCreator class"
+		ttycreator = creator.TtyDevicesCreator()
+
+		#Test isTtyDeviceName function
+		self.assertEqual(ttycreator.isTtyDeviceName("ttyS0"), True, "isTtyDeviceName function not working")
+		self.assertEqual(ttycreator.isTtyDeviceName("tty2"), False, "isTtyDeviceName function not working")
+		self.assertEqual(ttycreator.isTtyDeviceName("tty"), False, "isTtyDeviceName function not working")
 
 	## -- ProcessorCreator testcases
 	def test_ProcessorCreator(self):
@@ -384,6 +393,31 @@ class UtilTestCase(unittest.TestCase):
 	 	print "UtilTestCase:test_getBit - begin"
 		self.assertEqual(util.getBit(5,2), 1, "getBit function not working")
 		self.assertEqual(util.getBit(5,5), 0, "getBit function not working")
+
+	def test_getLinks(self):
+		"Tests the getLinks function"
+		print "UtilTestCase:test_getLinks - begin"
+		testdir = os.path.join(testpaths.PATH_TEST_UTIL, "test_getFilesInPath")
+
+		def filterexp(filename):
+			if filename.startswith("file"):
+				return True
+			else:
+				return False
+
+		testfilteredlist = ["file0", "file1", "file2", "file3"]
+
+		#Get the absolute location of symbolic links in path
+		testfilteredpaths = []
+		for filename in testfilteredlist: 		
+			filePath = os.path.join(testdir,filename)
+			relativeLink = os.readlink(filePath)
+			absLink = os.path.join(os.path.dirname(filePath), relativeLink)			
+			testfilteredpaths.append(absLink)
+
+		self.assertEqual(util.getLinks(testdir,filterexp),
+				testfilteredpaths,
+				"getFilesInPath function not working")
 
 	def test_isHex(self):
 		"Tests the isHex function"

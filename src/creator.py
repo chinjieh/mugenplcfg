@@ -179,17 +179,8 @@ class PciDevicesCreator():
 	def findDevicePaths(self, path):
 		"Gets paths to all PCI devices in system"
 		devicePaths = []
-
-		files = os.listdir(path)
-		for file in files:
-			if self.isDeviceName(file):
-				#Get the absolute location of symbolic links in path
-				filePath = os.path.join(path,file)
-				relativeLink = os.readlink(filePath)
-				absLink = os.path.join(os.path.dirname(filePath), relativeLink)			
-				devicePaths.append(absLink)
-
-		return devicePaths	
+		devicePaths = util.getLinks(path, self.isDeviceName)
+		return devicePaths
 	
 	def filterDevicePaths(self, devicePaths):
 		"Returns filtered list of paths of devices"
@@ -466,24 +457,23 @@ class TtyDevicesCreator():
 	def createElems(self):
 		ttydevicelist = []
 		self.devicepaths = self.getDevicePaths(paths.TTY)
-		
+		#TODO
 		return ttydevicelist
 
 	def getDevicePaths(self, path):
 		"Finds paths to related Tty Devices"
-		SEARCH_STRING = "ttyS"
 		devicePaths = []
-		"""
-		files = os.listdir(path)
-		for file in files:
-			if util.isPCIDeviceName(file):
-				#Get the absolute location of symbolic links in path
-				filePath = os.path.join(path,file)
-				relativeLink = os.readlink(filePath)
-				absLink = os.path.join(os.path.dirname(filePath), relativeLink)			
-				devicePaths.append(absLink)
-		"""
-		return devicePaths	
+		devicePaths = util.getLinks(path, self.isTtyDeviceName)
+		print devicePaths
+		return devicePaths
+
+	def isTtyDeviceName(self, name):
+		SEARCH_STRING = "ttyS"
+		result = False
+		if name.startswith(SEARCH_STRING):
+			result = True
+		return result
+
 def createElements():
 	"Creates the element tree and returns top element"
 	platform = Element("platform", "platformType")
