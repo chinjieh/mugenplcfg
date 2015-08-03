@@ -8,7 +8,7 @@ import os
 import message
 import devicecap
 import extractor
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 Address = namedtuple("Address", "start end")
 
@@ -316,7 +316,7 @@ class PciDevicesCreator():
 	"""
 
 	def getDeviceShortNames(self, devicepaths):
-		shortnames = {}
+		shortnames = OrderedDict()
 		namecount = {}
 		#Initialise PciIdsParser
 		try:
@@ -345,17 +345,13 @@ class PciDevicesCreator():
 				#Add entry to dictionary shortnames
 				shortnames[devicepath] = classname
 
-		print "Shortnames : " , shortnames
 		namelist = []
 		for value in shortnames.itervalues():
 			namelist.append(value)
 
-		print namelist
-
 		listnumberer = util.ListNumberer(namelist)
-		for devicepath in sorted(shortnames.iterkeys()): #TODO this doesnt sort well: cause devicepaths start with 000000 even if it ends with 01 (bridge)
+		for devicepath in shortnames.iterkeys():
 			shortnames[devicepath] = listnumberer.getName(shortnames[devicepath])
-			print shortnames[devicepath]
 
 		"""
 				#Add class name to namecount
