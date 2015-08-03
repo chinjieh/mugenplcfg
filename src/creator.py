@@ -539,10 +539,10 @@ class SerialDevicesCreator():
 
 	def createSerialDevices(self,addresses):
 		devices = []
-		numberer = util.ListNumberer(["serial"])
+		serialcount = 0
 		for addr in addresses:
 			device = Element("device", "deviceType")
-			device["name"] = numberer.getName("serial")
+			device["name"] = "serial_%d" % serialcount
 			device["shared"] = "true"
 			ioport = Element("ioPort", "ioPortType")
 			ioport["name"] = "port"
@@ -550,6 +550,7 @@ class SerialDevicesCreator():
 			ioport["end"] = util.toWord64(addr.end)
 			device.appendChild(ioport)
 			devices.append(device)
+			serialcount += 1
 
 		return devices
 

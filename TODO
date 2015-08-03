@@ -12,6 +12,7 @@ Remove whitespaces
 Package Pyxb with Project
 Default: Strict mode
 Option: Flexible mode
+Test serial device extraction
 
 Dependencies:
 --------
