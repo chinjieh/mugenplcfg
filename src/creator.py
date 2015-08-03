@@ -10,6 +10,8 @@ import devicecap
 import extractor
 from collections import namedtuple
 
+Address = namedtuple("Address", "start end")
+
 class ProcessorCreator():
 
 	@staticmethod
@@ -452,23 +454,26 @@ class PciDevicesCreator():
 
 class TtyDevicesCreator():
 	"Helper function of DevicesCreator"
+
 	def __init__(self):
 		self.addresses = []
 		self.ComAddresses = {
-					("03f8", "03ff") : "com_1",
-					("02f8", "02ff") : "com_2",
-					("03e8", "03ef") : "com_3",
-					("02e8", "02ef") : "com_4"
+					Address("03f8", "03ff") : "com_1",
+					Address("02f8", "02ff") : "com_2",
+					Address("03e8", "03ef") : "com_3",
+					Address("02e8", "02ef") : "com_4"
 							} #TODO Check
 
 	def createElems(self):
 		ttydevicelist = []
 		self.addresses = self.getSerialAddresses()
-		ttydevicelist.append(self.createComDevices(self.ComAddresses))
+		#Get COM Device addresses
+		for comdevice in self.createComDevices(self.ComAddresses):
+			ttydevicelist.append(comdevice)
 		#Filter COM devices from list
 		filteredlist = util.removeListsFromList(self.addresses, self.ComAddresses.iterkeys())
-		print filteredlist
-		ttydevicelist.append(self.createSerialDevices(filteredlist))
+		for serialdevice in self.createSerialDevices(filteredlist):
+			ttydevicelist.append(serialdevice)
 		return ttydevicelist
 
 	def getSerialAddresses(self):
@@ -490,8 +495,7 @@ class TtyDevicesCreator():
 		return serialAddresses
 
 	def getAddressFromLine(self, line):
-		"Parses line to obtain (start,end)"		
-		Address = namedtuple("Address", "start end")
+		"Parses line to obtain (start,end)"
 		addrInfo = line.partition(":")[0].strip()
 		start = addrInfo.partition("-")[0]
 		end = addrInfo.partition("-")[2]
@@ -500,12 +504,25 @@ class TtyDevicesCreator():
 
 	def createComDevices(self,comAddresses):
 		comdevices = []
-		#TODO return list of device elements
+		for addr in self.ComAddresses:
+		    	device = Element("device", "deviceType")
+		    	device["name"] = "test"
+			device["shared"] = "true"
+			ioport = Element("ioport", "ioPortType")
+			ioport["name"] = "port"
+			ioport["start"] = util.toWord64(addr.start)
+			ioport["end"] = util.toWord64(addr.end)
+			device.appendChild(ioport)
+			comdevices.append(device)
 		return comdevices
 
 	def createSerialDevices(self,addresses):
 		devices = []
-		#TODO return list of device elements
+		device = Element("device", "deviceType")
+		device["name"] = "name"
+		device["shared"] = "true"
+		devices.append(device)
+		#TODO
 		return devices
 
 def createElements():
@@ -514,6 +531,6 @@ def createElements():
 	platform.appendChild(ProcessorCreator.createElem())	
 	platform.appendChild(MemoryCreator.createElem())
 	platform.appendChild(DevicesCreator.createElem())
-	
+
 	return platform	
 
