@@ -342,7 +342,22 @@ class PciDevicesCreator():
 							)
 
 				classname = util.spacesToUnderscores(classname.lower())
+				#Add entry to dictionary shortnames
+				shortnames[devicepath] = classname
 
+		print "Shortnames : " , shortnames
+		namelist = []
+		for value in shortnames.itervalues():
+			namelist.append(value)
+
+		print namelist
+
+		listnumberer = util.ListNumberer(namelist)
+		for devicepath in sorted(shortnames.iterkeys()): #TODO this doesnt sort well: cause devicepaths start with 000000 even if it ends with 01 (bridge)
+			shortnames[devicepath] = listnumberer.getName(shortnames[devicepath])
+			print shortnames[devicepath]
+
+		"""
 				#Add class name to namecount
 				if classname not in namecount:
 					namecount[classname] = 1
@@ -369,7 +384,9 @@ class PciDevicesCreator():
 					shortnamesno[dev] = "%s_%d" % (shortnames[dev], counter)
 					counter += 1
 
-		return shortnamesno
+		"""
+
+		return shortnames
 
 	def createDeviceFromPath(self, devicepath):
 		pcistr = os.path.basename(devicepath)

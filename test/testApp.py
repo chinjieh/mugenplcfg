@@ -418,6 +418,26 @@ class UtilTestCase(unittest.TestCase):
 				testfilteredpaths,
 				"getFilesInPath function not working")
 
+	def test_numberMultiples(self):
+		"Tests the numberMultiples function"
+		print "UtilTestCase:test_numberMultiples - begin"
+		testlist = ["elem", "elem", "elem2", "elem2", "elem3"]
+		resultlist = ["elem_1", "elem_2", "elem2_1", "elem2_2", "elem3"]
+		failedlist = ["elem_1", "elem2_1", "elem_2", "elem2_2", "elem3"]
+		self.assertEqual(util.numberMultiples(testlist), resultlist, "numberMultiples function not working")
+		self.assertEqual(util.numberMultiples([]), [], "numberMultiples function not working")
+
+	def test_ListNumberer(self):
+		"Tests the ListNumberer class"
+		print "UtilTestCase:test_ListNumberer - begin"
+		testlist = ["elem", "elem", "elem2", "elem2", "elem3"]
+		listnumberer = util.ListNumberer(testlist)
+		self.assertEqual(listnumberer.getName("elem"), "elem_1", "ListNumberer class not working")
+		self.assertEqual(listnumberer.getName("elem"), "elem_2", "ListNumberer class not working")
+		self.assertEqual(listnumberer.getName("elem2"), "elem2_1", "ListNumberer class not working")
+		self.assertEqual(listnumberer.getName("elem3"), "elem3", "ListNumberer class not working")
+		self.assertRaises(ValueError, listnumberer.getName, "elem4")
+
 	def test_isHex(self):
 		"Tests the isHex function"
 		print "UtilTestCase:test_isHex - begin"

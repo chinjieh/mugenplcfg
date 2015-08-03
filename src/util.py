@@ -2,6 +2,37 @@
 import math
 import os
 
+# == Utility Classes ==
+class ListNumberer():
+	"Class that stores list of names, and is able to retrieve numbered names"
+	def __init__(self, listnames):
+		self.listnames = listnames
+		self.namecount = {} #name, count of how many times name was used
+		self.NUMBER_FORMAT = "_%d"
+
+	def getName(self, inname):
+		repeatednames = []
+		outname = ""
+		#Check if inname is in self.listnames
+		if inname not in self.listnames:
+			raise ValueError("ListNumberer.getName: 'inname' not in 'listnames'")
+
+		for name in self.listnames:
+			if name not in repeatednames:
+				if self.listnames.count(name) > 1:
+					repeatednames.append(name)
+		
+		if inname in repeatednames:
+			if inname in self.namecount:
+				self.namecount[inname] += 1
+			else:
+				self.namecount[inname] = 1
+			outname = inname + self.NUMBER_FORMAT % self.namecount[inname]	
+		else:
+			outname = inname
+
+		return outname
+
 # == Misc functions ==
 def toList(keylist):
 	"Convert keylist to a list"
@@ -55,6 +86,30 @@ def getLinks(path, filterexp=None):
 			filelist.append(absLink)
 
 	return filelist
+
+def numberMultiples(listin):
+	"Numbers repeated elements in list, leaves it alone if element is solo"
+	NUMBER_FORMAT = "_%d"
+	repeatednames = []
+	namecount = {} #name, count
+	for name in listin:
+		if name not in repeatednames:
+			if listin.count(name) > 1:
+				repeatednames.append(name)
+
+	listout = []
+	for name in listin:
+		if name in repeatednames:
+			if name not in namecount:
+				namecount[name] = 1
+			else:
+				namecount[name] += 1
+			newname = name + NUMBER_FORMAT % namecount[name]
+			listout.append(newname)
+		else:
+			listout.append(name)
+			
+	return listout
 
 # == Functions to support generation of schema ==
 
