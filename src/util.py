@@ -13,7 +13,7 @@ class ListNumberer():
 	def getName(self, inname):
 		repeatednames = []
 		outname = ""
-		#Check if inname is in self.listnames
+
 		if inname not in self.listnames:
 			raise ValueError("ListNumberer.getName: 'inname' not in 'listnames'")
 

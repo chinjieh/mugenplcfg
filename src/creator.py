@@ -16,7 +16,7 @@ class ProcessorCreator():
 
 	@staticmethod
 	def createElem():
-		print "Creating element: processor"
+		print "> Creating element: processor"
 		cpuinfo = extractor.extractData(paths.CPUINFO)
 		processor = Element("processor", "processorType")
 		processor["logicalCpus"] = parseutil.count(cpuinfo,"processor")
@@ -64,7 +64,7 @@ class MemoryCreator():
 	
 	@staticmethod
 	def createElem():
-		print "Creating element: memory"
+		print "> Creating element: memory"
 
 		memory = Element("memory", "physicalMemoryType")	
 		#Get list of memoryBlocks available
@@ -121,15 +121,17 @@ class DevicesCreator():
 
 	@staticmethod
 	def createElem():
-		print "Creating element: devices"
+		print "> Creating element: devices"
 		devices = Element("devices", "devicesType")
 		devices["pciConfigAddress"] = util.toWord64(DevicesCreator.getPciConfigAddress(paths.IOMEM))
 		
 		#Add Pci Devices
+		print "Extracting PCI device information..."
 		devices.appendChild(PciDevicesCreator().createElems())
 
-		#Add Tty Devices
-		devices.appendChild(TtyDevicesCreator().createElems())
+		#Add Serial Devices
+		print "Extracting Serial device information..."
+		devices.appendChild(SerialDevicesCreator().createElems())
 
 		print "Element created: devices"
 	
@@ -151,7 +153,7 @@ class DevicesCreator():
 
 
 class PciDevicesCreator():
-	"Helper function of DevicesCreator"
+	"Helper class of DevicesCreator"
 	def __init__(self):	
 		self.devicepaths = []
 		self.capabilities = {} #devicepath = capabilitylist
@@ -411,7 +413,7 @@ class PciDevicesCreator():
 		#memory, includes expansion roms
 		try:
 			resourceData = extractor.extractData(os.path.join(devicepath, "resource"))
-			memcount = 0
+			memcount = 0			
 			for line in resourceData.splitlines():
 				tokens = line.split(' ')
 				if tokens[2][-3] == '2': #if line represents a memory block
@@ -421,8 +423,8 @@ class PciDevicesCreator():
 					memory["physicalAddress"] = util.toWord64(tokens[0])
 					memory["size"] = util.toWord64(util.sizeOf(tokens[1], tokens[0]))
 					memory["caching"] = "UC" #TODO
-					memcount += 1
 					device.appendChild(memory)
+					memcount += 1
 		
 		except IOError:
 			message.addError("Could not obtain memory information for device: %s" % pcistr)
@@ -465,12 +467,12 @@ class PciDevicesCreator():
 
 		return device
 
-class TtyDevicesCreator():
-	"Helper function of DevicesCreator"
+class SerialDevicesCreator():
+	"Helper class of DevicesCreator"
 
 	def __init__(self):
 		self.addresses = []
-		self.ComAddresses = {
+		self.COMADDRESSES = {
 					Address("03f8", "03ff") : "com_1",
 					Address("02f8", "02ff") : "com_2",
 					Address("03e8", "03ef") : "com_3",
@@ -478,16 +480,16 @@ class TtyDevicesCreator():
 							} #TODO Check
 
 	def createElems(self):
-		ttydevicelist = []
+		serialdevicelist = []
 		self.addresses = self.getSerialAddresses()
 		#Get COM Device addresses
-		for comdevice in self.createComDevices(self.ComAddresses):
-			ttydevicelist.append(comdevice)
+		for comdevice in self.createComDevices(self.COMADDRESSES):
+			serialdevicelist.append(comdevice)
 		#Filter COM devices from list
-		filteredlist = util.removeListsFromList(self.addresses, self.ComAddresses.iterkeys())
+		filteredlist = util.removeListsFromList(self.addresses, self.COMADDRESSES.iterkeys())
 		for serialdevice in self.createSerialDevices(filteredlist):
-			ttydevicelist.append(serialdevice)
-		return ttydevicelist
+			serialdevicelist.append(serialdevice)
+		return serialdevicelist
 
 	def getSerialAddresses(self):
 		"Gets serial addresses in form (startaddr, endaddr)"
@@ -517,25 +519,38 @@ class TtyDevicesCreator():
 
 	def createComDevices(self,comAddresses):
 		comdevices = []
-		for addr in self.ComAddresses:
+		comaddr = []
+		for addr in self.addresses:
+			if addr in self.COMADDRESSES:
+				comaddr.append(addr)
+					
+		for addr in comaddr:
 		    	device = Element("device", "deviceType")
-		    	device["name"] = "test"
+		    	device["name"] = self.COMADDRESSES[addr]
 			device["shared"] = "true"
-			ioport = Element("ioport", "ioPortType")
+			ioport = Element("ioPort", "ioPortType")
 			ioport["name"] = "port"
 			ioport["start"] = util.toWord64(addr.start)
 			ioport["end"] = util.toWord64(addr.end)
 			device.appendChild(ioport)
 			comdevices.append(device)
+
 		return comdevices
 
 	def createSerialDevices(self,addresses):
 		devices = []
-		device = Element("device", "deviceType")
-		device["name"] = "name"
-		device["shared"] = "true"
-		devices.append(device)
-		#TODO
+		numberer = util.ListNumberer(["serial"])
+		for addr in addresses:
+			device = Element("device", "deviceType")
+			device["name"] = numberer.getName("serial")
+			device["shared"] = "true"
+			ioport = Element("ioPort", "ioPortType")
+			ioport["name"] = "port"
+			ioport["start"] = util.toWord64(addr.start)
+			ioport["end"] = util.toWord64(addr.end)
+			device.appendChild(ioport)
+			devices.append(device)
+
 		return devices
 
 def createElements():

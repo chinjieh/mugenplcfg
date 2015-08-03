@@ -7,7 +7,6 @@ Add warnings for when any file cannot be read
 Double check info obtained
 
 [High Priority]
-Tty
 Iommu
 Remove whitespaces
 Package Pyxb with Project

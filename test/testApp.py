@@ -118,14 +118,14 @@ class CreatorTestCase(unittest.TestCase):
 		#Test getDeviceFunction function
 		self.assertEqual(pcicreator.getDeviceFunction("0000:01:02.3"), "3", "getDeviceFunction function not working")
 
-	## -- TtyDevicesCreator testcases
-	def test_TtyDevicesCreator(self):
-		"Tests the TtyDevicesCreator class"
-		ttycreator = creator.TtyDevicesCreator()
+	## -- SerialDevicesCreator testcases
+	def test_SerialDevicesCreator(self):
+		"Tests the SerialDevicesCreator class"
+		serialcreator = creator.SerialDevicesCreator()
 		
 		#Test getAddressFromLine function
-		self.assertEqual(ttycreator.getAddressFromLine("  3e0f-3e50 : serial"), ("3e0f", "3e50"), "getAddressFromLine function not working")
-		self.assertEqual(ttycreator.getAddressFromLine("    3e05-3e10 : serial"), ("3e05", "3e10"), "getAddressFromLine function not working")
+		self.assertEqual(serialcreator.getAddressFromLine("  3e0f-3e50 : serial"), ("3e0f", "3e50"), "getAddressFromLine function not working")
+		self.assertEqual(serialcreator.getAddressFromLine("    3e05-3e10 : serial"), ("3e05", "3e10"), "getAddressFromLine function not working")
 
 	## -- ProcessorCreator testcases
 	def test_ProcessorCreator(self):
