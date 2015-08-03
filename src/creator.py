@@ -133,6 +133,10 @@ class DevicesCreator():
 		print "Extracting Serial device information..."
 		devices.appendChild(SerialDevicesCreator().createElems())
 
+		#Add IOMMUs
+		print "Extracting IOMMU device information..."
+		devices.appendChild(IommuDevicesCreator().createElems())
+
 		print "Element created: devices"
 	
 		return devices
@@ -553,6 +557,14 @@ class SerialDevicesCreator():
 			serialcount += 1
 
 		return devices
+
+class IommuDevicesCreator():
+	def __init__(self):
+		pass
+
+	def createElems(self):
+		elemlist = []
+		return elemlist
 
 def createElements():
 	"Creates the element tree and returns top element"

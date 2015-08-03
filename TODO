@@ -6,16 +6,16 @@ Make more code testable: Add arguments in functions
 Add warnings for when any file cannot be read
 Double check info obtained
 
-[High Priority]
-Iommu
 Remove whitespaces
-Package Pyxb with Project
 Default: Strict mode
 Option: Flexible mode
+
+[High Priority]
+Iommu
+Package Pyxb with Project
 Test serial device extraction
 
 Dependencies:
 --------
 Pyxb
-Pci.ids
-vmxcap
+Pci.ids (licensing)
