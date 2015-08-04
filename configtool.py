@@ -1,6 +1,7 @@
 import sys; sys.dont_write_bytecode = True
 import paths
 import os
+import shutil
 from src import customExceptions, creator, message
 
 #
@@ -25,6 +26,17 @@ def init():
 			"in location: %s.\nPlease ensure that the file is there " + 
 			"and try again." % (paths.SCHEMACONFIG))
 
+def cleanup():
+	"Call this function at the end of the program to remove temp files"
+	print "Cleaning up..."
+
+	CURRENTDIR = os.path.dirname(__file__)
+
+	shutil.rmtree(paths.TEMP, onerror=cleanupErrorHandler)
+
+def cleanupErrorHandler(function, path, excinfo):
+	message.addWarning("Could not remove temp directory: %s" % path)
+
 def checkPermissions():
 	"Check user permissions"
 	if not os.access("/sys", os.W_OK):
@@ -38,7 +50,7 @@ def formatXML(xmlstr):
 	try:
 		from lxml import etree
 	except ImportError:
-		message.addWarning("Lxml library not found, could not format XML document")
+		message.addWarning("LXML library not found, could not format XML document.")
 	else:
 		root = etree.fromstring(xmlstr)
 		result = etree.tostring(root, pretty_print=True)
@@ -66,9 +78,7 @@ def hasErrors():
 	for key in message.messagecount:
 		if key is message.ErrorMessage:
 			hasErrors = True
-
 	return hasErrors
-
 
 def main():
 	print "=== ConfigTool Start ==="
@@ -80,9 +90,9 @@ def main():
 	print "> Extracting data from schema bindings..."
 	elemtree = creator.createElements()
 	xml = generateXML(elemtree)
-
+	cleanup()
 	message.printMessages()
-
+	
 	if len(message.messagequeue) is 0:
 		print "=== ConfigTool completed successfully ==="
 	else:
@@ -90,11 +100,14 @@ def main():
 		for key in message.messagecount:
 			print "%d %s" % (message.messagecount[key],
 					key.shortname)
-
+		print "========================================="
+	
 	if hasErrors():
 		print "> XML File could not be generated."
 	else:
 		output(xml)
+
+	
 	
 if __name__ == "__main__":
 	main()

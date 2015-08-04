@@ -363,35 +363,6 @@ class PciDevicesCreator():
 		for devicepath in shortnames.iterkeys():
 			shortnames[devicepath] = listnumberer.getName(shortnames[devicepath])
 
-		"""
-				#Add class name to namecount
-				if classname not in namecount:
-					namecount[classname] = 1
-				else:
-					namecount[classname] += 1
-
-				#Add entry to dictionary
-				shortnames[devicepath] = classname
-
-		
-		#Find repeated class names
-		repeatednames = []
-		shortnamesno = shortnames.copy()
-		for item in namecount.items():
-			if item[1] > 1:
-				if item[0] not in repeatednames:
-					repeatednames.append(item[0])
-
-		#Append numbers to repeated names
-		for repeatedname in repeatednames:
-			counter = 1
-			for dev in devicepaths:
-				if shortnames[dev] == repeatedname:
-					shortnamesno[dev] = "%s_%d" % (shortnames[dev], counter)
-					counter += 1
-
-		"""
-
 		return shortnames
 
 	def createDeviceFromPath(self, devicepath):
@@ -596,7 +567,7 @@ class IommuDevicesCreator():
 			tempfile = os.path.join(outputloc, self.DMAR_TEMPNAME)
 			shutil.copyfile(dmar, tempfile)
 
-		except subprocess.IOError:
+		except IOError:
 			message.addError("DMAR table could not be copied to %s." % tempfile)
 
 		#Parse temp file
@@ -612,8 +583,10 @@ class IommuDevicesCreator():
 		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
 		iommuaddrs = []
 		KEY = "Register Base Address"
-		
-		dmardata = extractor.extractData(dmarfile)
+		try:
+			dmardata = extractor.extractData(dmarfile)
+		except IOError:
+			message.addError("Could not find '%s' in location: %s." % (self.DMAR_NAME, self.OUTPUTPATH))		
 		for line in dmardata.splitlines():
 			try:
 				addr = parseutil.parseLine_Sep(line, KEY, ":")
