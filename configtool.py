@@ -27,16 +27,32 @@ def checkPermissions():
 	"Check user permissions"
 	if not os.access("/sys", os.W_OK):
 		raise customExceptions.NoPermissions
-		
+
+def formatXML(xmlstr):
+	"Uses lxml to format xml string"
+	print "Formatting XML document..."
+	result = xmlstr
+	try:
+		from lxml import etree
+	except ImportError:
+		message.addWarning("Lxml library not found, could not format XML document")
+	else:
+		root = etree.fromstring(xmlstr)
+		result = etree.tostring(root, pretty_print=True)
+
+	return result	
+	
 def generateXML(elemtree):
-	return elemtree.toXML("utf-8")
+	xmlstr = elemtree.toXML("utf-8")
+	formattedxml = formatXML(xmlstr)
+	return formattedxml
 
 def output(xml):
 	OUTPUT_NAME = "output.xml"
-	print "> XML file '%s' generated to location: %s" % (	OUTPUT_NAME, 
+	print "> XML file '%s' generated to location: \n %s" % (OUTPUT_NAME, 
 								paths.OUTPUT )
 
-	xml = xml.replace('><','>\n<')
+	#xml = xml.replace('><','>\n<')
 	with open(os.path.join(paths.OUTPUT, OUTPUT_NAME), "w") as f:
 		indents = 0
 		for line in xml.splitlines(True):

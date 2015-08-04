@@ -136,7 +136,7 @@ class CreatorTestCase(unittest.TestCase):
 		emptyloc = os.path.join(self.testdir, "devicescreator/testdmar_empty.dsl")
 
 		self.assertEqual(iommucreator.getIommuAddrs(loc), 
-				["FED91000", "FED91100"],
+				["0xfed91000", "0xfed91100"],
 				"getIommuAddrs function not working")
 		self.assertEqual(iommucreator.getIommuAddrs(emptyloc),
 				[],
@@ -702,4 +702,7 @@ class ParseUtilTestCase(unittest.TestCase):
 
 # == Runs the Unit Test ==
 if __name__ == "__main__":
-	unittest.main()
+	if not os.access("/sys", os.W_OK):
+		print "Please start the test program with 'sudo'."
+	else:
+		unittest.main()

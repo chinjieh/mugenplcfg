@@ -9,7 +9,9 @@ import devicecap
 import extractor
 import subprocess
 import shutil
-from collections import namedtuple, OrderedDict
+import mmap
+import struct
+from collections import namedtuple, OrderedDict, deque
 from schemadata import Element
 
 Address = namedtuple("Address", "start end")
@@ -127,17 +129,17 @@ class DevicesCreator():
 		devices = Element("devices", "devicesType")
 		devices["pciConfigAddress"] = util.toWord64(DevicesCreator.getPciConfigAddress(paths.IOMEM))
 		
-		#Add Pci Devices
-		print "Extracting PCI device information..."
-		devices.appendChild(PciDevicesCreator().createElems())
+		#Add IOMMUs
+		print "Extracting IOMMU device information..."
+		devices.appendChild(IommuDevicesCreator().createElems())
 
 		#Add Serial Devices
 		print "Extracting Serial device information..."
 		devices.appendChild(SerialDevicesCreator().createElems())
 
-		#Add IOMMUs
-		print "Extracting IOMMU device information..."
-		devices.appendChild(IommuDevicesCreator().createElems())
+		#Add Pci Devices
+		print "Extracting PCI device information..."
+		devices.appendChild(PciDevicesCreator().createElems())
 
 		print "Element created: devices"
 	
@@ -565,21 +567,24 @@ class IommuDevicesCreator():
 		self.DMAR_TEMPNAME = "dmar.dat"
 		self.DMAR_NAME = "dmar.dsl"
 		self.OUTPUTPATH = paths.TEMP
+		self.DEVMEM = paths.DEVMEM
+		self.iommuaddrs = []
+		self.iommunames = deque([])
 
 	def createElems(self):
 		elemlist = []
 		print "Parsing DMAR table..."
-		self.genDMAR(paths.DMAR, self.OUTPUTPATH)
-		iommuaddrs = []		
-		iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH, self.DMAR_NAME))
+		self.genDMAR(paths.DMAR, self.OUTPUTPATH)	
+		self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH, self.DMAR_NAME))
+		for addr in self.iommuaddrs:	
+			elemlist.append(self.createDeviceFromAddr(addr))
 
 		return elemlist
 
 	def genDMAR(self, dmar, outputloc):
 		"Creates Parsed DMAR file in temp folder"
 
-		#Generate temp file to be parsed
-		##Make temp folder if does not exist
+		#Make temp folder if does not exist
 		try:
 			os.makedirs(outputloc)
 		except OSError:
@@ -596,7 +601,7 @@ class IommuDevicesCreator():
 
 		#Parse temp file
 		try:
-			subprocess.call(["iasl","-d",tempfile])
+			subprocess.call(["iasl","-d",tempfile], stdout=subprocess.PIPE)
 
 		except OSError as e:
 			if e.errno == os.errno.ENOENT: #iasl does not exist
@@ -613,12 +618,66 @@ class IommuDevicesCreator():
 			try:
 				addr = parseutil.parseLine_Sep(line, KEY, ":")
 				addr = addr.lstrip("0")
+				addr = "0x" + addr
+				addr = addr.lower()
 				iommuaddrs.append(addr)
 
 			except customExceptions.KeyNotFound:
 				pass
 
 		return iommuaddrs
+
+	def createDeviceFromAddr(self, iommuaddr):
+		"Generates a device element from a given iommu address"
+		MAP_MAX = "0x30"
+		CAPABILITY_OFFSET = "0x08"
+		AGAW_39_BITNO = 1
+		AGAW_48_BITNO = 2
+		IOMMU_SIZE = "1000"
+		
+		device = Element("device", "deviceType")
+		device["shared"] = "false"
+
+		#name attr
+		for addr in self.iommuaddrs:
+			self.iommunames.append("iommu")
+		self.iommunames = deque(util.numberMultiples(self.iommunames))
+		device["name"] = self.iommunames.popleft()
+
+		#memory
+		memory = Element("memory", "deviceMemoryType")
+		memory["caching"] = "UC" #TODO
+		memory["name"] = "mmio"
+		memory["physicalAddress"] = util.toWord64(iommuaddr)
+		memory["size"] = util.toWord64(IOMMU_SIZE)
+		device.appendChild(memory)
+		
+		#capabilities
+		capabilities = Element("capabilities", "capabilitiesType")
+		## iommu
+		iommucap = Element("capability", "capabilityType")
+		iommucap["name"] = "iommu"
+		capabilities.appendChild(iommucap)
+		## agax
+		agaxcap = Element("capability", "capabilityType")
+		agaxcap["name"] = "agax"
+
+		try:
+			bytes = extractor.extractBinaryData(self.DEVMEM,int(CAPABILITY_OFFSET,0)+1, 1)
+		except IOError:
+			message.addError("Could not access file: %s" % self.DEVMEM)
+		else:
+			if util.getBit(int(bytes[0], 16),AGAW_39_BITNO):
+				agaxcap["name"] = "agax39"
+			elif util.getBit(int(bytes[0], 16), AGAW_48_BITNO):
+				agaxcap["name"] = "agax48"
+			else:
+				message.addError("AGAX Capability could not be found for IOMMU device.")
+
+		capabilities.appendChild(agaxcap)
+		device.appendChild(capabilities)
+
+		return device
 	
 
 def createElements():

@@ -15,12 +15,6 @@ def extractData(loc):
 
 	return trimmedDataString;
 
-def extractToFile(infile, outfile):
-	"Extracts contents of data to file"
-	data = extractData(infile)
-	
-
-
 import struct
 def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN"):
 	"Reads binary file at start position and returns bytes read as list of bytes in hex"
