@@ -13,7 +13,12 @@ def extractData(loc):
 		#remove trailing newline
 		trimmedDataString = dataString.rstrip();
 
-	return trimmedDataString; 
+	return trimmedDataString;
+
+def extractToFile(infile, outfile):
+	"Extracts contents of data to file"
+	data = extractData(infile)
+	
 
 
 import struct

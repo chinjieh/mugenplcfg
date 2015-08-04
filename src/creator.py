@@ -1,6 +1,5 @@
 #Module that handles creation of the XML document
 import parseutil
-from schemadata import Element
 import customExceptions
 import util
 import paths
@@ -8,7 +7,10 @@ import os
 import message
 import devicecap
 import extractor
+import subprocess
+import shutil
 from collections import namedtuple, OrderedDict
+from schemadata import Element
 
 Address = namedtuple("Address", "start end")
 
@@ -28,7 +30,7 @@ class ProcessorCreator():
 	@staticmethod
 	def getVmxTimerRate():
 		#check for MSR	
-		vmxTimerRate = 0	
+		vmxTimerRate = 0
 		MSRfound = False
 		OFFSET = 0x485
 		VMX_BITS_START = 0
@@ -48,7 +50,7 @@ class ProcessorCreator():
 			for path in paths.MSR:
 				errormsg += ("%s\n" % path)
 
-			errormsg += "vmxTimerRate could not be found. Please add it manually, or try 'modprobe msr' to probe for MSR, then run the tool again.\n" + \
+			errormsg += "vmxTimerRate could not be found. Try 'modprobe msr' to probe for MSR, then run the tool again.\n" + \
 			"Alternatively, run the tool again with the proper permissions."
 			message.addError(errormsg)
 		else:
@@ -330,7 +332,7 @@ class PciDevicesCreator():
 		
 		except customExceptions.PciIdsFileNotFound:
 			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
-			"Please ensure that the file is in the directory." )
+			"Please ensure that the file is in the directory.")
 		
 		else:
 			for devicepath in devicepaths:
@@ -560,11 +562,64 @@ class SerialDevicesCreator():
 
 class IommuDevicesCreator():
 	def __init__(self):
-		pass
+		self.DMAR_TEMPNAME = "dmar.dat"
+		self.DMAR_NAME = "dmar.dsl"
+		self.OUTPUTPATH = paths.TEMP
 
 	def createElems(self):
 		elemlist = []
+		print "Parsing DMAR table..."
+		self.genDMAR(paths.DMAR, self.OUTPUTPATH)
+		iommuaddrs = []		
+		iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH, self.DMAR_NAME))
+
 		return elemlist
+
+	def genDMAR(self, dmar, outputloc):
+		"Creates Parsed DMAR file in temp folder"
+
+		#Generate temp file to be parsed
+		##Make temp folder if does not exist
+		try:
+			os.makedirs(outputloc)
+		except OSError:
+			if not os.path.isdir(outputloc):
+				raise
+		
+		#Copy DMAR to temp folder
+		try:
+			tempfile = os.path.join(outputloc, self.DMAR_TEMPNAME)
+			shutil.copyfile(dmar, tempfile)
+
+		except subprocess.IOError:
+			message.addError("DMAR table could not be copied to %s." % tempfile)
+
+		#Parse temp file
+		try:
+			subprocess.call(["iasl","-d",tempfile])
+
+		except OSError as e:
+			if e.errno == os.errno.ENOENT: #iasl does not exist
+				message.addError("iasl tool not found in the system. "+
+						"Try 'apt-get install iasl' to install.")
+
+	def getIommuAddrs(self, dmarfile):
+		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
+		iommuaddrs = []
+		KEY = "Register Base Address"
+		
+		dmardata = extractor.extractData(dmarfile)
+		for line in dmardata.splitlines():
+			try:
+				addr = parseutil.parseLine_Sep(line, KEY, ":")
+				addr = addr.lstrip("0")
+				iommuaddrs.append(addr)
+
+			except customExceptions.KeyNotFound:
+				pass
+
+		return iommuaddrs
+	
 
 def createElements():
 	"Creates the element tree and returns top element"

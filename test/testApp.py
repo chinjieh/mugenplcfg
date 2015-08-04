@@ -12,17 +12,17 @@ class ExtractorTestCase(unittest.TestCase):
 	
 	"Tests the extractor file"
 	def setUp(self):
-		"""Setup code"""
+		"Setup code"
 		print "<> ExtractorTestCase:setUp - begin"
 		self.testdir = testpaths.PATH_TEST_EXTRACTOR
 		
 	def tearDown(self):
-		"""Cleanup code"""
+		"Cleanup code"
 		print "<> ExtractorTestCase:tearDown - begin"
 
 	## -- extractData testcases
 	def test_extractData(self):
-		"""Tests the extractData function"""
+		"Tests the extractData function"
 		print "ExtractorTestCase:test_extractData - begin"
 		
 		loc = self.testdir + "testExtractData.txt"
@@ -31,19 +31,18 @@ class ExtractorTestCase(unittest.TestCase):
 		self.assertNotEqual(extractor.extractData(loc), "", "Extracted Data from file "+ loc +" matches incorrectly.")
 	
 	def test_extractData_blank(self):
-		"""Tests the extractData function with blank file"""
+		"Tests the extractData function with blank file"
 		print "ExtractorTestCase:test_extractData_blank - begin"
 		
 		loc = self.testdir + "testExtractData_blank.txt"
 		self.assertEqual(extractor.extractData(loc), "", "Extracted Data from file "+ loc +" does not match.")
 
 	def test_extractData_doesNotExist(self):
-		"""Tests the extractData function with file that does not exist"""
+		"Tests the extractData function with file that does not exist"
 		print "ExtractorTestCase:test_extractData_doesNotExist - begin"
 		
 		loc = self.testdir + "testExtractData_shouldnotexist.txt"
 		self.assertRaises(IOError,extractor.extractData,loc)
-
 
 	## -- extractBinaryData testcases
 	def test_extractBinaryData(self):
@@ -127,6 +126,23 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(serialcreator.getAddressFromLine("  3e0f-3e50 : serial"), ("3e0f", "3e50"), "getAddressFromLine function not working")
 		self.assertEqual(serialcreator.getAddressFromLine("    3e05-3e10 : serial"), ("3e05", "3e10"), "getAddressFromLine function not working")
 
+	## -- IommuDevicesCreator testcases
+	def test_IommuDevicesCreator(self):
+		"Tests the IommuDevicesCreator class"
+		iommucreator = creator.IommuDevicesCreator()
+
+		#Test getIommuAddrs function
+		loc = os.path.join(self.testdir, "devicescreator/testdmar.dsl")
+		emptyloc = os.path.join(self.testdir, "devicescreator/testdmar_empty.dsl")
+
+		self.assertEqual(iommucreator.getIommuAddrs(loc), 
+				["FED91000", "FED91100"],
+				"getIommuAddrs function not working")
+		self.assertEqual(iommucreator.getIommuAddrs(emptyloc),
+				[],
+				"getIommuAddrs function not working")
+		
+		
 	## -- ProcessorCreator testcases
 	def test_ProcessorCreator(self):
 		"Tests the ProcessorCreator class"

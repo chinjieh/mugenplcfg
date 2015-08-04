@@ -1,4 +1,5 @@
 #Module to contain functions to handle messages
+import sys
 
 class Message():
 	shortname = "message(s)"
@@ -24,7 +25,7 @@ class WarningMessage(Message):
 
 class ErrorMessage(Message):
 	shortname = "error(s)"
-	def __init__(self,msg):
+	def __init__(self,msg,forcequit=False):
 		self.msg = msg
 		addToCount(ErrorMessage)
 
@@ -57,8 +58,11 @@ def add(Message):
 def addWarning(msg):
 	add(WarningMessage(msg))
 
-def addError(msg):
+def addError(msg, forcequit=True):
 	add(ErrorMessage(msg))
+	if forcequit:
+		printMessages()
+		sys.exit() #Terminate script upon error
 
 messagecount = {} #Message, count
 messagequeue = []

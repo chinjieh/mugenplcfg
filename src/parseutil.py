@@ -165,7 +165,6 @@ def parseLine_Sep(line, key, separatorList=""):
 	
 	#obtains whatever is on the right of the separator, without whitespaces on the left		
 	try:
-	
 		keyEndPos = line.index(key)	
 	except ValueError:
 		raise customExceptions.KeyNotFound("Key %s not found in data" % (key))	
