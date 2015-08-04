@@ -21,12 +21,15 @@ def init():
 	try:
 		open (paths.SCHEMACONFIG + ".py", "r")
 	except IOError:
-		raise customExceptions.SchemaConfigFileNotFound()
+		message.addError("Could not find required PyXB binding file 'schemaconfig.py' " +
+			"in location: %s.\nPlease ensure that the file is there " + 
+			"and try again." % (paths.SCHEMACONFIG))
 
 def checkPermissions():
 	"Check user permissions"
 	if not os.access("/sys", os.W_OK):
-		raise customExceptions.NoPermissions
+		message.addMessage("ConfigTool cannot be run without the proper " + \
+			"permissions. Try running with 'sudo'.", True)
 
 def formatXML(xmlstr):
 	"Uses lxml to format xml string"
@@ -70,38 +73,29 @@ def hasErrors():
 def main():
 	print "=== ConfigTool Start ==="
 
-	try:
-		checkPermissions()
-		print "> Initializing..."
-		init()
+	checkPermissions()
+	print "> Initializing..."
+	init()
 
-		print "> Extracting data from schema bindings..."
-		elemtree = creator.createElements()
-		xml = generateXML(elemtree)
+	print "> Extracting data from schema bindings..."
+	elemtree = creator.createElements()
+	xml = generateXML(elemtree)
 
-		message.printMessages()
+	message.printMessages()
 
-		if len(message.messagequeue) is 0:
-			print "=== ConfigTool completed successfully ==="
-		else:
-			print "ConfigTool finished with: "
-			for key in message.messagecount:
-				print "%d %s" % (message.messagecount[key],
-						key.shortname)
+	if len(message.messagequeue) is 0:
+		print "=== ConfigTool completed successfully ==="
+	else:
+		print "ConfigTool finished with: "
+		for key in message.messagecount:
+			print "%d %s" % (message.messagecount[key],
+					key.shortname)
 
-		if hasErrors():
-			print "> XML File could not be generated."
-		else:
-			output(xml)
-
-	except customExceptions.SchemaConfigFileNotFound:
-		print ("Could not find required PyXB binding file 'schemaconfig.py' " +
-			"in location: %s.\nPlease ensure that the file is there " + 
-			"and try again." % (paths.SCHEMACONFIG) )
-
-	except customExceptions.NoPermissions:
-		print 	"ERROR: ConfigTool cannot be run without the proper " + \
-			"permissions. Try running with 'sudo'."
+	if hasErrors():
+		print "> XML File could not be generated."
+	else:
+		output(xml)
+	
 if __name__ == "__main__":
 	main()
 

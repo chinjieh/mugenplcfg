@@ -41,7 +41,6 @@ def addToCount(classname):
 		messagecount[classname] += 1
 
 def printMessages():
-	print ""
 	for message in messagequeue:
 		message.display()
 
@@ -57,6 +56,12 @@ def add(Message):
 
 def addWarning(msg):
 	add(WarningMessage(msg))
+
+def addMessage(msg, forcequit=False):
+	add(Message(msg))
+	if forcequit:
+		printMessages()
+		sys.exit()
 
 def addError(msg, forcequit=True):
 	add(ErrorMessage(msg))

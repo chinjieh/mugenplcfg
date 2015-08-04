@@ -31,11 +31,5 @@ class PciIdsSubclassNotFound(CustomException):
 class DmarFileNotCopied(CustomException):
 	pass 
 
-class SchemaConfigFileNotFound(CustomException):
-	pass
-
 class KeyNotFound(CustomException):
-	pass
-
-class NoPermissions(CustomException):
 	pass
