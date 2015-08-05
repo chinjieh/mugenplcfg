@@ -632,9 +632,9 @@ class IommuDevicesCreator():
 		iommucap = Element("capability", "capabilityType")
 		iommucap["name"] = "iommu"
 		capabilities.appendChild(iommucap)
-		## agax
-		agaxcap = Element("capability", "capabilityType")
-		agaxcap["name"] = "agax"
+		## agaw
+		agawcap = Element("capability", "capabilityType")
+		agawcap["name"] = "agaw"
 
 		try:
 			bytes = extractor.extractBinaryData(self.DEVMEM,int(CAPABILITY_OFFSET,0)+1, 1)
@@ -642,13 +642,13 @@ class IommuDevicesCreator():
 			message.addError("Could not access file: %s" % self.DEVMEM)
 		else:
 			if util.getBit(int(bytes[0], 16),AGAW_39_BITNO):
-				agaxcap["name"] = "agax39"
+				agawcap["name"] = "agaw39"
 			elif util.getBit(int(bytes[0], 16), AGAW_48_BITNO):
-				agaxcap["name"] = "agax48"
+				agawcap["name"] = "agaw48"
 			else:
-				message.addError("AGAX Capability could not be found for IOMMU device.")
+				message.addError("AGAW Capability could not be found for IOMMU device.")
 
-		capabilities.appendChild(agaxcap)
+		capabilities.appendChild(agawcap)
 		device.appendChild(capabilities)
 
 		return device

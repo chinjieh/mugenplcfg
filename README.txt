@@ -13,15 +13,21 @@
 #
 ##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
+== [ Installing the Tool ] ==
 
+ConfigTool can be obtained from the repository via command:
 
+	$ git clone --recursive git@git.codelabs.ch:/muen/mugenplcfg
+
+This clones all submodules required by the tool as well as the source files.
 
 == [ Running the Tool ] ==
 
-ConfigTool requires root user permissions to execute correctly.
-It can be run via the command:
+After installation, ConfigTool can be run via the command:
 
-$ sudo python ./configtool.py
+	$ sudo python mugenplcfg/configtool.py
+
+Root user permissions are necessary to allow ConfigTool to examine system data.
 
 == [ Optional Arguments ] ==
 

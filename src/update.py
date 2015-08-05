@@ -14,8 +14,9 @@ def updatePciIds(url, location):
 	try:
 		urllib2.urlopen(PCI_IDS)
 	except urllib2.URLError:
-		print "pci.ids file could not be updated from url: %s" % PCI_IDS
-		print "The file can be obtained manually from the repository."
+		print "Failed to update file: %s" % location
+		print "> pci.ids file could not be updated from url: %s" % PCI_IDS
+		print "> The file can be obtained manually from the repository."
 	else:
 		print "Updating file: %s" % location
 		urllib.urlretrieve(url, location)
