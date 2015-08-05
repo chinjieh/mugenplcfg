@@ -91,8 +91,6 @@ class CreatorTestCase(unittest.TestCase):
 		#Test getPciConfigAddress function
 		testiomem = os.path.join(self.testdir,"devicescreator/test_iomem") 
 		self.assertEqual(creator.DevicesCreator.getPciConfigAddress(testiomem), "e0000000", "getPciConfigAddress function not working")
-
-		creator.DevicesCreator.createElem()
 		#TODO
 
 	## -- PciDevicesCreator testcases
@@ -148,7 +146,6 @@ class CreatorTestCase(unittest.TestCase):
 		"Tests the ProcessorCreator class"
 		print "CreatorTestCase:test_ProcessorCreator - begin"
 
-		creator.ProcessorCreator.createElem()
 		#TODO
 
 	## -- MemoryCreator testcases
@@ -178,8 +175,6 @@ class CreatorTestCase(unittest.TestCase):
 		memoryBlock_pyxb = memoryBlock.compileToPyxb()
 		self.assertEqual(memoryBlock_pyxb.name, "0_type", "generateMemoryBlock not working")
 		self.assertEqual(memoryBlock_pyxb.physicalAddress, "16#000a#", "generateMemoryBlock not working")
-
-		creator.MemoryCreator.createElem()
 
 
 # == Tests schemadata.py ==

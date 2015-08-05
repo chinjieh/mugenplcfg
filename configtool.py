@@ -1,8 +1,9 @@
 import sys; sys.dont_write_bytecode = True
+import getopt
 import paths
 import os
 import shutil
-from src import customExceptions, creator, message
+from src import customExceptions, creator, message, update
 
 #
 # ConfigTool is developed to support the Muen Project. It produces a system
@@ -29,9 +30,7 @@ def init():
 def cleanup():
 	"Call this function at the end of the program to remove temp files"
 	print "Cleaning up..."
-
 	CURRENTDIR = os.path.dirname(__file__)
-
 	shutil.rmtree(paths.TEMP, onerror=cleanupErrorHandler)
 
 def cleanupErrorHandler(function, path, excinfo):
@@ -80,6 +79,16 @@ def hasErrors():
 			hasErrors = True
 	return hasErrors
 
+def handleArgs(argv):
+	opts, args = getopt.getopt(argv,"u",["update"])
+	runMain = True
+	for opt, value in opts:
+		if opt == "-u" or opt == "-update":
+			update.update()
+			runMain = False
+	if runMain:
+		main()
+
 def main():
 	print "=== ConfigTool Start ==="
 
@@ -110,5 +119,5 @@ def main():
 	
 	
 if __name__ == "__main__":
-	main()
+	handleArgs(sys.argv[1:])
 

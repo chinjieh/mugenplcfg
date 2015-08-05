@@ -18,7 +18,7 @@ DMAR_TEMP = TEMP
 DEVMEM = "/dev/mem"
 
 ## Location of pci.ids
-PCIIDS = CURRENTDIR + "/data/"
+PCIIDS = CURRENTDIR + "/data/pci.ids"
 
 ## Location of schemaconfig : PyXB binding file
 SCHEMACONFIGPATH = CURRENTDIR +"/schemaconfig/"

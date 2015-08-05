@@ -1,14 +1,14 @@
 Maybe have command switch to include bridges?
-Reject invalid element name
 Refactor creator code to make it more extensible  (split into files??)
-Add update function for pci.ids
 Make more code testable: Add arguments in functions
-Add warnings for when any file cannot be read
 Double check info obtained
+Fix bugs with warnings (Warning messages not showing when lxml unable to import)
 
 Remove whitespaces
 Default: Strict mode
 Option: Flexible mode
+
+Edit README.txt
 
 [High Priority]
 Test AGAX

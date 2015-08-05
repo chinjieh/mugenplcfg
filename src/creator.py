@@ -303,7 +303,7 @@ class PciDevicesCreator():
 
 		#Attempt to access pci.ids to retrieve device name
 		try:
-			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS + "pci.ids")
+			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS)
 
 		except customExceptions.PciIdsFileNotFound:
 			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
@@ -330,7 +330,7 @@ class PciDevicesCreator():
 		namecount = {}
 		#Initialise PciIdsParser
 		try:
-			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS + "pci.ids")
+			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS)
 		
 		except customExceptions.PciIdsFileNotFound:
 			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
@@ -346,9 +346,10 @@ class PciDevicesCreator():
 				
 				except (customExceptions.PciIdsFailedSearch,
 					customExceptions.PciIdsSubclassNotFound):
-					message.addWarning(("Name for Device at: %s" % devicepath +
-							" cannot be found. It would " + 
-							"be a good idea to update pci.ids")
+					message.addWarning(("Name for Device at: %s " % devicepath +
+							"cannot be found. It would " + 
+							"be a good idea to update pci.ids "+
+							"(try '-update' or '-u')")
 							)
 
 				classname = util.spacesToUnderscores(classname.lower())
