@@ -88,7 +88,7 @@ def handleArgs():
 	args = parser.parse_args()
 
 	runMain = True
-	if args.u:
+	if args.update:
 		update.update()
 		runMain = False
 
