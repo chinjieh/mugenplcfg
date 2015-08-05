@@ -1,5 +1,5 @@
 import sys; sys.dont_write_bytecode = True
-import getopt
+import argparse
 import paths
 import os
 import shutil
@@ -79,13 +79,19 @@ def hasErrors():
 			hasErrors = True
 	return hasErrors
 
-def handleArgs(argv):
-	opts, args = getopt.getopt(argv,"u",["update"])
+def handleArgs():
+	"Checks arguments in command line and performs relevant actions"
+	parser = argparse.ArgumentParser()
+	parser.add_argument(	"-u", "--update",
+				help="Updates files used by the tool",
+				action="store_true")
+	args = parser.parse_args()
+
 	runMain = True
-	for opt, value in opts:
-		if opt == "-u" or opt == "-update":
-			update.update()
-			runMain = False
+	if args.u:
+		update.update()
+		runMain = False
+
 	if runMain:
 		main()
 
@@ -119,5 +125,5 @@ def main():
 	
 	
 if __name__ == "__main__":
-	handleArgs(sys.argv[1:])
+	handleArgs()
 
