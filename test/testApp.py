@@ -699,5 +699,4 @@ class ParseUtilTestCase(unittest.TestCase):
 if __name__ == "__main__":
 	if not os.access("/sys", os.W_OK):
 		print "Please start the test program with elevated permissions (try 'sudo')."
-	else:
-		unittest.main()
+	unittest.main()

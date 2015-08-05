@@ -1,13 +1,13 @@
 #Module to contain code related to construction of XML document
-import pyxb
+import sys
 import copy
 import util
 import customExceptions
 import paths
-import sys
 sys.path.append(paths.SCHEMACONFIGPATH)
+sys.path.append(paths.PYXB)
 from schemaconfig import schemaconfig as schema
-
+import pyxb
 
 class Element():
 	"Class that wraps Pyxb and provides easier use of modification of XML elements"
