@@ -428,8 +428,7 @@ class PciDevicesCreator():
 					memory["name"] = "mem%d" % memcount
 					memory["physicalAddress"] = util.toWord64(tokens[0])
 					memory["size"] = util.toWord64(util.sizeOf(tokens[1],
-															   tokens[0])
-												   )
+															   tokens[0]) )
 					memory["caching"] = "UC" #TODO
 					device.appendChild(memory)
 					memcount += 1
