@@ -21,7 +21,7 @@ DEVMEM = "/dev/mem"
 PCIIDS = CURRENTDIR + "/data/pci.ids"
 
 ## Location of PyXB Library
-PYXB = CURRENTDIR + "/contrib/pyxb/pyxb/"
+PYXB = CURRENTDIR + "/contrib/pyxb/"
 
 ## Location of schemaconfig : PyXB binding file
 SCHEMACONFIGPATH = CURRENTDIR +"/schemaconfig/"
