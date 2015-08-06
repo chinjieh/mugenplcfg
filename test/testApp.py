@@ -68,9 +68,6 @@ class ExtractorTestCase(unittest.TestCase):
 		self.assertEqual(extractor.extractBinaryLinkedList(loc,0x02,1,1,0x0,3), ["0x0a", "0x0b", "0x0c"], "extractBinaryLinkedList function not working")
 
 
-
-
-
 # == Class that tests creator.py ==
 import src.creator as creator
 class CreatorTestCase(unittest.TestCase):

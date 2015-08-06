@@ -84,7 +84,10 @@ class MemoryCreator():
 	@staticmethod
 	def getMemoryBlocks(path):
 		memoryBlockList = []
-		for root,subdirs,files in os.walk(path):
+		def walkError(excep):
+			message.addError("Could not access memory block data: " +\
+							 str(excep), False)
+		for root,subdirs,files in os.walk(path, onerror=walkError):
 			if not subdirs:  #at end of paths
 
 				endfile = root + "/" + "end"
@@ -95,7 +98,8 @@ class MemoryCreator():
 																	typefile,
 																	startfile)
 				except IOError:
-					message.addError("Could not retrieve complete memory data")
+					message.addError("Could not retrieve complete memory data",
+									 False)
 				#Adds newly created memoryBlock element to memoryBlockList
 				memoryBlockList.append(memoryBlock)
 
@@ -302,12 +306,12 @@ class PciDevicesCreator():
 		except customExceptions.NoAccessToFile:
 			message.addError("Not enough permissions to access capabilities of "
 							 "devices. It is advised to run the tool again with "
-							 "the proper permissions.")
+							 "the proper permissions.", False)
 
 		return capabilities
 
 	#TODO Unused for now, while device names are relying on class codes and not Vendor and Device pairs
-
+	"""
 	@staticmethod
 	def getDeviceNames(devicepaths):
 		"Gets device names from pci.ids"
@@ -324,7 +328,7 @@ class PciDevicesCreator():
 			message.addError("pci.ids file could not be located in tool directory: "
 							 "%s. " % paths.CURRENTDIR + "Device names could not "
 							 "be obtained.\nPlease ensure that the file is in "
-							 "the directory." )
+							 "the directory.", False)
 
 		else:
 			for devicepath in devicepaths:
@@ -344,7 +348,7 @@ class PciDevicesCreator():
 									   "XML file.")
 
 		return names
-
+	"""
 
 	def getDeviceShortNames(self, devicepaths):
 		shortnames = OrderedDict()
@@ -357,7 +361,8 @@ class PciDevicesCreator():
 			message.addError("pci.ids file could not be located in tool "
 							 "directory: %s. " % paths.CURRENTDIR + "Device "
 							 "names could not be obtained.\n"
-							 "Please ensure that the file is in the directory.")
+							 "Please ensure that the file is in the directory.",
+							 False)
 
 		else:
 			for devicepath in devicepaths:
@@ -371,7 +376,7 @@ class PciDevicesCreator():
 				except (customExceptions.PciIdsFailedSearch,
 					customExceptions.PciIdsSubclassNotFound):
 					message.addWarning(("Name for Device at: %s " % devicepath +
-										"cannot be found. It would " +
+										"could not be found. It would " +
 										"be a good idea to update pci.ids "+
 										"(try '-update' or '-u')" ))
 
@@ -413,7 +418,8 @@ class PciDevicesCreator():
 				device.appendChild(irq)
 
 		except IOError:
-			message.addError("Could not obtain irq number for device: %s" % pcistr)
+			message.addError("Could not obtain irq number for device: %s" % pcistr,
+							 False)
 
 		#memory, includes expansion roms
 		try:
@@ -435,7 +441,8 @@ class PciDevicesCreator():
 
 		except IOError:
 			message.addError("Could not obtain memory information for device: "
-							 "%s" % pcistr)
+							 "%s" % pcistr,
+							 False)
 
 		#ioports
 		try:
@@ -455,7 +462,8 @@ class PciDevicesCreator():
 
 		except IOError:
 			message.addError("Could not obtain ioport information for device: "
-							 "%s" % pcistr)
+							 "%s" % pcistr,
+							 False)
 
 		#capabilities
 		caplist = self.capabilities[devicepath]
@@ -513,7 +521,8 @@ class SerialDevicesCreator():
 		try:
 			ioportdata = extractor.extractData(paths.TTY)
 		except IOError:
-			message.addError("Could not access %s." % paths.TTY)
+			message.addError("Could not access location: %s\n" % paths.TTY +\
+							 "Serial device addresses not found.", False)
 		else:
 			lines = parseutil.findLines(ioportdata, KEYWORD)
 			#Retrieve (start,end) data for serial devices
@@ -579,11 +588,16 @@ class IommuDevicesCreator():
 	def createElems(self):
 		elemlist = []
 		print "Parsing DMAR table..."
-		self.genDMAR(paths.DMAR, self.OUTPUTPATH)
-		self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
-														  self.DMAR_NAME) )
-		for addr in self.iommuaddrs:
-			elemlist.append(self.createDeviceFromAddr(addr))
+		try:
+			self.genDMAR(paths.DMAR, self.OUTPUTPATH)
+		except (IOError, OSError):
+			message.addError("Could not obtain DMAR information; IOMMU devices "
+							 "not found.", False)
+		else:
+			self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
+															  self.DMAR_NAME) )
+			for addr in self.iommuaddrs:
+				elemlist.append(self.createDeviceFromAddr(addr))
 
 		return elemlist
 
@@ -603,16 +617,20 @@ class IommuDevicesCreator():
 			shutil.copyfile(dmar, tempfile)
 
 		except IOError:
-			message.addError("DMAR table could not be copied to %s." % tempfile)
+			message.addMessage("DMAR table at: '%s' " % dmar +\
+							 "could not be copied to location: '%s'" % tempfile)
+			raise IOError
 
-		#Parse temp file
-		try:
-			subprocess.call(["iasl","-d",tempfile], stdout=subprocess.PIPE)
+		else:
+			#Parse temp file
+			try:
+				subprocess.call(["iasl","-d",tempfile], stdout=subprocess.PIPE)
 
-		except OSError as e:
-			if e.errno == os.errno.ENOENT: #iasl does not exist
-				message.addError("iasl tool not found in the system. "+
-						"Try 'apt-get install iasl' to install.")
+			except OSError as e:
+				if e.errno == os.errno.ENOENT: #iasl does not exist
+					message.addMessage("iasl tool not found in the system. "+
+							"Try 'apt-get install iasl' to install.")
+				raise OSError
 
 	def getIommuAddrs(self, dmarfile):
 		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
@@ -622,17 +640,18 @@ class IommuDevicesCreator():
 			dmardata = extractor.extractData(dmarfile)
 		except IOError:
 			message.addError("Could not find '%s' in location: %s." %
-							 (self.DMAR_NAME, self.OUTPUTPATH) )
-		for line in dmardata.splitlines():
-			try:
-				addr = parseutil.parseLine_Sep(line, KEY, ":")
-				addr = addr.lstrip("0")
-				addr = "0x" + addr
-				addr = addr.lower()
-				iommuaddrs.append(addr)
+							 (self.DMAR_NAME, self.OUTPUTPATH), False)
+		else:
+			for line in dmardata.splitlines():
+				try:
+					addr = parseutil.parseLine_Sep(line, KEY, ":")
+					addr = addr.lstrip("0")
+					addr = "0x" + addr
+					addr = addr.lower()
+					iommuaddrs.append(addr)
 
-			except customExceptions.KeyNotFound:
-				pass
+				except customExceptions.KeyNotFound:
+					pass
 
 		return iommuaddrs
 
@@ -675,7 +694,7 @@ class IommuDevicesCreator():
 			bytes = extractor.extractBinaryData(self.DEVMEM,
 												int(CAPABILITY_OFFSET,0)+1, 1)
 		except IOError:
-			message.addError("Could not access file: %s" % self.DEVMEM)
+			message.addError("Could not access file: %s" % self.DEVMEM, False)
 		else:
 			if util.getBit(int(bytes[0], 16),AGAW_39_BITNO):
 				agawcap["name"] = "agaw39"
@@ -683,7 +702,7 @@ class IommuDevicesCreator():
 				agawcap["name"] = "agaw48"
 			else:
 				message.addError("AGAW Capability could not be found for IOMMU "
-								 "device.")
+								 "device.", False)
 
 		capabilities.appendChild(agawcap)
 		device.appendChild(capabilities)

@@ -2,11 +2,6 @@ Maybe have command switch to include bridges?
 Refactor creator code to make it more extensible  (split into files??)
 Make more code testable: Add arguments in functions
 Double check info obtained
-Fix bugs with warnings (Warning messages not showing when lxml unable to import)
-
-Remove whitespaces
-Default: Strict mode
-Option: Flexible mode
 
 Edit README.txt
 

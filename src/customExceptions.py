@@ -33,3 +33,9 @@ class DmarFileNotCopied(CustomException):
 
 class KeyNotFound(CustomException):
 	pass
+
+class ForceQuit(CustomException):
+	pass
+
+class InsufficientPermissions(CustomException):
+	pass

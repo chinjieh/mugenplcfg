@@ -1,5 +1,6 @@
 #Module to contain functions to handle messages
 import sys
+import customExceptions
 
 class Message():
 	shortname = "message(s)"
@@ -53,21 +54,22 @@ def add(Message):
 	if not exists:
 		messagequeue.append(Message)
 
-
 def addWarning(msg):
 	add(WarningMessage(msg))
 
 def addMessage(msg, forcequit=False):
 	add(Message(msg))
 	if forcequit:
-		printMessages()
-		sys.exit()
+		forceQuit()
 
 def addError(msg, forcequit=True):
+	"Adds Error Message class to messagequeue; Quits program by default"
 	add(ErrorMessage(msg))
 	if forcequit:
-		printMessages()
-		sys.exit() #Terminate script upon error
+		forceQuit()
+
+def forceQuit():
+	raise customExceptions.ForceQuit()
 
 messagecount = {} #Message, count
 messagequeue = []

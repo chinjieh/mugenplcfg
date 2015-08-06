@@ -9,14 +9,14 @@ from src import customExceptions, creator, message, update
 # ConfigTool is developed to support the Muen Project. It produces a system
 # policy file to be used by the Muen kernel.
 #
-# ConfigTool utilises a binding configuration file generated using the library 
-# PyXB, as a representation of the XSD schema. This file is to be named 
+# ConfigTool utilises a binding configuration file generated using the library
+# PyXB, as a representation of the XSD schema. This file is to be named
 # 'schemaconfig.py'.
 #
 # It also utilises pci.ids, a repository of PCI identification numbers obtained
 # from https://pci-ids.ucw.cz/
 #
-##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 def init():
 	#Check for Pyxb binding configuration file
@@ -39,8 +39,7 @@ def cleanupErrorHandler(function, path, excinfo):
 def checkPermissions():
 	"Check user permissions"
 	if not os.access("/sys", os.W_OK):
-		message.addMessage("ConfigTool cannot be run without the proper permissions. "
-						   "Try running with 'sudo'.", True)
+		raise customExceptions.InsufficientPermissions()
 
 def formatXML(xmlstr):
 	"Uses lxml to format xml string"
@@ -54,8 +53,8 @@ def formatXML(xmlstr):
 		root = etree.fromstring(xmlstr)
 		result = etree.tostring(root, pretty_print=True)
 
-	return result	
-	
+	return result
+
 def generateXML(elemtree):
 	xmlstr = elemtree.toXML("utf-8")
 	formattedxml = formatXML(xmlstr)
@@ -63,7 +62,7 @@ def generateXML(elemtree):
 
 def output(xml):
 	OUTPUT_NAME = "output.xml"
-	print "> XML file '%s' generated to location: \n %s" % (OUTPUT_NAME, 
+	print "> XML file '%s' generated to location: \n %s" % (OUTPUT_NAME,
 								paths.OUTPUT )
 
 	#xml = xml.replace('><','>\n<')
@@ -82,9 +81,12 @@ def hasErrors():
 def handleArgs():
 	"Checks arguments in command line and performs relevant actions"
 	parser = argparse.ArgumentParser()
-	parser.add_argument(	"-u", "--update",
-				help="Updates files used by the tool",
-				action="store_true")
+	parser.add_argument("-u", "--update",
+						help="Updates files used by the tool",
+						action="store_true")
+	parser.add_argument("-f", "--force",
+						help="Attempts to generate the output file despite errors",
+						action="store_true")
 	args = parser.parse_args()
 
 	runMain = True
@@ -93,37 +95,56 @@ def handleArgs():
 		runMain = False
 
 	if runMain:
-		main()
+		main(args.force)
 
-def main():
+
+
+def main(forcecreate=False):
 	print "=== ConfigTool Start ==="
 
-	checkPermissions()
-	print "> Initializing..."
-	init()
+	try:
+		checkPermissions()
 
-	print "> Extracting data from schema bindings..."
-	elemtree = creator.createElements()
-	xml = generateXML(elemtree)
-	cleanup()
-	message.printMessages()
-	
-	if len(message.messagequeue) is 0:
-		print "=== ConfigTool completed successfully ==="
-	else:
-		print "ConfigTool finished with: "
-		for key in message.messagecount:
-			print "%d %s" % (message.messagecount[key],
-					key.shortname)
-		print "========================================="
-	
-	if hasErrors():
+		print "> Initializing..."
+		init()
+
+		print "> Extracting data from schema bindings..."
+		elemtree = creator.createElements()
+		xml = generateXML(elemtree)
+
+	except customExceptions.InsufficientPermissions:
+		print ("ConfigTool must be run with root permissions. "
+			   "Try running with 'sudo'.")
+
+	except customExceptions.ForceQuit:
+		message.printMessages()
+		cleanup()
 		print "> XML File could not be generated."
-	else:
-		output(xml)
+		sys.exit()
 
-	
-	
+	else:
+		message.printMessages()
+		cleanup()
+		if len(message.messagequeue) is 0:
+			print "=== ConfigTool completed successfully ==="
+		else:
+			print "ConfigTool finished with: "
+			for key in message.messagecount:
+				print "%d %s" % (message.messagecount[key],
+						key.shortname)
+			print "========================================="
+
+		if hasErrors():
+			if forcecreate:
+				output(xml)
+			else:
+				print "> XML File could not be generated."
+		else:
+			output(xml)
+
+
+
+
 if __name__ == "__main__":
 	handleArgs()
 
