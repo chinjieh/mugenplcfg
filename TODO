@@ -19,4 +19,4 @@ Dependencies:
 --------
 Pyxb
 Pci.ids (licensing)
-iasl
+iasl (DMAR parsing in IOMMUs)
