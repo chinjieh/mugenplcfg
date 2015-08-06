@@ -13,22 +13,29 @@ class Element():
 	"Class that wraps Pyxb and provides easier use of modification of XML elements"
 
 	# How to use this class:
-	# 1. Create the element using the constructor, with the relevant fields for "name" and "elemtype" corresponding to schema
-	#	e.g. processor = Element("processor", "processorType")
+	# 1. Create the element using the constructor, with the relevant fields
+	#    for "name" and "elemtype" corresponding to schema
+	#
+	#	 e.g. processor = Element("processor", "processorType")
 	#
 	# 2. Set attributes by using []. Multiple attributes can be set at once too.
-	#	e.g. processor["attribute1"] = value1    OR     processor["attribute1", "attribute2"] = value1, value2
+	#
+	#	 e.g. processor["attribute1"] = value1    OR
+	#         processor["attribute1", "attribute2"] = value1, value2
 	# 
 	# 3. Set element content by using setContent("elementContent")
 	#
 	# 4. Add child elements to the element by using appendChild(Element)
-	#	e.g. processorChild = Element("processorChild", "processorChildType")
-	#	     processor.appendChild(processorChildElement)
 	#
-	# 5. When the whole element tree has been created, call toXML('utf version') on the root element. This will convert the entire tree to XML format.
-	#	e.g. xml = processor.toXML('utf-8')
+	#	 e.g. processorChild = Element("processorChild", "processorChildType")
+	#	      processor.appendChild(processorChildElement)
+	#
+	# 5. When the whole element tree has been created, call toXML('utf version')
+	#    on the root element. This will convert the entire tree to XML format.
+	#	 e.g. xml = processor.toXML('utf-8')
 
-	#TODO Reject if element name is not in the schema during compileToPyxb, as Pyxb now allows any element to be created but removes them during generation of XML
+	#TODO Reject if element name is not in the schema during compileToPyxb, as
+	#     Pyxb now allows any element to be created but removes them during generation of XML
 
 	def __init__(self, name, elemtype):
 		"name: schema's name attribute; elemtype: schema's 'type' "
@@ -70,20 +77,23 @@ class Element():
 		valuelist = util.toList(valuelist)
 
 		if len(keylist) != len(valuelist):
-			errorstr = "Values %s to be assigned to attributes %s in element %s do not match in length" % (valuelist,keylist,self)
+			errorstr = (("Values %s to be assigned to attributes %s in element %s "
+						"do not match in length") % (valuelist,keylist,self) )
 			raise customExceptions.AttributeMismatch(errorstr)
 		else:
 			for index in range(0,len(keylist)):
 				key = keylist[index]
 				if key not in dir(pyxbElem):
-					raise customExceptions.InvalidAttribute( "Element %s does not have attribute: %s" % (self, key))
+					raise customExceptions.InvalidAttribute(
+						"Element %s does not have attribute: %s" % (self, key) )
 				else:
 					self.attr[key] = valuelist[index]
 
 	def __getitem__(self, key):
 		pyxbElem = getattr(schema, self.type)
 		if key not in dir(pyxbElem):
-			raise customExceptions.InvalidAttribute( "Element %s does not have attribute: %s" % (self, key) )
+			raise customExceptions.InvalidAttribute(
+				"Element %s does not have attribute: %s" % (self, key) )
 		else:
 			return self.attr[key]
 	

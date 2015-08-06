@@ -13,7 +13,7 @@ from src import customExceptions, creator, message, update
 # PyXB, as a representation of the XSD schema. This file is to be named 
 # 'schemaconfig.py'.
 #
-# It also utilises pci.ids, a repository of PCI identification numbers obtained 
+# It also utilises pci.ids, a repository of PCI identification numbers obtained
 # from https://pci-ids.ucw.cz/
 #
 ##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -23,9 +23,9 @@ def init():
 	try:
 		open (paths.SCHEMACONFIG + ".py", "r")
 	except IOError:
-		message.addError("Could not find required PyXB binding file 'schemaconfig.py' " +
-			"in location: %s.\nPlease ensure that the file is there " + 
-			"and try again." % (paths.SCHEMACONFIG))
+		message.addError("Could not find required PyXB binding file 'schemaconfig.py' "
+						 "in location: %s.\nPlease ensure that the file is there "
+						 "and try again." % (paths.SCHEMACONFIG))
 
 def cleanup():
 	"Call this function at the end of the program to remove temp files"
@@ -39,8 +39,8 @@ def cleanupErrorHandler(function, path, excinfo):
 def checkPermissions():
 	"Check user permissions"
 	if not os.access("/sys", os.W_OK):
-		message.addMessage("ConfigTool cannot be run without the proper " + \
-			"permissions. Try running with 'sudo'.", True)
+		message.addMessage("ConfigTool cannot be run without the proper permissions. "
+						   "Try running with 'sudo'.", True)
 
 def formatXML(xmlstr):
 	"Uses lxml to format xml string"

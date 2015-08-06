@@ -2,7 +2,7 @@
 import math
 import os
 
-# == Utility Classes ==		
+# == Utility Classes ==
 class ListNumberer():
 	"Class that stores list of names, and is able to retrieve numbered names"
 	def __init__(self, listnames):
@@ -21,13 +21,13 @@ class ListNumberer():
 			if name not in repeatednames:
 				if self.listnames.count(name) > 1:
 					repeatednames.append(name)
-		
+
 		if inname in repeatednames:
 			if inname in self.namecount:
 				self.namecount[inname] += 1
 			else:
 				self.namecount[inname] = 1
-			outname = inname + self.NUMBER_FORMAT % self.namecount[inname]	
+			outname = inname + self.NUMBER_FORMAT % self.namecount[inname]
 		else:
 			outname = inname
 
@@ -56,7 +56,7 @@ def removeListsFromList(mainList, *removelists):
 					toremove.append(mainList.index(item))
 	#Add elements to result while ignoring those in toremove
 	for item in mainList:
-		if mainList.index(item) not in toremove:	
+		if mainList.index(item) not in toremove:
 			result.append(item)
 	return result
 
@@ -82,7 +82,7 @@ def getLinks(path, filterexp=None):
 			#Get the absolute location of symbolic links in path
 			filePath = os.path.join(path,filename)
 			relativeLink = os.readlink(filePath)
-			absLink = os.path.join(os.path.dirname(filePath), relativeLink)			
+			absLink = os.path.join(os.path.dirname(filePath), relativeLink)
 			filelist.append(absLink)
 
 	return filelist
@@ -108,7 +108,7 @@ def numberMultiples(listin):
 			listout.append(newname)
 		else:
 			listout.append(name)
-			
+
 	return listout
 
 # == Functions to support generation of schema ==
@@ -127,15 +127,15 @@ def toWord64(value):
 	value = rawvalue.rjust(int(math.ceil( len(rawvalue)/4.0) *4 ), '0')
 	#Add underscore between characters
 	finalvalue = ""
-	
+
 	for index in range(0,len(value)):
 		if ((index % 4) is 0) and (index is not 0):
 			finalvalue += "_"
 
-		finalvalue += value[index]	
-	
+		finalvalue += value[index]
+
 	return 	wrap16(finalvalue)
-	
+
 def wrap16(value):
 	"Wraps value -> 16#value#"
 	wrapper = "16#_#"
@@ -151,14 +151,14 @@ def stripvalue(value, retainzeros = False):
 		result = value.partition('0x')[-1]
 		if retainzeros is False:
 			result = result.lstrip('0')
-		
+
 		if result == "":
 			return "0"
 		else:
-			return result 
+			return result
 	else:
 		return value
-		
+
 def sizeOf(addr1, addr2):
 	"Gets size between two hex addresses"
 	if isHex(addr1) and isHex(addr2):

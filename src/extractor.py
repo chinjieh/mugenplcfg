@@ -17,7 +17,8 @@ def extractData(loc):
 
 import struct
 def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN"):
-	"Reads binary file at start position and returns bytes read as list of bytes in hex"
+	"Reads binary file at start position and returns bytes read as list of "
+	"bytes in hex"
 	with open(file, "rb") as f:
 		BYTE_SIZE = 1
 		bytelist = []
@@ -33,17 +34,22 @@ def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN"):
 				elif endian is "LITTLE_ENDIAN":
 					bytelist.insert(0, hexbyte)
 				else:
-					raise ValueError("Incorrect argument value '%s' for argument 'endian' in function: extractBinaryData" % endian)
+					raise ValueError("Incorrect argument value '%s' " % endian +
+									 "for argument 'endian' in function: "
+									 "extractBinaryData")
 				bytes -= 1
 				byte = f.read(BYTE_SIZE)
 			else:
-				raise customExceptions.NoAccessToFile("No permission to read file: %s" % file)
+				raise customExceptions.NoAccessToFile("No permission to read "
+													  "file: %s" % file)
 	return bytelist
 
 
 
 def extractBinaryLinkedList(file, startpos, datasize, nextoffset=1, stopid=0x00, numJumps=-1):
-	"Extracts binary data that is in linked list format i.e reads address from startpos, reads data in address, reads address from ptroffset..."
+	"Extracts binary data that is in linked list format i.e "
+	"reads address from startpos, reads data in address, reads address from "
+	"ptroffset..."
 	result = []	
 	
 	def readdata(f,size):
@@ -52,7 +58,8 @@ def extractBinaryLinkedList(file, startpos, datasize, nextoffset=1, stopid=0x00,
 			#returns integer of data
 			return struct.unpack('B', data)[0]
 		else:
-			raise customExceptions.NoAccessToFile("No permission to read file: %s" % file)
+			raise customExceptions.NoAccessToFile(
+				"No permission to read file: %s" % file )
 
 	with open(file, "rb") as f:
 		f.seek(startpos)
@@ -65,28 +72,3 @@ def extractBinaryLinkedList(file, startpos, datasize, nextoffset=1, stopid=0x00,
 			nextaddr = readdata(f,datasize) #read next address
 			numJumps -= 1
 	return result
-
-
-
-"""
-import io
-import binascii
-def printBinaryData(loc):
-	"Used to print data from a binary file like 'config' in pci devices"
-	with open(loc, "rb") as f:
-		chunksize = 1
-		byte = f.read(chunksize)
-		asciiarray = []
-		while byte != b"":
-			bytestring = binascii.b2a_hex(byte)
-			asciiarray.append(bytestring)
-			byte = f.read(chunksize)
-		
-		for i in range(0, len(asciiarray)):
-				print asciiarray[i]			
-			
-		#for i in range (0,len(asciiarray), 2):
-		#	print hex(i), ": ", asciiarray[i+1], asciiarray[i]
-		#	print " "
-"""
-		

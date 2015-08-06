@@ -31,7 +31,7 @@ class ProcessorCreator():
 
 	@staticmethod
 	def getVmxTimerRate():
-		#check for MSR	
+		#check for MSR
 		vmxTimerRate = 0
 		MSRfound = False
 		OFFSET = 0x485
@@ -52,8 +52,10 @@ class ProcessorCreator():
 			for path in paths.MSR:
 				errormsg += ("%s\n" % path)
 
-			errormsg += "vmxTimerRate could not be found. Try 'modprobe msr' to probe for MSR, then run the tool again.\n" + \
-			"Alternatively, run the tool again with the proper permissions."
+			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
+						 "probe for MSR, then run the tool again.\n"
+						 "Alternatively, run the tool again with the proper "
+						 "permissions." )
 			message.addError(errormsg)
 		else:
 			vmxbits = 0
@@ -63,14 +65,14 @@ class ProcessorCreator():
 			vmxTimerRate = int(vmxbits)
 
 		return vmxTimerRate
-	
+
 class MemoryCreator():
-	
+
 	@staticmethod
 	def createElem():
 		print "> Creating element: memory"
 
-		memory = Element("memory", "physicalMemoryType")	
+		memory = Element("memory", "physicalMemoryType")
 		#Get list of memoryBlocks available
 		memoryBlockList = MemoryCreator.getMemoryBlocks(paths.MEMMAP)
 
@@ -78,7 +80,7 @@ class MemoryCreator():
 			memory.appendChild(memoryBlock)
 		print "Element created: memory"
 		return memory
-	
+
 	@staticmethod
 	def getMemoryBlocks(path):
 		memoryBlockList = []
@@ -89,10 +91,12 @@ class MemoryCreator():
 				typefile = root + "/" + "type"
 				startfile = root + "/" + "start"
 				try:
-					memoryBlock = MemoryCreator.generateMemoryBlock(endfile,typefile,startfile)
+					memoryBlock = MemoryCreator.generateMemoryBlock(endfile,
+																	typefile,
+																	startfile)
 				except IOError:
 					message.addError("Could not retrieve complete memory data")
-				#Adds newly created memoryBlock element to memoryBlockList			
+				#Adds newly created memoryBlock element to memoryBlockList
 				memoryBlockList.append(memoryBlock)
 
 		return memoryBlockList
@@ -100,25 +104,30 @@ class MemoryCreator():
 	@staticmethod
 	def generateMemoryBlock(endfile,typefile,startfile):
 		memoryBlock = Element("memoryBlock", "memoryBlockType")
-		
+
 		memoryBlock["name"] = extractor.extractData(typefile)
 		if MemoryCreator.isAllocatable(memoryBlock["name"]):
 			memoryBlock["allocatable"] = "true"
 		else:
 			memoryBlock["allocatable"] = "false"
-	
-		memoryBlock["physicalAddress"] = util.toWord64(extractor.extractData(startfile))
-		memoryBlock["size"] = util.toWord64(util.sizeOf(extractor.extractData(endfile), extractor.extractData(startfile)) )
-	
+
+		memoryBlock["physicalAddress"] = util.toWord64(
+			extractor.extractData(startfile)
+			)
+		memoryBlock["size"] = util.toWord64(
+			util.sizeOf(extractor.extractData(endfile),
+						extractor.extractData(startfile) )
+			)
+
 		return memoryBlock
 
-	
-	
+
+
 	@staticmethod
 	def isAllocatable(name):
 		if name == "System RAM":
 			return True
-		else: 
+		else:
 			return False
 
 class DevicesCreator():
@@ -127,8 +136,10 @@ class DevicesCreator():
 	def createElem():
 		print "> Creating element: devices"
 		devices = Element("devices", "devicesType")
-		devices["pciConfigAddress"] = util.toWord64(DevicesCreator.getPciConfigAddress(paths.IOMEM))
-		
+		devices["pciConfigAddress"] = util.toWord64(
+			DevicesCreator.getPciConfigAddress(paths.IOMEM)
+			)
+
 		#Add IOMMUs
 		print "Extracting IOMMU device information..."
 		devices.appendChild(IommuDevicesCreator().createElems())
@@ -142,7 +153,7 @@ class DevicesCreator():
 		devices.appendChild(PciDevicesCreator().createElems())
 
 		print "Element created: devices"
-	
+
 		return devices
 
 	@staticmethod
@@ -153,7 +164,7 @@ class DevicesCreator():
 			iomemdata = extractor.extractData(path)
 			keyline = parseutil.findLines(iomemdata, key)[0]
 			pciconfigaddr = keyline.split("-")[0]
-		
+
 		except (customExceptions.KeyNotFound, IOError):
 			message.addError("Could not obtain pciConfigAddress from %s." % path)
 
@@ -162,7 +173,7 @@ class DevicesCreator():
 
 class PciDevicesCreator():
 	"Helper class of DevicesCreator"
-	def __init__(self):	
+	def __init__(self):
 		self.devicepaths = []
 		self.capabilities = {} #devicepath = capabilitylist
 		self.devicenames = {} #devicepath = name
@@ -176,13 +187,14 @@ class PciDevicesCreator():
 		self.getDependencies()
 		print "Examining PCI devices..."
 		filteredpaths = self.filterDevicePaths(self.devicepaths)
-		print "Extracting device information from %d PCI devices (excluding PCI bridges and non PCI-Express devices)..." % len(filteredpaths)
-		for devicepath in filteredpaths:	
+		print ("Extracting device information from %d PCI devices " % len(filteredpaths) +
+			   "(excluding PCI bridges and non PCI-Express devices)...")
+		for devicepath in filteredpaths:
 			device = self.createDeviceFromPath(devicepath)
 			pcidevicelist.append(device)
 
 		return pcidevicelist
-	
+
 	def getDependencies(self):
 		"Checks whether dependencies are fulfilled and fills up the class attributes"
 		self.capabilities = self.getCapabilities(self.devicepaths)
@@ -194,7 +206,7 @@ class PciDevicesCreator():
 		devicePaths = []
 		devicePaths = util.getLinks(path, self.isDeviceName)
 		return devicePaths
-	
+
 	def filterDevicePaths(self, devicePaths):
 		"Returns filtered list of paths of devices"
 		bridgePaths = []
@@ -212,7 +224,7 @@ class PciDevicesCreator():
 					for subdir in subdirs:
 						if self.isDeviceName(subdir):
 							bridgedDevicePaths.append(os.path.join(root,subdir))
-		
+
 		for bridgedDevice in bridgedDevicePaths:
 			if self.isPciExpress(bridgedDevice) is False:
 				nonPciExpressPaths.append(bridgedDevice)
@@ -225,12 +237,14 @@ class PciDevicesCreator():
 		print "> Bridged Devices: ", len(bridgedDevicePaths)
 		for item in bridgedDevicePaths:
 			print "  ", os.path.basename(item)
-					
+
 		print "> PCI Express Devices: ", len(pciExpressPaths)
 		for item in pciExpressPaths:
 			print "  ", os.path.basename(item)
 
-		resultPaths = util.removeListsFromList(devicePaths, bridgePaths, nonPciExpressPaths)
+		resultPaths = util.removeListsFromList(devicePaths,
+											   bridgePaths,
+											   nonPciExpressPaths)
 		return resultPaths
 
 	def isBridge(self, devicepath):
@@ -244,10 +258,10 @@ class PciDevicesCreator():
 	def isPciExpress(self, devicepath):
 		isPciExpress = False
 		PCI_EXPRESS = "0x10"
-		
+
 		if PCI_EXPRESS in self.capabilities[devicepath]:
 			isPciExpress = True
-		
+
 		return isPciExpress
 
 	def isDeviceName(self, value):
@@ -255,7 +269,7 @@ class PciDevicesCreator():
 		splitcolon = value.split(':')
 		if len(splitcolon) != 3:
 			return False
-	
+
 		if '.' not in splitcolon[2]:
 			return False
 
@@ -271,9 +285,9 @@ class PciDevicesCreator():
 		return (devicestr.split(':')[2] ).split('.')[0]
 
 	def getDeviceFunction(self, devicestr):
-		return (devicestr.split(':')[2] ).split('.')[1]	
+		return (devicestr.split(':')[2] ).split('.')[1]
 
-	def getCapabilities(self, devicepaths):	
+	def getCapabilities(self, devicepaths):
 		"Checks if device capabilities can be found"
 		capabilities = {}
 
@@ -281,18 +295,19 @@ class PciDevicesCreator():
 		for devicepath in devicepaths:
 			capabilities[devicepath] = []
 
-		#Attempt to fill dictionary	
+		#Attempt to fill dictionary
 		try:
 			for devicepath in devicepaths:
 				capabilities[devicepath] = devicecap.getCapability(devicepath)
 		except customExceptions.NoAccessToFile:
-			message.addError("Not enough permissions to access capabilities of devices. " +
-			"It is advised to run the tool again with the proper permissions.")		
+			message.addError("Not enough permissions to access capabilities of "
+							 "devices. It is advised to run the tool again with "
+							 "the proper permissions.")
 
 		return capabilities
 
 	#TODO Unused for now, while device names are relying on class codes and not Vendor and Device pairs
-	"""
+
 	@staticmethod
 	def getDeviceNames(devicepaths):
 		"Gets device names from pci.ids"
@@ -306,24 +321,30 @@ class PciDevicesCreator():
 			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS)
 
 		except customExceptions.PciIdsFileNotFound:
-			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
-			"Please ensure that the file is in the directory." )
-		
+			message.addError("pci.ids file could not be located in tool directory: "
+							 "%s. " % paths.CURRENTDIR + "Device names could not "
+							 "be obtained.\nPlease ensure that the file is in "
+							 "the directory." )
+
 		else:
 			for devicepath in devicepaths:
 				try:
 					venhex = extractor.extractData(os.path.join(devicepath,"vendor") )
-					devhex = extractor.extractData(os.path.join(devicepath,"device") ) 
+					devhex = extractor.extractData(os.path.join(devicepath,"device") )
 					names[devicepath] = pciIdsParser.getVendorName(venhex) #TODO Name constraint
 				except customExceptions.PciIdsFailedSearch as e:
-					message.addWarning("Names for Device %s of Vendor %s could not be found. It would be a good idea to update pci.ids")			
+					message.addWarning(("Names for Device %s of Vendor %s could " +
+									   "not be found. ") % (devhex,venhex) +\
+									   "It would be a good idea to update pci.ids")
 
 				except customExceptions.PciIdsMultipleEntries as e:
-					message.addWarning("Multiple names for Device %s of Vendor %s were found. Please insert the correct names manually in the XML " +
-					"file.")
+					message.addWarning("Multiple names for Device %s of Vendor %s " %
+									   (devhex, venhex) + "were found. Please "
+									   "insert the correct names manually in the "
+									   "XML file.")
 
 		return names
-	"""
+
 
 	def getDeviceShortNames(self, devicepaths):
 		shortnames = OrderedDict()
@@ -331,26 +352,28 @@ class PciDevicesCreator():
 		#Initialise PciIdsParser
 		try:
 			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS)
-		
+
 		except customExceptions.PciIdsFileNotFound:
-			message.addError("pci.ids file could not be located in tool directory: %s. Device names could not be obtained.\n" % paths.CURRENTDIR +
-			"Please ensure that the file is in the directory.")
-		
+			message.addError("pci.ids file could not be located in tool "
+							 "directory: %s. " % paths.CURRENTDIR + "Device "
+							 "names could not be obtained.\n"
+							 "Please ensure that the file is in the directory.")
+
 		else:
 			for devicepath in devicepaths:
 				#Get class code from "class" file"
-				classcode = extractor.extractData(os.path.join(devicepath, "class"))[0:6]
+				classcode = extractor.extractData(
+					os.path.join(devicepath, "class") )[0:6]
 				classname = classcode
 				try:
 					classname = pciIdsParser.getClassName(classcode)
-				
+
 				except (customExceptions.PciIdsFailedSearch,
 					customExceptions.PciIdsSubclassNotFound):
 					message.addWarning(("Name for Device at: %s " % devicepath +
-							"cannot be found. It would " + 
-							"be a good idea to update pci.ids "+
-							"(try '-update' or '-u')")
-							)
+										"cannot be found. It would " +
+										"be a good idea to update pci.ids "+
+										"(try '-update' or '-u')" ))
 
 				classname = util.spacesToUnderscores(classname.lower())
 				#Add entry to dictionary shortnames
@@ -376,9 +399,11 @@ class PciDevicesCreator():
 
 		#pci
 		pci = Element("pci", "pciType")
-		pci["bus", "device", "function"] = util.wrap16(self.getDeviceBus(pcistr)), util.wrap16(self.getDeviceNo(pcistr)), self.getDeviceFunction(pcistr)
+		pci["bus", "device", "function"] = (util.wrap16(self.getDeviceBus(pcistr)),
+											util.wrap16(self.getDeviceNo(pcistr)),
+											self.getDeviceFunction(pcistr))
 		device.appendChild(pci)
-		
+
 		#irq
 		try:
 			irqNo = extractor.extractData(os.path.join(devicepath,"irq"))
@@ -389,34 +414,39 @@ class PciDevicesCreator():
 
 		except IOError:
 			message.addError("Could not obtain irq number for device: %s" % pcistr)
-		
+
 		#memory, includes expansion roms
 		try:
-			resourceData = extractor.extractData(os.path.join(devicepath, "resource"))
-			memcount = 0			
+			resourceData = extractor.extractData(os.path.join(devicepath,
+															  "resource") )
+			memcount = 0
 			for line in resourceData.splitlines():
 				tokens = line.split(' ')
 				if tokens[2][-3] == '2': #if line represents a memory block
-				
+
 					memory = Element("memory", "deviceMemoryType")
 					memory["name"] = "mem%d" % memcount
 					memory["physicalAddress"] = util.toWord64(tokens[0])
-					memory["size"] = util.toWord64(util.sizeOf(tokens[1], tokens[0]))
+					memory["size"] = util.toWord64(util.sizeOf(tokens[1],
+															   tokens[0])
+												   )
 					memory["caching"] = "UC" #TODO
 					device.appendChild(memory)
 					memcount += 1
-		
+
 		except IOError:
-			message.addError("Could not obtain memory information for device: %s" % pcistr)
+			message.addError("Could not obtain memory information for device: "
+							 "%s" % pcistr)
 
 		#ioports
 		try:
-			resourceData = extractor.extractData(os.path.join(devicepath, "resource"))
+			resourceData = extractor.extractData(os.path.join(devicepath,
+															  "resource") )
 			ioportcount = 0
 			for line in resourceData.splitlines():
 				tokens = line.split(' ')
 				if tokens[2][-3] == '1': #if line represents ioport information
-				
+
 					ioPort = Element("ioPort", "ioPortType")
 					ioPort["name"] = "ioport%d" % ioportcount
 					ioPort["start"] = util.toWord64(tokens[0])
@@ -425,9 +455,10 @@ class PciDevicesCreator():
 					device.appendChild(ioPort)
 
 		except IOError:
-			message.addError("Could not obtain ioport information for device: %s" % pcistr)
-	
-		#capabilities	
+			message.addError("Could not obtain ioport information for device: "
+							 "%s" % pcistr)
+
+		#capabilities
 		caplist = self.capabilities[devicepath]
 		if caplist:
 			capabilities = Element("capabilities", "capabilitiesType")
@@ -438,7 +469,9 @@ class PciDevicesCreator():
 				try:
 					capability.setContent(devicecap.translate(cap))
 				except customExceptions.CapabilityUnknown:
-					message.addWarning("Capability code: %s is unknown. It might be a good idea to update 'devicecap.py'." % cap)
+					message.addWarning("Capability code: %s is unknown. " % cap +
+									   "It might be a good idea to update "
+									   "'devicecap.py'.")
 					capability.setContent(cap)
 
 				capabilities.appendChild(capability)
@@ -466,7 +499,8 @@ class SerialDevicesCreator():
 		for comdevice in self.createComDevices(self.COMADDRESSES):
 			serialdevicelist.append(comdevice)
 		#Filter COM devices from list
-		filteredlist = util.removeListsFromList(self.addresses, self.COMADDRESSES.iterkeys())
+		filteredlist = util.removeListsFromList(self.addresses,
+												self.COMADDRESSES.iterkeys() )
 		for serialdevice in self.createSerialDevices(filteredlist):
 			serialdevicelist.append(serialdevice)
 		return serialdevicelist
@@ -483,10 +517,10 @@ class SerialDevicesCreator():
 			message.addError("Could not access %s." % paths.TTY)
 		else:
 			lines = parseutil.findLines(ioportdata, KEYWORD)
-			#Retrieve (start,end) data for serial devices		
+			#Retrieve (start,end) data for serial devices
 			for line in lines:
 				serialAddresses.append(self.getAddressFromLine(line))
-		
+
 		return serialAddresses
 
 	def getAddressFromLine(self, line):
@@ -503,10 +537,10 @@ class SerialDevicesCreator():
 		for addr in self.addresses:
 			if addr in self.COMADDRESSES:
 				comaddr.append(addr)
-					
+
 		for addr in comaddr:
-		    	device = Element("device", "deviceType")
-		    	device["name"] = self.COMADDRESSES[addr]
+			device = Element("device", "deviceType")
+			device["name"] = self.COMADDRESSES[addr]
 			device["shared"] = "true"
 			ioport = Element("ioPort", "ioPortType")
 			ioport["name"] = "port"
@@ -546,9 +580,10 @@ class IommuDevicesCreator():
 	def createElems(self):
 		elemlist = []
 		print "Parsing DMAR table..."
-		self.genDMAR(paths.DMAR, self.OUTPUTPATH)	
-		self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH, self.DMAR_NAME))
-		for addr in self.iommuaddrs:	
+		self.genDMAR(paths.DMAR, self.OUTPUTPATH)
+		self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
+														  self.DMAR_NAME) )
+		for addr in self.iommuaddrs:
 			elemlist.append(self.createDeviceFromAddr(addr))
 
 		return elemlist
@@ -562,7 +597,7 @@ class IommuDevicesCreator():
 		except OSError:
 			if not os.path.isdir(outputloc):
 				raise
-		
+
 		#Copy DMAR to temp folder
 		try:
 			tempfile = os.path.join(outputloc, self.DMAR_TEMPNAME)
@@ -587,7 +622,8 @@ class IommuDevicesCreator():
 		try:
 			dmardata = extractor.extractData(dmarfile)
 		except IOError:
-			message.addError("Could not find '%s' in location: %s." % (self.DMAR_NAME, self.OUTPUTPATH))		
+			message.addError("Could not find '%s' in location: %s." %
+							 (self.DMAR_NAME, self.OUTPUTPATH) )
 		for line in dmardata.splitlines():
 			try:
 				addr = parseutil.parseLine_Sep(line, KEY, ":")
@@ -608,7 +644,7 @@ class IommuDevicesCreator():
 		AGAW_39_BITNO = 1
 		AGAW_48_BITNO = 2
 		IOMMU_SIZE = "1000"
-		
+
 		device = Element("device", "deviceType")
 		device["shared"] = "false"
 
@@ -625,7 +661,7 @@ class IommuDevicesCreator():
 		memory["physicalAddress"] = util.toWord64(iommuaddr)
 		memory["size"] = util.toWord64(IOMMU_SIZE)
 		device.appendChild(memory)
-		
+
 		#capabilities
 		capabilities = Element("capabilities", "capabilitiesType")
 		## iommu
@@ -637,7 +673,8 @@ class IommuDevicesCreator():
 		agawcap["name"] = "agaw"
 
 		try:
-			bytes = extractor.extractBinaryData(self.DEVMEM,int(CAPABILITY_OFFSET,0)+1, 1)
+			bytes = extractor.extractBinaryData(self.DEVMEM,
+												int(CAPABILITY_OFFSET,0)+1, 1)
 		except IOError:
 			message.addError("Could not access file: %s" % self.DEVMEM)
 		else:
@@ -646,20 +683,21 @@ class IommuDevicesCreator():
 			elif util.getBit(int(bytes[0], 16), AGAW_48_BITNO):
 				agawcap["name"] = "agaw48"
 			else:
-				message.addError("AGAW Capability could not be found for IOMMU device.")
+				message.addError("AGAW Capability could not be found for IOMMU "
+								 "device.")
 
 		capabilities.appendChild(agawcap)
 		device.appendChild(capabilities)
 
 		return device
-	
+
 
 def createElements():
 	"Creates the element tree and returns top element"
 	platform = Element("platform", "platformType")
-	platform.appendChild(ProcessorCreator.createElem())	
+	platform.appendChild(ProcessorCreator.createElem())
 	platform.appendChild(MemoryCreator.createElem())
 	platform.appendChild(DevicesCreator.createElem())
 
-	return platform	
+	return platform
 

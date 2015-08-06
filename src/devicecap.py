@@ -52,7 +52,8 @@ def translate(capcode):
 	try:
 		return translated[capcode]
 	except KeyError:
-		raise customExceptions.CapabilityUnknown("Capability Code %s is unknown." % capcode)
+		raise customExceptions.CapabilityUnknown(
+			"Capability Code %s is unknown." % capcode )
 		return capcode
 
 def getCapability(devicepath):
@@ -64,10 +65,19 @@ def getCapability(devicepath):
 	DATA_SIZE = 1
 	STOP_ID = 0x00
 	CAPABILITY_NUM = 48
+	CONFIG_PATH = os.path.join(devicepath, "config")
+
 	#Checks config file whether capability bit is activated
-	if util.getBit(int(extractor.extractBinaryData(os.path.join(devicepath, "config"), STATUS_REG_LOCATION, 1)[0], 16), CAPABILITY_BIT_POS):
+	capbyte = extractor.extractBinaryData(CONFIG_PATH, STATUS_REG_LOCATION, 1)[0]
+	capint = int(capbyte, 16)
+	if util.getBit(capint, CAPABILITY_BIT_POS):
 		#Checks config file, starting at CAPABILITY_START and moving through linked list
-		return extractor.extractBinaryLinkedList(os.path.join(devicepath,"config"),CAPABILITY_START,DATA_SIZE,NEXT_OFFSET,STOP_ID, CAPABILITY_NUM)
+		return extractor.extractBinaryLinkedList(CONFIG_PATH,
+												 CAPABILITY_START,
+												 DATA_SIZE,
+												 NEXT_OFFSET,
+												 STOP_ID,
+												 CAPABILITY_NUM )
 	else:
 		return []
 
