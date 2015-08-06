@@ -263,7 +263,7 @@ class PciDevicesCreator():
 		isPciExpress = False
 		PCI_EXPRESS = "0x10"
 
-		if PCI_EXPRESS in self.capabilities[devicepath]:
+		if PCI_EXPRESS in self.capabilities.get(devicepath):
 			isPciExpress = True
 
 		return isPciExpress

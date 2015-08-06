@@ -12,6 +12,7 @@ def update():
 def updatePciIds(url, location):
 	print "Attempting to update file: %s" % location
 	try:
+		print "Checking for resource file @ '%s'" % PCI_IDS
 		urllib2.urlopen(PCI_IDS)
 	except urllib2.URLError:
 		print "Failed to update file: %s" % location
