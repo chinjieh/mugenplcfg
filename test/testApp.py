@@ -101,6 +101,7 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(pcicreator.isDeviceName("010:10:01.2"), False, "isDeviceName function not working")
 		self.assertEqual(pcicreator.isDeviceName("0000:10:01"), False, "isDeviceName function not working")
 		self.assertEqual(pcicreator.isDeviceName("000:10:01.1"), False, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("0003:0E0F:0003.0001"), False, "isDeviceName function not working")
 
 		#Test getDeviceBus function
 		self.assertEqual(pcicreator.getDeviceBus("0011:01:02.3"), "01", "getDeviceBus function not working")

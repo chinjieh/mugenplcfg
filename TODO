@@ -8,6 +8,8 @@ Edit README.txt
 [High Priority]
 Test AGAX
 Package Pyxb with Project
+DEBUG ERROR WITH cannot find self.capabilities in PciDevicesCreator (exclude
+devices more than one layer down from devicepaths?)
 Test serial device extraction
 
 Dependencies:

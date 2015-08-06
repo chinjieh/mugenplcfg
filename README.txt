@@ -32,4 +32,4 @@ Root user permissions are necessary to allow ConfigTool to examine system data.
 == [ Optional Arguments ] ==
 
 -u / --update		Update files used by the tool
--f / --force		Attempts to generate the output file despite errors
+-f / --force		Attempt to generate the output file despite errors

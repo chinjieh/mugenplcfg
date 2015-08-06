@@ -269,7 +269,7 @@ class PciDevicesCreator():
 		return isPciExpress
 
 	def isDeviceName(self, value):
-		"Checks for format: ####:##[#]:##[#].#[#]"
+		"Checks for format: ####:##:##.#"
 		splitcolon = value.split(':')
 		if len(splitcolon) != 3:
 			return False
@@ -277,7 +277,16 @@ class PciDevicesCreator():
 		if '.' not in splitcolon[2]:
 			return False
 
-		if len(splitcolon[0]) != 4:
+		if len(splitcolon[0]) != 4: #Host bus no. length
+			return False
+		
+		if len(splitcolon[1]) != 2: #Bus no. length
+			return False
+		
+		if len(splitcolon[2].split('.')[0]) != 2: #Device no. length
+			return False
+		
+		if len(splitcolon[2].split('.')[1]) != 1: #Function no. length
 			return False
 
 		return True
