@@ -525,15 +525,20 @@ class SerialDevicesCreator():
 		"Gets serial addresses in form (startaddr, endaddr)"
 		serialAddresses = []
 		KEYWORD = "serial"
+		TTY_PATH = paths.TTY
 
 		#Get all lines which include KEYWORD
 		try:
-			ioportdata = extractor.extractData(paths.TTY)
+			ioportdata = extractor.extractData(TTY_PATH)
 		except IOError:
-			message.addError("Could not access location: %s\n" % paths.TTY +\
+			message.addError("Could not access location: %s\n" % TTY_PATH +\
 							 "Serial device addresses not found.", False)
 		else:
-			lines = parseutil.findLines(ioportdata, KEYWORD)
+			try:
+				lines = parseutil.findLines(ioportdata, KEYWORD)
+			except customExceptions.KeyNotFound:
+				message.addMessage(
+					"No serial devices found in file: %s" % TTY_PATH)
 			#Retrieve (start,end) data for serial devices
 			for line in lines:
 				serialAddresses.append(self.getAddressFromLine(line))
