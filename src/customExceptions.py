@@ -28,6 +28,9 @@ class PciIdsMultipleEntries(CustomException):
 class PciIdsSubclassNotFound(CustomException):
 	pass
 
+class PciIdsInvalidLink(CustomException):
+	pass
+
 class DmarFileNotFound(CustomException):
 	pass
 

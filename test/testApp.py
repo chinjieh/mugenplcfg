@@ -399,7 +399,7 @@ class UtilTestCase(unittest.TestCase):
 
 	def test_getBit(self):
 		"Tests the getBit function"
-	 	print "UtilTestCase:test_getBit - begin"
+		print "UtilTestCase:test_getBit - begin"
 		self.assertEqual(util.getBit(5,2), 1, "getBit function not working")
 		self.assertEqual(util.getBit(5,5), 0, "getBit function not working")
 
@@ -482,6 +482,30 @@ class UtilTestCase(unittest.TestCase):
 		self.assertEqual(util.sizeOf("0x0002", "0x0001"), "0x2", "sizeOf function not working")
 		self.assertEqual(util.sizeOf("0xe000", "0xe07f"), "0x80", "sizeOf function not working")
 		self.assertRaises(ValueError, util.sizeOf, "0x1000", 2)
+
+
+# == Class that tests update.py ==
+from src import update
+import urllib2
+class UpdateTestCase(unittest.TestCase):
+	"Tests the update.py file"
+	def setUp(self):
+		"Setup code"
+		print "<> UpdateTestCase:setUp - begin"
+		self.testdir = testpaths.PATH_TEST_UPDATE
+
+	def tearDown(self):
+		"Cleanup code"
+		print "UpdateTestCase:tearDown - begin"
+
+	# -- updatePciIds tests
+	def test_updatePciIds(self):
+		"Tests updatePciIds function"
+		INVALID_ADDR = "http://test"
+		testfile = os.path.join(self.testdir,"test_pciids.ids")
+		self.assertRaises(customExceptions.PciIdsInvalidLink,
+						  update.updatePciIds,
+						  INVALID_ADDR, testfile)
 
 
 # == Class that tests parseutil.py ==
