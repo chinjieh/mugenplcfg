@@ -192,7 +192,7 @@ class PciDevicesCreator():
 		print "Examining PCI devices..."
 		filteredpaths = self.filterDevicePaths(self.devicepaths)
 		print ("Extracting device information from %d PCI devices " % len(filteredpaths) +
-			   "(excluding PCI bridges and non PCI-Express devices)...")
+			   "(excluding PCI bridges and non PCI-Express devices behind bridges)...")
 		for devicepath in filteredpaths:
 			device = self.createDeviceFromPath(devicepath)
 			pcidevicelist.append(device)
@@ -233,7 +233,7 @@ class PciDevicesCreator():
 			if self.isPciExpress(bridgedDevice) is False:
 				nonPciExpressPaths.append(bridgedDevice)
 
-		print "Devices found: %d\n------------------" % len(self.devicepaths)
+		print "PCI Devices found: %d\n------------------" % len(self.devicepaths)
 		print "> PCI Bridges: ", len(bridgePaths)
 		for item in bridgePaths:
 			print "  ", os.path.basename(item)
