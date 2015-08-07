@@ -539,9 +539,10 @@ class SerialDevicesCreator():
 			except customExceptions.KeyNotFound:
 				message.addMessage(
 					"No serial devices found in file: %s" % TTY_PATH)
-			#Retrieve (start,end) data for serial devices
-			for line in lines:
-				serialAddresses.append(self.getAddressFromLine(line))
+			else:
+				#Retrieve (start,end) data for serial devices
+				for line in lines:
+					serialAddresses.append(self.getAddressFromLine(line))
 
 		return serialAddresses
 
