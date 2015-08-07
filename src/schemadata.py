@@ -75,19 +75,21 @@ class Element():
 		
 		keylist = util.toList(keylist)
 		valuelist = util.toList(valuelist)
-
-		if len(keylist) != len(valuelist):
-			errorstr = (("Values %s to be assigned to attributes %s in element %s "
-						"do not match in length") % (valuelist,keylist,self) )
-			raise customExceptions.AttributeMismatch(errorstr)
+		if valuelist == [""]:
+			pass
 		else:
-			for index in range(0,len(keylist)):
-				key = keylist[index]
-				if key not in dir(pyxbElem):
-					raise customExceptions.InvalidAttribute(
-						"Element %s does not have attribute: %s" % (self, key) )
-				else:
-					self.attr[key] = valuelist[index]
+			if len(keylist) != len(valuelist):
+				errorstr = (("Values %s to be assigned to attributes %s in element %s "
+							"do not match in length") % (valuelist,keylist,self) )
+				raise customExceptions.AttributeMismatch(errorstr)
+			else:
+				for index in range(0,len(keylist)):
+					key = keylist[index]
+					if key not in dir(pyxbElem):
+						raise customExceptions.InvalidAttribute(
+							"Element %s does not have attribute: %s" % (self, key) )
+					else:
+						self.attr[key] = valuelist[index]
 
 	def __getitem__(self, key):
 		pyxbElem = getattr(schema, self.type)

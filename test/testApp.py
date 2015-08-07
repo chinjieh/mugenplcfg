@@ -213,6 +213,11 @@ class SchemaDataTestCase(unittest.TestCase):
 		processor_pyxb = processor.compileToPyxb()
 		self.assertEqual(processor_pyxb.logicalCpus, 10, "Attribute setting failed")
 		self.assertEqual(processor_pyxb.speed, 15, "Attribute setting failed")
+		
+		#Test for correctly not setting empty attributes
+		devices = Element("devices", "devicesType")
+		devices["pciConfigAddress"] = ""
+		devices.compileToPyxb()
 
 		#Test for setting multiple attributes
 		processor["logicalCpus", "speed", "vmxTimerRate"] = 1, 2, 3

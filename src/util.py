@@ -122,27 +122,27 @@ def isHex(value):
 
 def toWord64(value):
 	"Converts to Word64 Type"
-	rawvalue = stripvalue(value)
-	#Pads string to be length of multiple of 4, justified right
-	value = rawvalue.rjust(int(math.ceil( len(rawvalue)/4.0) *4 ), '0')
-	#Add underscore between characters
-	finalvalue = ""
-
-	for index in range(0,len(value)):
-		if ((index % 4) is 0) and (index is not 0):
-			finalvalue += "_"
-
-		finalvalue += value[index]
-
-	return 	wrap16(finalvalue)
+	if value == "":
+		return ""
+	else:
+		rawvalue = stripvalue(value)
+		#Pads string to be length of multiple of 4, justified right
+		value = rawvalue.rjust(int(math.ceil( len(rawvalue)/4.0) *4 ), '0')
+		#Add underscore between characters
+		finalvalue = ""
+	
+		for index in range(0,len(value)):
+			if ((index % 4) is 0) and (index is not 0):
+				finalvalue += "_"
+	
+			finalvalue += value[index]
+	
+		return 	wrap16(finalvalue)
 
 def wrap16(value):
 	"Wraps value -> 16#value#"
 	wrapper = "16#_#"
-	if value == "":
-		return ""
-	else:
-		return wrapper.replace("_", value)
+	return wrapper.replace("_", value)
 
 def spacesToUnderscores(value):
 	"Converts spaces to underscores"
