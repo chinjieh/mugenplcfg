@@ -167,7 +167,7 @@ class DevicesCreator():
 		try:
 			iomemdata = extractor.extractData(path)
 			keyline = parseutil.findLines(iomemdata, key)[0]
-			pciconfigaddr = keyline.split("-")[0]
+			pciconfigaddr = keyline.split("-")[0].lstrip()
 
 		except (customExceptions.KeyNotFound, IOError):
 			message.addWarning("Could not obtain pciConfigAddress from %s." % path)
