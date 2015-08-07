@@ -20,7 +20,7 @@ class WarningMessage(Message):
 		addToCount(WarningMessage)
 
 	def display(self):
-		print "<< WARNING: %s >>\n" % self.msg
+		print "<< WARNING: %s >>" % self.msg
 
 
 class ErrorMessage(Message):
@@ -31,7 +31,7 @@ class ErrorMessage(Message):
 
 	def display(self):
 		print ""
-		print "<< ERROR: %s >>\n" % self.msg
+		print "<< ERROR: %s >>" % self.msg
 
 
 def addToCount(classname):
@@ -42,7 +42,6 @@ def addToCount(classname):
 
 def printMessages():
 	for message in messagequeue:
-		print ""
 		message.display()
 		print ""
 
