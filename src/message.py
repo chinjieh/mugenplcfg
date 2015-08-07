@@ -10,8 +10,7 @@ class Message():
 		addToCount(Message)
 		
 	def display(self):
-		print ""
-		print self.msg + "\n"
+		print self.msg
 
 
 class WarningMessage(Message):
@@ -43,7 +42,9 @@ def addToCount(classname):
 
 def printMessages():
 	for message in messagequeue:
+		print ""
 		message.display()
+		print ""
 
 def add(Message):
 	exists = False
