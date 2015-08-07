@@ -610,8 +610,8 @@ class IommuDevicesCreator():
 							   "IOMMU devices not detected.")
 		except (customExceptions.DmarFileNotCopied,
 				customExceptions.IaslToolNotFound):
-			message.addWarning("Could not obtain DMAR information; IOMMU device "
-							   "information not found.")
+			message.addError("Could not obtain DMAR information; IOMMU device "
+							   "information not found.", False)
 		else:
 			self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
 															  self.DMAR_NAME) )
