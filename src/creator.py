@@ -538,7 +538,7 @@ class SerialDevicesCreator():
 				lines = parseutil.findLines(ioportdata, KEYWORD)
 			except customExceptions.KeyNotFound:
 				message.addMessage(
-					"No serial devices found in file: %s" % TTY_PATH)
+					"No serial devices found from file: %s" % TTY_PATH)
 			else:
 				#Retrieve (start,end) data for serial devices
 				for line in lines:
@@ -607,7 +607,7 @@ class IommuDevicesCreator():
 			self.genDMAR(paths.DMAR, self.OUTPUTPATH)
 		except customExceptions.DmarFileNotFound:
 			message.addMessage("No DMAR file found at: '%s'; " % paths.DMAR +\
-							   "IOMMU devices not detected.")
+							   "No IOMMU devices found.")
 		except (customExceptions.DmarFileNotCopied,
 				customExceptions.IaslToolNotFound):
 			message.addError("Could not obtain DMAR information; IOMMU device "

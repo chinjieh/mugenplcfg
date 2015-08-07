@@ -7,11 +7,8 @@ Edit README.txt
 
 [High Priority]
 Test AGAX
-Package Pyxb with Project
-DEBUG ERROR WITH cannot find self.capabilities in PciDevicesCreator (exclude
-devices more than one layer down from devicepaths?)***
-DEBUG ERROR with word64 invalid value of 16#00  _f000_0000#
 Test serial device extraction
+Test vmxTimerRate
 
 Dependencies:
 --------
