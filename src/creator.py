@@ -170,7 +170,7 @@ class DevicesCreator():
 			pciconfigaddr = keyline.split("-")[0]
 
 		except (customExceptions.KeyNotFound, IOError):
-			message.addError("Could not obtain pciConfigAddress from %s." % path)
+			message.addWarning("Could not obtain pciConfigAddress from %s." % path)
 
 		return pciconfigaddr
 
