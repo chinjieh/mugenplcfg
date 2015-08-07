@@ -139,7 +139,10 @@ def toWord64(value):
 def wrap16(value):
 	"Wraps value -> 16#value#"
 	wrapper = "16#_#"
-	return wrapper.replace("_", value)
+	if value == "":
+		return ""
+	else:
+		return wrapper.replace("_", value)
 
 def spacesToUnderscores(value):
 	"Converts spaces to underscores"
