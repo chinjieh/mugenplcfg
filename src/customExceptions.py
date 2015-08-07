@@ -28,8 +28,14 @@ class PciIdsMultipleEntries(CustomException):
 class PciIdsSubclassNotFound(CustomException):
 	pass
 
+class DmarFileNotFound(CustomException):
+	pass
+
 class DmarFileNotCopied(CustomException):
-	pass 
+	pass
+
+class IaslToolNotFound(CustomException):
+	pass
 
 class KeyNotFound(CustomException):
 	pass

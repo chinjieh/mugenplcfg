@@ -605,9 +605,13 @@ class IommuDevicesCreator():
 		print "Parsing DMAR table..."
 		try:
 			self.genDMAR(paths.DMAR, self.OUTPUTPATH)
-		except (IOError, OSError):
-			message.addError("Could not obtain DMAR information; IOMMU devices "
-							 "not found.", False)
+		except customExceptions.DmarFileNotFound:
+			message.addMessage("No DMAR file found at: '%s'; " % paths.DMAR +\
+							   "IOMMU devices not detected.")
+		except (customExceptions.DmarFileNotCopied,
+				customExceptions.IaslToolNotFound):
+			message.addWarning("Could not obtain DMAR information; IOMMU device "
+							   "information not found.")
 		else:
 			self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
 															  self.DMAR_NAME) )
@@ -625,6 +629,14 @@ class IommuDevicesCreator():
 		except OSError:
 			if not os.path.isdir(outputloc):
 				raise
+			
+		#Check if DMAR exists
+		try:
+			open(dmar,"r")
+		except IOError:
+			raise customExceptions.DmarFileNotFound("DMAR file not found at: "
+													"%s" % dmar)
+			return
 
 		#Copy DMAR to temp folder
 		try:
@@ -634,7 +646,7 @@ class IommuDevicesCreator():
 		except IOError:
 			message.addMessage("DMAR table at: '%s' " % dmar +\
 							 "could not be copied to location: '%s'" % tempfile)
-			raise IOError
+			raise customExceptions.DmarFileNotCopied("DMAR file could not be copied")
 
 		else:
 			#Parse temp file
@@ -645,7 +657,7 @@ class IommuDevicesCreator():
 				if e.errno == os.errno.ENOENT: #iasl does not exist
 					message.addMessage("iasl tool not found in the system. "+
 							"Try 'apt-get install iasl' to install.")
-				raise OSError
+				raise customExceptions.IaslToolNotFound()
 
 	def getIommuAddrs(self, dmarfile):
 		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
