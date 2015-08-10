@@ -2,7 +2,7 @@ Maybe have command switch to include bridges?
 Refactor creator code to make it more extensible  (split into files??)
 Make more code testable: Add arguments in functions
 Double check info obtained
-
+Test Protocols
 Edit README.txt
 
 [High Priority]
