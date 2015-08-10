@@ -52,10 +52,8 @@ class ProcessorCreator():
 			for path in paths.MSR:
 				errormsg += ("%s\n" % path)
 
-			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
-						 "probe for MSR, then run the tool again.\n"
-						 "Alternatively, run the tool again with the proper "
-						 "permissions." )
+			errormsg += ("vmxTimerRate could not be found.\nTry 'modprobe msr' to "
+						 "probe for MSR, then run the tool again.")
 			message.addError(errormsg)
 		else:
 			vmxbits = 0
@@ -238,7 +236,7 @@ class PciDevicesCreator():
 		for item in bridgePaths:
 			print "  ", os.path.basename(item)
 
-		print "> Bridged Devices: ", len(bridgedDevicePaths)
+		print "> Devices behind bridges: ", len(bridgedDevicePaths)
 		for item in bridgedDevicePaths:
 			print "  ", os.path.basename(item)
 
@@ -681,10 +679,35 @@ class IommuDevicesCreator():
 					pass
 
 		return iommuaddrs
-
+	
+	def getIommuAGAW(self, iommuaddr):
+		"Gets the AGAW name from a given iommuaddr, at the capability offset"
+		CAPABILITY_OFFSET = "0x08"
+		CAP_REG_BYTE_SIZE = 2
+		AGAW_39_BITNO = 1
+		AGAW_48_BITNO = 2
+		AGAW_39_NAME = "agaw39"
+		AGAW_48_NAME = "agaw48"
+		
+		name = "agaw"
+		try:
+			bytes = extractor.extractBinaryData(self.DEVMEM,
+												int(CAPABILITY_OFFSET, 16),
+												CAP_REG_BYTE_SIZE)
+		except IOError:
+			message.addError("Could not access file: %s" % self.DEVMEM, False)
+		else:
+			if util.getBit(int(bytes[1],16),AGAW_39_BITNO):
+				name = AGAW_39_NAME
+			elif util.getBit(int(bytes[1],16),AGAW_48_BITNO):
+				name = AGAW_48_NAME
+			else:
+				message.addError("AGAW Capability could not be found for IOMMU "
+								 "device at: %s" % iommuaddr, False)
+		return name
+	
 	def createDeviceFromAddr(self, iommuaddr):
 		"Generates a device element from a given iommu address"
-		MAP_MAX = "0x30"
 		CAPABILITY_OFFSET = "0x08"
 		AGAW_39_BITNO = 1
 		AGAW_48_BITNO = 2
@@ -715,22 +738,7 @@ class IommuDevicesCreator():
 		capabilities.appendChild(iommucap)
 		## agaw
 		agawcap = Element("capability", "capabilityType")
-		agawcap["name"] = "agaw"
-
-		try:
-			bytes = extractor.extractBinaryData(self.DEVMEM,
-												int(CAPABILITY_OFFSET,0)+1, 1)
-		except IOError:
-			message.addError("Could not access file: %s" % self.DEVMEM, False)
-		else:
-			if util.getBit(int(bytes[0], 16),AGAW_39_BITNO):
-				agawcap["name"] = "agaw39"
-			elif util.getBit(int(bytes[0], 16), AGAW_48_BITNO):
-				agawcap["name"] = "agaw48"
-			else:
-				message.addError("AGAW Capability could not be found for IOMMU "
-								 "device.", False)
-
+		agawcap["name"] = self.getIommuAGAW(iommuaddr)
 		capabilities.appendChild(agawcap)
 		device.appendChild(capabilities)
 
