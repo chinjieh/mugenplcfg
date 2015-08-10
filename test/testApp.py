@@ -136,7 +136,7 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(iommucreator.getIommuAddrs(emptyloc),
 				[],
 				"getIommuAddrs function not working")
-
+		
 	## -- ProcessorCreator testcases
 	def test_ProcessorCreator(self):
 		"Tests the ProcessorCreator class"

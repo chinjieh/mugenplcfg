@@ -704,8 +704,9 @@ class IommuDevicesCreator():
 		
 		name = "agaw"
 		try:
+			startaddr = int(iommuaddr,16) + int(CAPABILITY_OFFSET, 16)
 			bytes = extractor.extractBinaryData(self.DEVMEM,
-												int(CAPABILITY_OFFSET, 16),
+												startaddr,
 												CAP_REG_BYTE_SIZE)
 		except IOError:
 			message.addError("Could not access file: %s" % self.DEVMEM, False)
