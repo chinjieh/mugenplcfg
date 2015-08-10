@@ -420,13 +420,13 @@ class PciDevicesCreator():
 		pci["bus", "device", "function"] = (util.wrap16(self.getDeviceBus(pcistr)),
 											util.wrap16(self.getDeviceNo(pcistr)),
 											self.getDeviceFunction(pcistr))
-		"""
+
 		pci["msi"] = "false"
 		if devicecap.CAP_MSI in self.capabilities[devicepath]:
 			pci["msi"] = "true"
 		if devicecap.CAP_MSIX in self.capabilities[devicepath]:
 			pci["msi"] = "true"
-		"""	
+
 		device.appendChild(pci)
 
 		#irq
