@@ -1,6 +1,9 @@
 #Module to contain functions to handle messages
 import sys
 import customExceptions
+import textwrap
+
+textWrapper = textwrap.TextWrapper(break_long_words=False)
 
 class Message():
 	shortname = "message(s)"
@@ -10,7 +13,7 @@ class Message():
 		addToCount(Message)
 		
 	def display(self):
-		print self.msg
+		print textWrapper.fill(self.msg)
 
 
 class WarningMessage(Message):
@@ -20,7 +23,7 @@ class WarningMessage(Message):
 		addToCount(WarningMessage)
 
 	def display(self):
-		print "* WARNING *: %s" % self.msg
+		print textWrapper.fill("* WARNING *: %s" % self.msg)
 
 
 class ErrorMessage(Message):
@@ -30,8 +33,7 @@ class ErrorMessage(Message):
 		addToCount(ErrorMessage)
 
 	def display(self):
-		print ""
-		print "** ERROR **: << %s >>" % self.msg
+		print testWrapper.fill("** ERROR **: %s" % self.msg)
 
 
 def addToCount(classname):

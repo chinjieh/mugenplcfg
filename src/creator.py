@@ -52,7 +52,7 @@ class ProcessorCreator():
 			for path in paths.MSR:
 				errormsg += ("%s\n" % path)
 
-			errormsg += ("vmxTimerRate could not be found.\nTry 'modprobe msr' to "
+			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
 						 "probe for MSR, then run the tool again.")
 			message.addError(errormsg)
 		else:
@@ -367,8 +367,8 @@ class PciDevicesCreator():
 		except customExceptions.PciIdsFileNotFound:
 			message.addError("pci.ids file could not be located in tool "
 							 "directory: %s. " % paths.CURRENTDIR + "Device "
-							 "names could not be obtained.\n"
-							 "Please ensure that the file is in the directory.",
+							 "names could not be obtained. Please ensure that "
+							 "the file is in the directory.",
 							 False)
 
 		else:
