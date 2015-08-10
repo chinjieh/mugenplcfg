@@ -68,7 +68,7 @@ def getCapability(devicepath):
 	CONFIG_PATH = os.path.join(devicepath, "config")
 
 	#Checks config file whether capability bit is activated
-	capbyte = extractor.extractBinaryData(CONFIG_PATH, STATUS_REG_LOCATION, 1)[0]
+	capbyte = extractor.extractBinaryData(CONFIG_PATH, STATUS_REG_LOCATION, 1)
 	capint = int(capbyte, 16)
 	if util.getBit(capint, CAPABILITY_BIT_POS):
 		#Checks config file, starting at CAPABILITY_START and moving through linked list

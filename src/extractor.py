@@ -16,33 +16,39 @@ def extractData(loc):
 	return trimmedDataString;
 
 import struct
-def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN"):
-	"Reads binary file at start position and returns bytes read as list of "
-	"bytes in hex"
+def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN", chunks=False):
+	"Reads binary file at start position and returns bytes read, or as list of"
+	"bytes if chunks=True"
 	with open(file, "rb") as f:
 		BYTE_SIZE = 1
 		bytelist = []
 		f.seek(start)
 		byte = f.read(BYTE_SIZE)
-		
+		result = ""
 		while bytes is not 0:
 			if byte != "":
 				intbyte = struct.unpack('B', byte)[0]
-				hexbyte = "0x{:02x}".format(intbyte)
-				if endian is "BIG_ENDIAN":
-					bytelist.append(hexbyte)
-				elif endian is "LITTLE_ENDIAN":
-					bytelist.insert(0, hexbyte)
+				if chunks:
+					hexbyte = "0x{:02x}".format(intbyte)
+					if endian is "LITTLE_ENDIAN":
+						bytelist.append(hexbyte)
+					elif endian is "BIG_ENDIAN":
+						bytelist.insert(0, hexbyte)
+					else:
+						raise ValueError("Incorrect argument value '%s' " % endian +
+										 "for argument 'endian' in function: "
+										 "extractBinaryData")
 				else:
-					raise ValueError("Incorrect argument value '%s' " % endian +
-									 "for argument 'endian' in function: "
-									 "extractBinaryData")
+					result = "{:02x}".format(intbyte) + result
 				bytes -= 1
 				byte = f.read(BYTE_SIZE)
 			else:
 				raise customExceptions.NoAccessToFile("No permission to read "
 													  "file: %s" % file)
-	return bytelist
+	if chunks:
+		return bytelist
+	else:
+		return "0x" + result
 
 
 

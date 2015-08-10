@@ -51,9 +51,10 @@ class ExtractorTestCase(unittest.TestCase):
 		loc = self.testdir + "testExtractBinaryData"
 		with open(loc, "wb") as f:
 			f.write(b"\x01\x02\x03\x04")
-		self.assertEqual(extractor.extractBinaryData(loc, 0, 4), ["0x01","0x02","0x03","0x04"], "extractBinaryData function not working")
-		self.assertEqual(extractor.extractBinaryData(loc, 2, 2), ["0x03","0x04"], "extractBinaryData function not working")
-		self.assertEqual(extractor.extractBinaryData(loc, 0, 2, "LITTLE_ENDIAN"), ["0x02", "0x01"], "extractBinaryData function not working")
+		self.assertEqual(extractor.extractBinaryData(loc, 0, 4), "0x04030201", "extractBinaryData function not working")
+		self.assertEqual(extractor.extractBinaryData(loc, 0, 4, chunks=True), ["0x04","0x03","0x02","0x01"], "extractBinaryData function not working")
+		self.assertEqual(extractor.extractBinaryData(loc, 2, 2, chunks=True), ["0x04","0x03"], "extractBinaryData function not working")
+		self.assertEqual(extractor.extractBinaryData(loc, 0, 2, "LITTLE_ENDIAN", chunks=True), ["0x01", "0x02"], "extractBinaryData function not working")
 		self.assertRaises(customExceptions.NoAccessToFile, extractor.extractBinaryData, loc, 3, 2)
 
 	## -- extractBinaryLinkedList testcases

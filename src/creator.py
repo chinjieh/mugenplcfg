@@ -40,7 +40,7 @@ class ProcessorCreator():
 		for path in paths.MSR:
 			try:
 				#Try to find MSR file
-				byte = extractor.extractBinaryData(path, OFFSET, 1)[0]
+				byte = extractor.extractBinaryData(path, OFFSET, 1)
 			except IOError:
 				continue
 			else:
@@ -61,7 +61,6 @@ class ProcessorCreator():
 			for bitnum in range(VMX_BITS_START, VMX_BITS_END+1):
 				vmxbits += util.getBit(int(byte, 16), bitnum) << bitnum
 			vmxTimerRate = int(vmxbits)
-
 		return vmxTimerRate
 
 class MemoryCreator():
@@ -696,7 +695,8 @@ class IommuDevicesCreator():
 	def getIommuAGAW(self, iommuaddr):
 		"Gets the AGAW name from a given iommuaddr, at the capability offset"
 		CAPABILITY_OFFSET = "0x08"
-		CAP_REG_BYTE_SIZE = 2
+		CAP_REG_BYTE_SIZE = 7
+		AGAW_BIT_START = 8
 		AGAW_39_BITNO = 1
 		AGAW_48_BITNO = 2
 		AGAW_39_NAME = "39"
@@ -705,15 +705,16 @@ class IommuDevicesCreator():
 		name = "agaw"
 		try:
 			startaddr = int(iommuaddr,16) + int(CAPABILITY_OFFSET, 16)
-			bytes = extractor.extractBinaryData(self.DEVMEM,
+			capreg = extractor.extractBinaryData(self.DEVMEM,
 												startaddr,
 												CAP_REG_BYTE_SIZE)
 		except IOError:
 			message.addError("Could not access file: %s" % self.DEVMEM, False)
 		else:
-			if util.getBit(int(bytes[1],16),AGAW_39_BITNO):
+			agaw = (int(capreg,16) >> AGAW_BIT_START) & 0x1F #See 5 bits
+			if util.getBit(agaw,AGAW_39_BITNO):
 				name = AGAW_39_NAME
-			elif util.getBit(int(bytes[1],16),AGAW_48_BITNO):
+			elif util.getBit(agaw,AGAW_48_BITNO):
 				name = AGAW_48_NAME
 			else:
 				message.addError("AGAW Capability could not be found for IOMMU "
