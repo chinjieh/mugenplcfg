@@ -158,6 +158,7 @@ class CreatorTestCase(unittest.TestCase):
 		memoryBlock0 = memoryBlockList[0].compileToPyxb()
 		memoryBlock1 = memoryBlockList[1].compileToPyxb()
 		self.assertEqual(memoryBlock0.physicalAddress,"16#000a#", "getMemoryBlocks function not working")
+		self.assertEqual(memoryBlock0.size,"16#0ff6#", "getMemoryBlocks function not working")
 		self.assertEqual(memoryBlock1.name,"1_type", "getMemoryBlocks function not working")
 
 		#Test generateMemoryBlock

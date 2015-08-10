@@ -85,21 +85,26 @@ class MemoryCreator():
 		def walkError(excep):
 			message.addError("Could not access memory block data: " +\
 							 str(excep), False)
+		
+		memdirs = []
 		for root,subdirs,files in os.walk(path, onerror=walkError):
 			if not subdirs:  #at end of paths
+				memdirs.append(root)
 
-				endfile = root + "/" + "end"
-				typefile = root + "/" + "type"
-				startfile = root + "/" + "start"
-				try:
-					memoryBlock = MemoryCreator.generateMemoryBlock(endfile,
-																	typefile,
-																	startfile)
-				except IOError:
-					message.addError("Could not retrieve complete memory data",
-									 False)
-				#Adds newly created memoryBlock element to memoryBlockList
-				memoryBlockList.append(memoryBlock)
+		memdirs.sort(key=lambda x: int(os.path.basename(x)) ) #Sort paths found by numerical order
+		for root in memdirs:
+			endfile = root + "/" + "end"
+			typefile = root + "/" + "type"
+			startfile = root + "/" + "start"
+			try:
+				memoryBlock = MemoryCreator.generateMemoryBlock(endfile,
+																typefile,
+																startfile)
+			except IOError:
+				message.addError("Could not retrieve complete memory data",
+								 False)
+			#Adds newly created memoryBlock element to memoryBlockList
+			memoryBlockList.append(memoryBlock)
 
 		return memoryBlockList
 
@@ -404,6 +409,7 @@ class PciDevicesCreator():
 	def createDeviceFromPath(self, devicepath):
 		pcistr = os.path.basename(devicepath)
 		device = Element("device", "deviceType")
+		MSI_CODE = ""
 		#Old code that gets device name as Vendor DeviceName
 		#device["name"] = self.devicenames[devicepath]
 		device["name"] = self.deviceShortNames[devicepath]
@@ -414,6 +420,13 @@ class PciDevicesCreator():
 		pci["bus", "device", "function"] = (util.wrap16(self.getDeviceBus(pcistr)),
 											util.wrap16(self.getDeviceNo(pcistr)),
 											self.getDeviceFunction(pcistr))
+		"""
+		pci["msi"] = "false"
+		if devicecap.CAP_MSI in self.capabilities[devicepath]:
+			pci["msi"] = "true"
+		if devicecap.CAP_MSIX in self.capabilities[devicepath]:
+			pci["msi"] = "true"
+		"""	
 		device.appendChild(pci)
 
 		#irq
@@ -686,8 +699,8 @@ class IommuDevicesCreator():
 		CAP_REG_BYTE_SIZE = 2
 		AGAW_39_BITNO = 1
 		AGAW_48_BITNO = 2
-		AGAW_39_NAME = "agaw39"
-		AGAW_48_NAME = "agaw48"
+		AGAW_39_NAME = "39"
+		AGAW_48_NAME = "48"
 		
 		name = "agaw"
 		try:
@@ -738,7 +751,8 @@ class IommuDevicesCreator():
 		capabilities.appendChild(iommucap)
 		## agaw
 		agawcap = Element("capability", "capabilityType")
-		agawcap["name"] = self.getIommuAGAW(iommuaddr)
+		agawcap["name"] = "agaw"
+		agawcap.content = self.getIommuAGAW(iommuaddr)
 		capabilities.appendChild(agawcap)
 		device.appendChild(capabilities)
 

@@ -1,7 +1,7 @@
 # ./platform_config.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:e92452c8d3e28a9e27abfc9994d2007779e7f4c9
-# Generated 2015-07-10 08:24:12.534316 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
+# Generated 2015-08-10 12:29:37.907363 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
 # Namespace AbsentNamespace0
 
 from __future__ import unicode_literals
@@ -14,7 +14,7 @@ import pyxb.utils.domutils
 import sys
 import pyxb.utils.six as _six
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:47cf7f30-26cc-11e5-8f1a-001999a78414')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:b39f50aa-3f4a-11e5-b0f5-001999a78414')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.5-DEV'
@@ -777,6 +777,7 @@ _module_typeBindings.devicesType = devicesType
 Namespace.addCategoryObject('typeBinding', 'devicesType', devicesType)
 
 
+# Complex type processorType with content type EMPTY
 class processorType (pyxb.binding.basis.complexTypeDefinition):
     """Complex type processorType with content type EMPTY"""
     _TypeDefinition = None
