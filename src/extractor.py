@@ -28,7 +28,7 @@ def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN"):
 		while bytes is not 0:
 			if byte != "":
 				intbyte = struct.unpack('B', byte)[0]
-				hexbyte = "{:02x}".format(intbyte)
+				hexbyte = "0x{:02x}".format(intbyte)
 				if endian is "BIG_ENDIAN":
 					bytelist.append(hexbyte)
 				elif endian is "LITTLE_ENDIAN":
