@@ -6,6 +6,7 @@ import os
 import customExceptions
 import util
 import struct
+from collections import namedtuple
 
 
 CAP_PM = "0x01"
@@ -51,7 +52,7 @@ translated = {	CAP_PM : "Power Management",
 
 
 class DevicecapManager():
-	"Class that handles device capability data"
+	"Class that handles PCI device capability data"
 	def __init__(self):
 		self.capabilities = {}
 			
@@ -65,12 +66,11 @@ class DevicecapManager():
 		#Attempt to fill dictionary
 		try:
 			for devicepath in devicepaths:
-				self.capabilities[devicepath] = self._extractCapability(devicepath)
+				capabilities[devicepath] = self._extractCapability(devicepath)
 		except customExceptions.NoAccessToFile:
 			message.addError("Not enough permissions to access capabilities of "
 							 "devices. It is advised to run the tool again with "
 							 "the proper permissions.", False)
-
 		self.capabilities = capabilities
 
 	def _extractCapability(self, devicepath):
@@ -98,8 +98,12 @@ class DevicecapManager():
 		else:
 			return []
 		
-	def getCap(self, devicepath):
-		return self.capabilities.get(devicepath)
+	def getCap(self, devicepath, simple=True):
+		result = None
+		if simple:
+			result = self.capabilities.get(devicepath)
+			
+		return result
 	
 	def _readCapFile(self, file, startpos, datasize, nextoffset=1, stopid=0x00, numJumps=-1):
 		"Extracts data from the config file that is in linked list format i.e "
