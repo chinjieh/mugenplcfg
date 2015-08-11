@@ -33,7 +33,7 @@ class ErrorMessage(Message):
 		addToCount(ErrorMessage)
 
 	def display(self):
-		print testWrapper.fill("** ERROR **: %s" % self.msg)
+		print textWrapper.fill("** ERROR **: %s" % self.msg)
 
 
 def addToCount(classname):
