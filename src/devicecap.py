@@ -8,8 +8,9 @@ import util
 import struct
 from collections import namedtuple
 
-Cap = namedtuple("Cap", ["code","value"])
+Cap = namedtuple("Cap", "code , value")
 
+# CAPABILITY CODES
 CAP_PM = "0x01"
 CAP_AGP = "0x02" 
 CAP_VPD = "0x03" 
@@ -52,6 +53,9 @@ translated = {
 	CAP_AF : "PCI Advanced Features"
 	}
 
+# CAPABILITY VALUES
+CAP_MSI_VALUE = namedtuple("MSI", "enable")
+CAP_MSIX_VALUE = namedtuple("MSIX", "enable")
 
 class DevicecapManager():
 	"Class that handles PCI device capability data"
@@ -137,25 +141,40 @@ class DevicecapManager():
 				f.seek(nextaddr)
 				data = readdata(f,capsize) #read data - capcode
 				capcode = "0x{:02x}".format(data)
-				capvalue = self._readCapValue(capcode)
-				cap = Cap(code=capcode, value=capvalue)
-				print cap
-				result.append(cap)
-				f.seek(nextoffset-1, 1) #move pointer to next
 				nextaddr = readdata(f,capsize) #read next address
+				capvalue = self._getCapValue(capcode, f) #read cap info
+				cap = Cap(code=capcode, value=capvalue)
+				result.append(cap)
 				numJumps -= 1
 		return result
 	
-	def _readCapValue(self, capcode):
-		"Reads the extra information for capabilities"
-		def read_cap_msi():
-			pass
+	def _getCapValue(self, capcode, fileobj):
+		"Gets the extra information for capabilities in form of tuple"
+		"Returns None if no Value found"
 		
-		read = {
-			CAP_MSI : read_cap_msi()
+		def get_cap_msi():
+			byte = struct.unpack('B',fileobj.read(1))[0]
+			enablebit = util.getBit(byte, 0) #Last bit
+			value = CAP_MSI_VALUE(enable=enablebit)
+			return value
+		
+		def get_cap_msix():
+			byte = struct.unpack('B',fileobj.read(1))[0]
+			enablebit = util.getBit(byte,0) #Last bit
+			value = CAP_MSIX_VALUE(enable=enablebit)
+			return value
+		
+		switch = {
+			CAP_MSI : get_cap_msi,
+			CAP_MSIX : get_cap_msix
 		}
-		
-		return read.get(capcode)
+
+		result = lambda : None
+		try:
+			result = switch[capcode]
+		except KeyError:
+			pass
+		return result() #Perform function based on capcode
 
 
 def translate(capcode):

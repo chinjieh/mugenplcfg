@@ -8,9 +8,9 @@ Add version no. in update.py
 Add Devicemanager
 
 [High Priority]
-Test AGAX
 Test serial device extraction
 Test vmxTimerRate
+Check COM Ports
 
 Dependencies:
 --------

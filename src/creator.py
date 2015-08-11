@@ -390,7 +390,6 @@ class PciDevicesCreator():
 	def createDeviceFromPath(self, devicepath):
 		pcistr = os.path.basename(devicepath)
 		device = Element("device", "deviceType")
-		MSI_CODE = ""
 		#Old code that gets device name as Vendor DeviceName
 		#device["name"] = self.devicenames[devicepath]
 		device["name"] = self.deviceShortNames[devicepath]
@@ -404,9 +403,11 @@ class PciDevicesCreator():
 
 		pci["msi"] = "false"
 		if devicecap.CAP_MSI in self.devicecapmgr.getCapList(devicepath):
-			pci["msi"] = "true"
+			if self.devicecapmgr.getCapValue(devicepath,devicecap.CAP_MSI).enable:
+				pci["msi"] = "true"
 		if devicecap.CAP_MSIX in self.devicecapmgr.getCapList(devicepath):
-			pci["msi"] = "true"
+			if self.devicecapmgr.getCapValue(devicepath,devicecap.CAP_MSIX).enable:
+				pci["msi"] = "true"
 
 		device.appendChild(pci)
 
