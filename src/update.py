@@ -3,6 +3,8 @@ import paths
 import urllib
 import urllib2
 import customExceptions
+import parseutil
+import extractor
 
 PCI_IDS = "https://pci-ids.ucw.cz/v2.2/pci.ids"
 
@@ -22,4 +24,23 @@ def updatePciIds(url, location):
 		raise customExceptions.PciIdsInvalidLink()
 	else:
 		print "Updating file: %s" % location
+		oldver = ""
+		newver = ""
+		
+		try:
+			with open(location) as oldfile:
+				for line in oldfile.readlines():
+					if "Version:" in line:
+						oldver = parseutil.parseLine_Sep(line,"Version", ":").strip()
+						break
+		except IOError:
+			pass
+
 		urllib.urlretrieve(url, location)
+		
+		with open(location) as newfile:
+			for line in newfile.readlines():
+				if "Version" in line:
+					newver = parseutil.parseLine_Sep(line,"Version", ":").strip()
+					break
+		print "pci.ids updated: Version %s > %s" % (oldver, newver)
