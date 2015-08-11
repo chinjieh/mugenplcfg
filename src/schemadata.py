@@ -1,13 +1,16 @@
 #Module to contain code related to construction of XML document
 import sys
+import os
 import copy
 import util
+import shutil
 import customExceptions
 import paths
 sys.path.append(paths.SCHEMACONFIGPATH)
 sys.path.append(paths.PYXB)
 from schemaconfig import schemaconfig as schema
 import pyxb
+import subprocess
 
 class Element():
 	"Class that wraps Pyxb and provides easier use of modification of XML elements"
@@ -148,4 +151,45 @@ class Element():
 		if obj in self.childElements:		
 			obj.parent = None
 			self.childElements.remove(obj)
+			
+			
+def generateBindings(schemafile):
+	"Creates a .py PyXB binding file from schemafile"
+	infile = schemafile.name
+	print infile
+	outpath = paths.CURRENTDIR
+	outname = "schemaconfig"
+	print "Generating binding file with PyXB..."
+	try:
+		proc = subprocess.Popen(
+			["pyxbgen","-u",infile,"-m",os.path.join(outpath,outname)],
+			stdout=subprocess.PIPE )
+		pyxbmsg = proc.stdout.read()
+		print "PyXB > ", pyxbmsg
+	except OSError as e:
+		if e.errno == os.errno.ENOENT: #pyxb does not exist
+			print ("'pyxbgen' command could not be found. Make sure PyXB is installed.")
+	else:
+		print "Generated binding file '%s.py' to: %s\n" % (outname,paths.CURRENTDIR)
+		
+		def getChoice():
+			accepted = ["Y","y","N","n",""]
+			while True:
+				choice = raw_input("Move to and overwrite previous binding file "
+				   "in /schemaconfig? [Y/n]")
+				if choice in accepted:
+					return choice
+				else:
+					print "Please enter a valid input"
+				
+		ans = getChoice()
+		if ans == "n" or ans == "N":
+			print "Done. Please move the file %s.py to /schemaconfig." % outname
+		else:
+			shutil.move(os.path.join(paths.CURRENTDIR,outname+".py"),
+						paths.SCHEMACONFIG+".py")
+			print "DONE"
+	
+			
+			
 	

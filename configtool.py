@@ -3,7 +3,7 @@ import argparse
 import paths
 import os
 import shutil
-from src import customExceptions, creator, message, update
+from src import customExceptions, creator, message, update, schemadata
 
 #
 # ConfigTool is developed to support the Muen Project. It produces a system
@@ -87,11 +87,22 @@ def handleArgs():
 	parser.add_argument("-f", "--force",
 						help="Attempts to generate the output file despite errors",
 						action="store_true")
+	parser.add_argument("-g", "--gen",
+						help="Generates a .py binding file from a .xsd schema file "
+						"for use in /schemaconfig. Requires PyXB to be installed.",
+						action="store",
+						type=file,
+						metavar="SCHEMA")
+
 	args = parser.parse_args()
 
 	runMain = True
 	if args.update:
 		update.update()
+		runMain = False
+	
+	if args.gen is not None:
+		schemadata.generateBindings(args.gen)
 		runMain = False
 
 	if runMain:
