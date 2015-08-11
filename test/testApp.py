@@ -57,18 +57,6 @@ class ExtractorTestCase(unittest.TestCase):
 		self.assertEqual(extractor.extractBinaryData(loc, 0, 2, "LITTLE_ENDIAN", chunks=True), ["0x01", "0x02"], "extractBinaryData function not working")
 		self.assertRaises(customExceptions.NoAccessToFile, extractor.extractBinaryData, loc, 3, 2)
 
-	## -- extractBinaryLinkedList testcases
-	def test_extractBinaryLinkedList(self):
-		"Tests the extractBinaryLinkedList function"
-		print "ExtractorTestCase:test_extractBinaryLinkedList - begin"
-		loc = self.testdir + "testExtractBinaryLinkedList"
-		with open(loc, "wb") as f:
-				   #00  01  02  03  04  05  06  07  08  09  0a  0b  0c  0d  0e  0f
-			f.write(b"\x00\x01\x04\x03\x0a\x0e\x0c\x0a\x0e\x0c\x0d\x08\x0f\x00\x0b\x06")
-		self.assertEqual(extractor.extractBinaryLinkedList(loc,0x02,1,1), ["0x0a", "0x0b", "0x0c", "0x0d", "0x0e", "0x0f"], "extractBinaryLinkedList function not working")
-		self.assertEqual(extractor.extractBinaryLinkedList(loc,0x02,1,1,0x0,3), ["0x0a", "0x0b", "0x0c"], "extractBinaryLinkedList function not working")
-
-
 # == Class that tests creator.py ==
 import src.creator as creator
 class CreatorTestCase(unittest.TestCase):
@@ -364,6 +352,7 @@ class DevicecapTestCase(unittest.TestCase):
 	"Tests the devicecap file"
 	def setUp(self):
 		print "<> DevicecapTestCase:setUp - begin"
+		self.testdir = testpaths.PATH_TEST_DEVICECAP
 
 	def tearDown(self):
 		print "<> DevicecapTestCase:tearDown - begin"
@@ -373,6 +362,18 @@ class DevicecapTestCase(unittest.TestCase):
 		print "DevicecapTestCase:test_translate - begin"
 		self.assertEqual(devicecap.translate("0x10"), "PCI Express", "translate function not working")
 		self.assertRaises(customExceptions.CapabilityUnknown, devicecap.translate, "0x0101")
+		
+	def test_readCapFile(self):
+		"Tests the readCapFile function"
+		print "DevicecapTestCase:test_readCapFile - begin"
+		loc = self.testdir + "testReadCapFile"
+		with open(loc, "wb") as f:
+				   #00  01  02  03  04  05  06  07  08  09  0a  0b  0c  0d  0e  0f
+			f.write(b"\x00\x01\x04\x03\x0a\x0e\x0c\x0a\x0e\x0c\x0d\x08\x0f\x00\x0b\x06")
+		devicecapmgr = devicecap.DevicecapManager()
+		self.assertEqual(devicecapmgr._readCapFile(loc,0x02,1,1), ["0x0a", "0x0b", "0x0c", "0x0d", "0x0e", "0x0f"], "readCapFile function not working")
+		self.assertEqual(devicecapmgr._readCapFile(loc,0x02,1,1,0x0,3), ["0x0a", "0x0b", "0x0c"], "readCapFile function not working")
+
 
 
 # == Class that tests util.py ==

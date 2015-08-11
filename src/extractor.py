@@ -49,32 +49,3 @@ def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN", chunks=False):
 		return bytelist
 	else:
 		return "0x" + result
-
-
-
-def extractBinaryLinkedList(file, startpos, datasize, nextoffset=1, stopid=0x00, numJumps=-1):
-	"Extracts binary data that is in linked list format i.e "
-	"reads address from startpos, reads data in address, reads address from "
-	"ptroffset..."
-	result = []	
-	
-	def readdata(f,size):
-		data = f.read(size)
-		if data != "":
-			#returns integer of data
-			return struct.unpack('B', data)[0]
-		else:
-			raise customExceptions.NoAccessToFile(
-				"No permission to read file: %s" % file )
-
-	with open(file, "rb") as f:
-		f.seek(startpos)
-		nextaddr = readdata(f, datasize)
-		while (nextaddr != stopid and numJumps != 0):
-			f.seek(nextaddr)
-			data = readdata(f,datasize) #read data
-			result.append("0x{:02x}".format(data))
-			f.seek(nextoffset-1, 1) #move pointer to next
-			nextaddr = readdata(f,datasize) #read next address
-			numJumps -= 1
-	return result

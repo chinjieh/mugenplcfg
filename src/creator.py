@@ -181,7 +181,7 @@ class PciDevicesCreator():
 	"Helper class of DevicesCreator"
 	def __init__(self):
 		self.devicepaths = []
-		self.capabilities = {} #devicepath = capabilitylist
+		self.devicecapmgr = None
 		self.devicenames = {} #devicepath = name
 		self.deviceShortNames = {} #devicepath = shortname
 
@@ -203,7 +203,8 @@ class PciDevicesCreator():
 
 	def getDependencies(self):
 		"Checks whether dependencies are fulfilled and fills up the class attributes"
-		self.capabilities = self.getCapabilities(self.devicepaths)
+		self.devicecapmgr = devicecap.DevicecapManager()
+		self.devicecapmgr.extractCapabilities(self.devicepaths)
 		#self.devicenames = self.getDeviceNames(self.devicepaths)
 		self.deviceShortNames = self.getDeviceShortNames(self.devicepaths)
 
@@ -265,7 +266,7 @@ class PciDevicesCreator():
 		isPciExpress = False
 		PCI_EXPRESS = "0x10"
 
-		if PCI_EXPRESS in self.capabilities.get(devicepath):
+		if PCI_EXPRESS in self.devicecapmgr.getCap(devicepath):
 			isPciExpress = True
 
 		return isPciExpress
@@ -301,25 +302,6 @@ class PciDevicesCreator():
 
 	def getDeviceFunction(self, devicestr):
 		return (devicestr.split(':')[2] ).split('.')[1]
-
-	def getCapabilities(self, devicepaths):
-		"Checks if device capabilities can be found"
-		capabilities = {}
-
-		#Initialise empty dictionary
-		for devicepath in devicepaths:
-			capabilities[devicepath] = []
-
-		#Attempt to fill dictionary
-		try:
-			for devicepath in devicepaths:
-				capabilities[devicepath] = devicecap.getCapability(devicepath)
-		except customExceptions.NoAccessToFile:
-			message.addError("Not enough permissions to access capabilities of "
-							 "devices. It is advised to run the tool again with "
-							 "the proper permissions.", False)
-
-		return capabilities
 
 	#TODO Unused for now, while device names are relying on class codes and not Vendor and Device pairs
 	"""
@@ -421,9 +403,9 @@ class PciDevicesCreator():
 											self.getDeviceFunction(pcistr))
 
 		pci["msi"] = "false"
-		if devicecap.CAP_MSI in self.capabilities[devicepath]:
+		if devicecap.CAP_MSI in self.devicecapmgr.getCap(devicepath):
 			pci["msi"] = "true"
-		if devicecap.CAP_MSIX in self.capabilities[devicepath]:
+		if devicecap.CAP_MSIX in self.devicecapmgr.getCap(devicepath):
 			pci["msi"] = "true"
 
 		device.appendChild(pci)
@@ -485,7 +467,7 @@ class PciDevicesCreator():
 							 False)
 
 		#capabilities
-		caplist = self.capabilities[devicepath]
+		caplist = self.devicecapmgr.getCap(devicepath)
 		if caplist:
 			capabilities = Element("capabilities", "capabilitiesType")
 			for cap in caplist:
