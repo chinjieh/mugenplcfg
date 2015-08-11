@@ -363,16 +363,22 @@ class DevicecapTestCase(unittest.TestCase):
 		self.assertEqual(devicecap.translate("0x10"), "PCI Express", "translate function not working")
 		self.assertRaises(customExceptions.CapabilityUnknown, devicecap.translate, "0x0101")
 		
-	def test_readCapFile(self):
-		"Tests the readCapFile function"
-		print "DevicecapTestCase:test_readCapFile - begin"
-		loc = self.testdir + "testReadCapFile"
+	def test_DevicecapManager(self):
+		"Tests the DevicecapManager class"
+		print "DevicecapTestCase:test_DevicecapManager - begin"
+		devicecapmgr = devicecap.DevicecapManager()
+		
+		# -- readCapFile function
+		loc = os.path.join(self.testdir, "testReadCapFile")
 		with open(loc, "wb") as f:
 				   #00  01  02  03  04  05  06  07  08  09  0a  0b  0c  0d  0e  0f
 			f.write(b"\x00\x01\x04\x03\x0a\x0e\x0c\x0a\x0e\x0c\x0d\x08\x0f\x00\x0b\x06")
-		devicecapmgr = devicecap.DevicecapManager()
-		self.assertEqual(devicecapmgr._readCapFile(loc,0x02,1,1), ["0x0a", "0x0b", "0x0c", "0x0d", "0x0e", "0x0f"], "readCapFile function not working")
-		self.assertEqual(devicecapmgr._readCapFile(loc,0x02,1,1,0x0,3), ["0x0a", "0x0b", "0x0c"], "readCapFile function not working")
+		test_capcode1 = [cap.code for cap in devicecapmgr._readCapFile(loc,0x02,1,1)]
+		test_capcode2 = [cap.code for cap in devicecapmgr._readCapFile(loc,0x02,1,1,0x0,3)]
+		self.assertEqual(test_capcode1, ["0x0a", "0x0b", "0x0c", "0x0d", "0x0e", "0x0f"], "readCapFile function not working")
+		self.assertEqual(test_capcode2, ["0x0a", "0x0b", "0x0c"], "readCapFile function not working")
+		
+		# -- getCap function
 
 
 

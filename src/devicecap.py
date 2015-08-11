@@ -8,6 +8,7 @@ import util
 import struct
 from collections import namedtuple
 
+Cap = namedtuple("Cap", ["code","value"])
 
 CAP_PM = "0x01"
 CAP_AGP = "0x02" 
@@ -29,83 +30,92 @@ CAP_MSIX = "0x11"
 CAP_SATA = "0x12"
 CAP_AF = "0x13"
 
-translated = {	CAP_PM : "Power Management",
-		CAP_AGP: "Accelerated Graphics Port",
-		CAP_VPD: "Vital Product Data",
-		CAP_SLOTID : "Slot Identification",
-		CAP_MSI : "Message Signalled Interrupts" ,
-		CAP_CHSWP : "CompactPCI Hotswap", 
-		CAP_PCIX : "PCI-X", 
-		CAP_HT : "HyperTransport",
-		CAP_VNDR : "Vendor-Specific",
-		CAP_DBG : "Debug Port" ,
-		CAP_CCRC : "CompactPCI Central Resource Control" ,
-		CAP_HOTPLUG : "PCI Standard Hot-Plug Controller", 
-		CAP_SSVID : "Bridge subsystem vendor/device ID",
-		CAP_AGP3 : "AGP Target PCI-PCI bridge",
-		CAP_SECURE : "Secure Device",
-		CAP_EXP : "PCI Express",
-		CAP_MSIX : "MSI-X",
-		CAP_SATA : "SATA Data/Index Configuration",
-		CAP_AF : "PCI Advanced Features"
-		}
+translated = {
+	CAP_PM : "Power Management",
+	CAP_AGP: "Accelerated Graphics Port",
+	CAP_VPD: "Vital Product Data",
+	CAP_SLOTID : "Slot Identification",
+	CAP_MSI : "Message Signalled Interrupts",
+	CAP_CHSWP : "CompactPCI Hotswap",
+	CAP_PCIX : "PCI-X",
+	CAP_HT : "HyperTransport",
+	CAP_VNDR : "Vendor-Specific",
+	CAP_DBG : "Debug Port" ,
+	CAP_CCRC : "CompactPCI Central Resource Control" ,
+	CAP_HOTPLUG : "PCI Standard Hot-Plug Controller",
+	CAP_SSVID : "Bridge subsystem vendor/device ID",
+	CAP_AGP3 : "AGP Target PCI-PCI bridge",
+	CAP_SECURE : "Secure Device",
+	CAP_EXP : "PCI Express",
+	CAP_MSIX : "MSI-X",
+	CAP_SATA : "SATA Data/Index Configuration",
+	CAP_AF : "PCI Advanced Features"
+	}
 
 
 class DevicecapManager():
 	"Class that handles PCI device capability data"
 	def __init__(self):
-		self.capabilities = {}
-			
+		self.capabilities = {} #devicepath, caplist
+
 	def extractCapabilities(self,devicepaths):
 		"Checks if device capabilities can be found and creates capability dict"
-		capabilities = {}
-		#Initialise empty dictionary
-		for devicepath in devicepaths:
-			capabilities[devicepath] = []
-
 		#Attempt to fill dictionary
 		try:
 			for devicepath in devicepaths:
-				capabilities[devicepath] = self._extractCapability(devicepath)
+				self._extractCapability(devicepath, "config")
 		except customExceptions.NoAccessToFile:
 			message.addError("Not enough permissions to access capabilities of "
 							 "devices. It is advised to run the tool again with "
 							 "the proper permissions.", False)
-		self.capabilities = capabilities
 
-	def _extractCapability(self, devicepath):
+	def _extractCapability(self, devicepath, configfilename):
 		"Gets capability for device"
 		CAPABILITY_START = 0x34
 		STATUS_REG_LOCATION = 0x6
 		CAPABILITY_BIT_POS = 4
 		NEXT_OFFSET = 1
-		DATA_SIZE = 1
+		CAP_SIZE = 1
 		STOP_ID = 0x00
 		CAPABILITY_NUM = 48
-		CONFIG_PATH = os.path.join(devicepath, "config")
+		CONFIG_PATH = os.path.join(devicepath, configfilename)
 	
 		#Checks config file whether capability bit is activated
 		capbyte = extractor.extractBinaryData(CONFIG_PATH, STATUS_REG_LOCATION, 1)
 		capint = int(capbyte, 16)
 		if util.getBit(capint, CAPABILITY_BIT_POS):
 			#Checks config file, starting at CAPABILITY_START and moving through linked list
-			return self._readCapFile(CONFIG_PATH,
-									 CAPABILITY_START,
-									 DATA_SIZE,
-									 NEXT_OFFSET,
-									 STOP_ID,
-									 CAPABILITY_NUM)
-		else:
-			return []
-		
-	def getCap(self, devicepath, simple=True):
-		result = None
-		if simple:
-			result = self.capabilities.get(devicepath)
-			
+			self.capabilities[devicepath] = self._readCapFile(CONFIG_PATH,
+															  CAPABILITY_START,
+															  CAP_SIZE,
+															  NEXT_OFFSET,
+															  STOP_ID,
+															  CAPABILITY_NUM)
+
+	def getCapList(self, devicepath, simple=True):
+		"Returns list of capabilities, only codes if simple=True"
+		result = []
+		caplist = self.capabilities.get(devicepath)
+		if caplist is not None:
+			result = []
+			if simple:
+				for cap in caplist:
+					result.append(cap.code)
+			else:
+				result = caplist
 		return result
 	
-	def _readCapFile(self, file, startpos, datasize, nextoffset=1, stopid=0x00, numJumps=-1):
+	def getCapValue(self, devicepath, capcode):
+		"Returns CapValue object for a device"
+		result = None
+		caplist = self.capabilities.get(devicepath)
+		if caplist is not None:
+			for cap in caplist:
+				if cap.code == capcode:
+					return cap.value
+		return result
+	
+	def _readCapFile(self, file, startpos, capsize, nextoffset=1, stopid=0x00, numJumps=-1):
 		"Extracts data from the config file that is in linked list format i.e "
 		"reads address from startpos, reads data in address, reads address from "
 		"ptroffset..."
@@ -122,15 +132,30 @@ class DevicecapManager():
 	
 		with open(file, "rb") as f:
 			f.seek(startpos)
-			nextaddr = readdata(f, datasize)
+			nextaddr = readdata(f, capsize)
 			while (nextaddr != stopid and numJumps != 0):
 				f.seek(nextaddr)
-				data = readdata(f,datasize) #read data
-				result.append("0x{:02x}".format(data))
+				data = readdata(f,capsize) #read data - capcode
+				capcode = "0x{:02x}".format(data)
+				capvalue = self._readCapValue(capcode)
+				cap = Cap(code=capcode, value=capvalue)
+				print cap
+				result.append(cap)
 				f.seek(nextoffset-1, 1) #move pointer to next
-				nextaddr = readdata(f,datasize) #read next address
+				nextaddr = readdata(f,capsize) #read next address
 				numJumps -= 1
 		return result
+	
+	def _readCapValue(self, capcode):
+		"Reads the extra information for capabilities"
+		def read_cap_msi():
+			pass
+		
+		read = {
+			CAP_MSI : read_cap_msi()
+		}
+		
+		return read.get(capcode)
 
 
 def translate(capcode):

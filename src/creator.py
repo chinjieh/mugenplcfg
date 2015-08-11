@@ -266,7 +266,7 @@ class PciDevicesCreator():
 		isPciExpress = False
 		PCI_EXPRESS = "0x10"
 
-		if PCI_EXPRESS in self.devicecapmgr.getCap(devicepath):
+		if PCI_EXPRESS in self.devicecapmgr.getCapList(devicepath):
 			isPciExpress = True
 
 		return isPciExpress
@@ -403,9 +403,9 @@ class PciDevicesCreator():
 											self.getDeviceFunction(pcistr))
 
 		pci["msi"] = "false"
-		if devicecap.CAP_MSI in self.devicecapmgr.getCap(devicepath):
+		if devicecap.CAP_MSI in self.devicecapmgr.getCapList(devicepath):
 			pci["msi"] = "true"
-		if devicecap.CAP_MSIX in self.devicecapmgr.getCap(devicepath):
+		if devicecap.CAP_MSIX in self.devicecapmgr.getCapList(devicepath):
 			pci["msi"] = "true"
 
 		device.appendChild(pci)
@@ -467,7 +467,7 @@ class PciDevicesCreator():
 							 False)
 
 		#capabilities
-		caplist = self.devicecapmgr.getCap(devicepath)
+		caplist = self.devicecapmgr.getCapList(devicepath)
 		if caplist:
 			capabilities = Element("capabilities", "capabilitiesType")
 			for cap in caplist:
