@@ -80,7 +80,9 @@ def hasErrors():
 
 def handleArgs():
 	"Checks arguments in command line and performs relevant actions"
-	parser = argparse.ArgumentParser()
+	descriptiontext = ("mugenplcfg is a tool which extracts system information and "
+					  "produces an .xml file to be used in the Muen kernel.")
+	parser = argparse.ArgumentParser(description=descriptiontext)
 	parser.add_argument("-u", "--update",
 						help="Updates files used by the tool",
 						action="store_true")
