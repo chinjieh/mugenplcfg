@@ -162,11 +162,14 @@ def generateBindings(schemafile):
 			[pyxbgen,"-u",infile,"-m",os.path.join(outpath,outname)],
 			stdout=subprocess.PIPE )
 		pyxbmsg = proc.stdout.read()
+		open(os.path.join(outpath,outname+".py"))
 		print "PyXB > ", pyxbmsg
 	except OSError as e:
 		if e.errno == os.errno.ENOENT: #pyxb does not exist
 			print ("'pyxbgen' script could not be found at: %s") % pyxbgen
 			print "Failed to generate bindings."
+	except IOError: #Check if file has been generated
+			print "Failed to generate bindings. Invalid schema: %s" % infile
 	else:
 		print "Generated binding file '%s.py' to: %s\n" % (outname,paths.CURRENTDIR)
 		
@@ -187,7 +190,7 @@ def generateBindings(schemafile):
 			shutil.move(os.path.join(paths.CURRENTDIR,outname+".py"),
 						paths.SCHEMACONFIG+".py")
 			print "DONE"
-	
-			
-			
-	
+
+		
+		
+
