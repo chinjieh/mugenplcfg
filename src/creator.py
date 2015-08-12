@@ -15,7 +15,8 @@ from collections import namedtuple, OrderedDict, deque
 from schemadata import Element
 
 Address = namedtuple("Address", "start end")
-PAGE_MIN_SIZE = "0x1000"
+PAGE_SIZE = "0x1000"
+PAGE_MIN_SIZE = PAGE_SIZE
 
 class ProcessorCreator():
 
@@ -73,7 +74,6 @@ class MemoryCreator():
 		memory = Element("memory", "physicalMemoryType")
 		#Get list of memoryBlocks available
 		memoryBlockList = MemoryCreator.getMemoryBlocks(paths.MEMMAP)
-
 		for memoryBlock in memoryBlockList:
 			memory.appendChild(memoryBlock)
 		print "Element created: memory"
@@ -105,9 +105,23 @@ class MemoryCreator():
 								 False)
 			#Adds newly created memoryBlock element to memoryBlockList
 			memoryBlockList.append(memoryBlock)
+			
+		#Filter out memoryBlocks that do not meet requirements
+		memoryBlockList = MemoryCreator.filterMemoryBlocks(memoryBlockList)
 
-		return memoryBlockList
+		return memoryBlockList			
 
+	@staticmethod
+	def filterMemoryBlocks(memoryBlockList):
+		"Removes reserved memory blocks and returns result"
+		RESERVE_NAME = "reserved"
+		result = []
+		print "Filtering memory blocks found..."
+		filterlist = [memblock for memblock in memoryBlockList
+					  if memblock["name"] == "reserved"]
+		result = util.removeListsFromList(memoryBlockList,filterlist)
+		return result
+	
 	@staticmethod
 	def generateMemoryBlock(endfile,typefile,startfile):
 		memoryBlock = Element("memoryBlock", "memoryBlockType")
@@ -118,17 +132,19 @@ class MemoryCreator():
 		else:
 			memoryBlock["allocatable"] = "false"
 
-		memoryBlock["physicalAddress"] = util.toWord64(
-			extractor.extractData(startfile)
-			)
-		memoryBlock["size"] = util.toWord64(
-			util.sizeOf(extractor.extractData(endfile),
-						extractor.extractData(startfile) )
-			)
+		memaddr = extractor.extractData(startfile)
+		memoryBlock["physicalAddress"] = util.toWord64(memaddr)
+		memsize = util.sizeOf(extractor.extractData(endfile),
+						extractor.extractData(startfile)  )
+		#Round memsize down to multiple of PAGE_SIZE
+		if int(memsize,16) % int(PAGE_SIZE,16) != 0:
+			memrounded = util.hexRoundToMultiple(memsize,PAGE_SIZE,rounddown=True)
+			print "Mem size %s for memoryBlock %s rounded down to: %s" %(
+				memsize, memaddr, memrounded )
+			memsize = memrounded
+		memoryBlock["size"] = util.toWord64(memsize)
 
 		return memoryBlock
-
-
 
 	@staticmethod
 	def isAllocatable(name):
@@ -437,8 +453,13 @@ class PciDevicesCreator():
 					memory["name"] = "mem%d" % memcount
 					memory["physicalAddress"] = util.toWord64(tokens[0])
 					#Rounds memsize up to PAGE_MIN_SIZE
-					memsize = util.hexFloor(util.sizeOf(tokens[1],tokens[0]),
-											PAGE_MIN_SIZE)
+					memsize = util.sizeOf(tokens[1],tokens[0])
+					if int(memsize,16) < int(PAGE_MIN_SIZE,16):
+						memrounded = util.hexFloor(memsize,PAGE_MIN_SIZE)
+						print "Mem size %s for device %s rounded to: %s" % (
+						memsize, os.path.basename(devicepath), memrounded )
+						memsize = memrounded
+						
 					memory["size"] = util.toWord64(memsize)
 					memory["caching"] = "UC" #TODO
 					device.appendChild(memory)

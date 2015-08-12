@@ -147,7 +147,7 @@ class CreatorTestCase(unittest.TestCase):
 		memoryBlock0 = memoryBlockList[0].compileToPyxb()
 		memoryBlock1 = memoryBlockList[1].compileToPyxb()
 		self.assertEqual(memoryBlock0.physicalAddress,"16#000a#", "getMemoryBlocks function not working")
-		self.assertEqual(memoryBlock0.size,"16#0ff6#", "getMemoryBlocks function not working")
+		self.assertEqual(memoryBlock0.size,"16#f000#", "getMemoryBlocks function not working")
 		self.assertEqual(memoryBlock1.name,"1_type", "getMemoryBlocks function not working")
 
 		#Test generateMemoryBlock
@@ -496,9 +496,16 @@ class UtilTestCase(unittest.TestCase):
 		"Tests the hexFloor function"
 		print "UtilTestCase: test_hexFloor - begin"
 		MINSIZE = "0x1000"
-		self.assertEqual(util.hexFloor("0x10",MINSIZE),MINSIZE, "roundMemSize function not working")
-		self.assertEqual(util.hexFloor("0x1000",MINSIZE), "0x1000", "roundMemSize function not working")
-		self.assertEqual(util.hexFloor("0x10000", MINSIZE), "0x10000", "roundMemSize function not working")
+		self.assertEqual(util.hexFloor("0x10",MINSIZE),MINSIZE, "hexFloor function not working")
+		self.assertEqual(util.hexFloor("0x1000",MINSIZE), "0x1000", "hexFloor function not working")
+		self.assertEqual(util.hexFloor("0x10000", MINSIZE), "0x10000", "hexFloor function not working")
+		
+	def test_hexRoundToMultiple(self):
+		"Tests the hexRoundToMultiple function"
+		print "UtilTestCase: test_hexRoundToMultiple - begin"
+		self.assertEqual(util.hexRoundToMultiple("0x9d800","0x1000"), "0x9e000", "hexRoundToMultiple function not working")
+		self.assertEqual(util.hexRoundToMultiple("0x9e000","0x1000"), "0x9e000", "hexRoundToMultiple function not working")
+		self.assertEqual(util.hexRoundToMultiple("0x9d800","0x1000",rounddown=True),"0x9d000", "hexRoundToMultiple function not working")
 
 
 # == Class that tests update.py ==

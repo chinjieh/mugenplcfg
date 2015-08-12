@@ -179,3 +179,17 @@ def hexFloor(hexval, minval):
 	if int(hexval,16) < int(minval,16):
 		result = minval
 	return result
+
+def hexRoundToMultiple(hexval, hexmultiple, rounddown=False):
+	"Sets hexval to the nearest multiple of multipleval"
+	intval = int(hexval,16)
+	intmultiple = int(hexmultiple,16)
+	if intval % intmultiple == 0:
+		return hexval
+	else:
+		factor = intval / intmultiple
+		if rounddown:
+			return hex(intmultiple * factor)
+		else:
+			return hex(intmultiple * (factor+1))
+	
