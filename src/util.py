@@ -172,3 +172,10 @@ def sizeOf(addr1, addr2):
 	else:
 		print "sizeOf has to accept 2 hexadecimal values"
 		raise ValueError
+	
+def hexFloor(hexval, minval):
+	"Sets hexval to minval if hexval < minval"
+	result = hexval
+	if int(hexval,16) < int(minval,16):
+		result = minval
+	return result

@@ -37,9 +37,6 @@ class Element():
 	#    on the root element. This will convert the entire tree to XML format.
 	#	 e.g. xml = processor.toXML('utf-8')
 
-	#TODO Reject if element name is not in the schema during compileToPyxb, as
-	#     Pyxb now allows any element to be created but removes them during generation of XML
-
 	def __init__(self, name, elemtype):
 		"name: schema's name attribute; elemtype: schema's 'type' "
 		self.name = name

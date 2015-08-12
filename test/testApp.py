@@ -492,6 +492,14 @@ class UtilTestCase(unittest.TestCase):
 		self.assertEqual(util.sizeOf("0xe000", "0xe07f"), "0x80", "sizeOf function not working")
 		self.assertRaises(ValueError, util.sizeOf, "0x1000", 2)
 
+	def test_hexFloor(self):
+		"Tests the hexFloor function"
+		print "UtilTestCase: test_hexFloor - begin"
+		MINSIZE = "0x1000"
+		self.assertEqual(util.hexFloor("0x10",MINSIZE),MINSIZE, "roundMemSize function not working")
+		self.assertEqual(util.hexFloor("0x1000",MINSIZE), "0x1000", "roundMemSize function not working")
+		self.assertEqual(util.hexFloor("0x10000", MINSIZE), "0x10000", "roundMemSize function not working")
+
 
 # == Class that tests update.py ==
 from src import update

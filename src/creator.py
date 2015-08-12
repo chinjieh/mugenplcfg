@@ -15,6 +15,7 @@ from collections import namedtuple, OrderedDict, deque
 from schemadata import Element
 
 Address = namedtuple("Address", "start end")
+PAGE_MIN_SIZE = "0x1000"
 
 class ProcessorCreator():
 
@@ -435,8 +436,10 @@ class PciDevicesCreator():
 					memory = Element("memory", "deviceMemoryType")
 					memory["name"] = "mem%d" % memcount
 					memory["physicalAddress"] = util.toWord64(tokens[0])
-					memory["size"] = util.toWord64(util.sizeOf(tokens[1],
-															   tokens[0]) )
+					#Rounds memsize up to PAGE_MIN_SIZE
+					memsize = util.hexFloor(util.sizeOf(tokens[1],tokens[0]),
+											PAGE_MIN_SIZE)
+					memory["size"] = util.toWord64(memsize)
 					memory["caching"] = "UC" #TODO
 					device.appendChild(memory)
 					memcount += 1
@@ -468,6 +471,7 @@ class PciDevicesCreator():
 							 False)
 
 		#capabilities
+		"""
 		caplist = self.devicecapmgr.getCapList(devicepath)
 		if caplist:
 			capabilities = Element("capabilities", "capabilitiesType")
@@ -486,6 +490,7 @@ class PciDevicesCreator():
 				capabilities.appendChild(capability)
 
 			device.appendChild(capabilities)
+		"""
 
 		return device
 
@@ -499,7 +504,7 @@ class SerialDevicesCreator():
 					Address("02f8", "02ff") : "com_2",
 					Address("03e8", "03ef") : "com_3",
 					Address("02e8", "02ef") : "com_4"
-							} #TODO Check
+							}
 
 	def createElems(self):
 		serialdevicelist = []
