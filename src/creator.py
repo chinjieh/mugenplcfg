@@ -230,6 +230,7 @@ class PciDevicesCreator():
 		devicePaths = []
 		devicePaths = util.getLinks(path, self.isDeviceName)
 		return devicePaths
+	
 
 	def filterDevicePaths(self, devicePaths):
 		"Returns filtered list of paths of devices"
@@ -533,11 +534,15 @@ class SerialDevicesCreator():
 		#Get COM Device addresses
 		for comdevice in self.createComDevices(self.COMADDRESSES):
 			serialdevicelist.append(comdevice)
+			
+		#Omit non COM serial devices for now
+		"""
 		#Filter COM devices from list
 		filteredlist = util.removeListsFromList(self.addresses,
 												self.COMADDRESSES.iterkeys() )
 		for serialdevice in self.createSerialDevices(filteredlist):
 			serialdevicelist.append(serialdevice)
+		"""
 		return serialdevicelist
 
 	def getSerialAddresses(self):
@@ -562,6 +567,10 @@ class SerialDevicesCreator():
 				#Retrieve (start,end) data for serial devices
 				for line in lines:
 					serialAddresses.append(self.getAddressFromLine(line))
+
+		print "Serial devices found: %d\n------------------" % len(serialAddresses)
+		for addr in serialAddresses:
+			print "  Start: ", "0x"+addr.start, " End: ", "0x"+addr.end
 
 		return serialAddresses
 
