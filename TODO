@@ -5,8 +5,11 @@ Double check info obtained
 Test Protocols
 Edit README.txt
 Add Devicemanager
+Implement -everything arg that does not filter or modify anything
 
 [High Priority]
+lowmem not allocatable
+leave out non-com serial devices
 Test serial device extraction
 Test vmxTimerRate
 

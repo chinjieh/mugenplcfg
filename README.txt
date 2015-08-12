@@ -13,6 +13,7 @@
 #
 ##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
+
 == [ Installing the Tool ] ==
 
 ConfigTool can be obtained from the repository via command:
@@ -20,6 +21,7 @@ ConfigTool can be obtained from the repository via command:
 	$ git clone --recursive git@git.codelabs.ch:/muen/mugenplcfg
 
 This clones all submodules required by the tool as well as the source files.
+
 
 == [ Running the Tool ] ==
 
@@ -29,9 +31,28 @@ After installation, ConfigTool can be run via the command:
 
 Root user permissions are necessary to allow ConfigTool to examine system data.
 
+
 == [ Optional Arguments ] ==
 
 -u / --update				Update files used by the tool
 -f / --force				Attempt to generate the output file despite errors
 -g SCHEMA /--gen SCHEMA		Generates a .py binding file from a .xsd schema file
 
+
+== [ Additional information on generated platform file ] ==
+
+mugenplcfg alters the following in the platform file to match the requirements
+of the Muen Kernel:
+
+Memory :
+	- Omit memory blocks that are reserved
+	- Size of memoryBlocks are rounded down to the nearest multiple of a page
+	- Sets "allocatable" to false for memoryBlocks with a size < 1 MB
+
+Devices (PCI):
+	- Omit PCI Bridges
+	- Omit non PCI-Express devices behind bridges
+	- Size of memoryBlocks are rounded up to match the size of a page
+
+Devices (Serial):
+	- Omits serial devices on ports other than COM ports
