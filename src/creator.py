@@ -585,7 +585,7 @@ class SerialDevicesCreator():
 			device["name"] = self.COMADDRESSES[addr]
 			device["shared"] = "true"
 			ioport = Element("ioPort", "ioPortType")
-			ioport["name"] = "port"
+			ioport["name"] = "ioport"
 			ioport["start"] = util.toWord64(addr.start)
 			ioport["end"] = util.toWord64(addr.end)
 			device.appendChild(ioport)
@@ -601,7 +601,7 @@ class SerialDevicesCreator():
 			device["name"] = "serial_%d" % serialcount
 			device["shared"] = "true"
 			ioport = Element("ioPort", "ioPortType")
-			ioport["name"] = "port"
+			ioport["name"] = "ioport"
 			ioport["start"] = util.toWord64(addr.start)
 			ioport["end"] = util.toWord64(addr.end)
 			device.appendChild(ioport)

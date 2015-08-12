@@ -12,17 +12,3 @@ Attribute 'number => 16' of 'irq' PCI MSI IRQ element not in allowed range 25 ..
 
 mucfgvalidate: Attribute 'size => 16#0009_d800#' of 'System RAM' platform memory block element not multiple of page size (4K)
  >Add rounding down function for hex values
-
-drivers/built-in.o: In function `hvc_muen_put':
-/home/cj/Programming/muen/components/linux/src/drivers/tty/hvc/hvc_muen.c:46: undefined reference to `muchannel_write'
-drivers/built-in.o: In function `hvc_muen_console_init':
-/home/cj/Programming/muen/components/linux/src/drivers/tty/hvc/hvc_muen.c:111: undefined reference to `muchannel_initialize'
-drivers/built-in.o: In function `hvc_muen_exit':
-/home/cj/Programming/muen/components/linux/src/drivers/tty/hvc/hvc_muen.c:85: undefined reference to `muchannel_deactivate'
-make[3]: *** [vmlinux] Error 1
-make[3]: Leaving directory `/home/cj/Programming/muen/components/linux/src'
-make[2]: *** [.built] Error 2
-make[2]: Leaving directory `/home/cj/Programming/muen/components/linux'
-make[1]: *** [linux] Error 2
-make[1]: Leaving directory `/home/cj/Programming/muen/components'
-make: *** [components] Error 2
