@@ -9,7 +9,6 @@ Add Devicemanager
 [High Priority]
 Test serial device extraction
 Test vmxTimerRate
-Check COM Ports
 
 Dependencies:
 --------

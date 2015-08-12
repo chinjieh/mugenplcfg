@@ -22,6 +22,7 @@ PCIIDS = CURRENTDIR + "/data/pci.ids"
 
 ## Location of PyXB Library
 PYXB = CURRENTDIR + "/contrib/pyxb/"
+PYXB_GEN = PYXB + "scripts/pyxbgen"
 
 ## Location of schemaconfig : PyXB binding file
 SCHEMACONFIGPATH = CURRENTDIR +"/schemaconfig/"

@@ -152,20 +152,21 @@ class Element():
 			
 def generateBindings(schemafile):
 	"Creates a .py PyXB binding file from schemafile"
+	pyxbgen = paths.PYXB_GEN
 	infile = schemafile.name
-	print infile
 	outpath = paths.CURRENTDIR
 	outname = "schemaconfig"
-	print "Generating binding file with PyXB..."
+	print "Generating binding file with PyXB submodule..."
 	try:
 		proc = subprocess.Popen(
-			["pyxbgen","-u",infile,"-m",os.path.join(outpath,outname)],
+			[pyxbgen,"-u",infile,"-m",os.path.join(outpath,outname)],
 			stdout=subprocess.PIPE )
 		pyxbmsg = proc.stdout.read()
 		print "PyXB > ", pyxbmsg
 	except OSError as e:
 		if e.errno == os.errno.ENOENT: #pyxb does not exist
-			print ("'pyxbgen' command could not be found. Make sure PyXB is installed.")
+			print ("'pyxbgen' script could not be found at: %s") % pyxbgen
+			print "Failed to generate bindings."
 	else:
 		print "Generated binding file '%s.py' to: %s\n" % (outname,paths.CURRENTDIR)
 		

@@ -88,8 +88,8 @@ def handleArgs():
 						help="Attempts to generate the output file despite errors",
 						action="store_true")
 	parser.add_argument("-g", "--gen",
-						help="Generates a .py binding file from a .xsd schema file "
-						"for use in /schemaconfig. Requires PyXB to be installed.",
+						help="Generates a .py binding file from a .xsd SCHEMA file "
+						"for use in /schemaconfig.",
 						action="store",
 						type=file,
 						metavar="SCHEMA")

@@ -31,8 +31,7 @@ Root user permissions are necessary to allow ConfigTool to examine system data.
 
 == [ Optional Arguments ] ==
 
--u / --update			Update files used by the tool
--f / --force			Attempt to generate the output file despite errors
--g SCHEMA /--gen SCHEMA	Generates a .py binding file from a .xsd schema file
-						for use in /schemaconfig. Requires PyXB to be installed.
+-u / --update				Update files used by the tool
+-f / --force				Attempt to generate the output file despite errors
+-g SCHEMA /--gen SCHEMA		Generates a .py binding file from a .xsd schema file
 
