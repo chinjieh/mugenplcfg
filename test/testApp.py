@@ -130,6 +130,16 @@ class CreatorTestCase(unittest.TestCase):
 	def test_ProcessorCreator(self):
 		"Tests the ProcessorCreator class"
 		print "CreatorTestCase:test_ProcessorCreator - begin"
+		
+		#Test getSpeed function
+		testline = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz"""
+		testline2 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 800MHz"""
+		testline3 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GH"""
+		testline4 = """model name	: 3.20GHz Intel(R) Xeon(R) CPU E31230"""
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline), "3200", "getSpeed function not working")
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline2), "800", "getSpeed function not working")
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline3)
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline4), "3200", "getSpeed function not working")
 
 	## -- MemoryCreator testcases
 	def test_MemoryCreator(self):
@@ -449,6 +459,15 @@ class UtilTestCase(unittest.TestCase):
 		self.assertEqual(util.getLinks(testdir,filterexp),
 				testfilteredpaths,
 				"getFilesInPath function not working")
+		
+	def test_getSpeedValue(self):
+		"Tests the getSpeedValue function"
+		print "UtilTestCaseL:test_getSpeedValue - begin"
+		validspeeds = ["GHz", "MHz"]
+		self.assertEqual(util.getSpeedValue("3.20GHz",validspeeds), "3200", "getSpeedValue function not working")
+		self.assertEqual(util.getSpeedValue("800.0MHz",validspeeds),"800","getSpeedValue function not working")
+		self.assertRaises(util.getSpeedValue("800KHz",validspeeds), None, "getSpeedValue function not working")
+		self.assertEqual(util.getSpeedValue("0GHz",validspeeds),"0", "getSpeedValue function not working")
 
 	def test_numberMultiples(self):
 		"Tests the numberMultiples function"

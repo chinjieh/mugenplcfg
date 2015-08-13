@@ -16,6 +16,9 @@ class AttributeMismatch(CustomException):
 class NoAccessToFile(CustomException):
 	pass
 
+class ProcessorSpeedNotFound(CustomException):
+	pass
+
 class PciIdsFileNotFound(CustomException):
 	pass
 

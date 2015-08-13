@@ -1,6 +1,7 @@
 #Module to contain utility functions
 import math
 import os
+import customExceptions
 
 # == Utility Classes ==
 class ListNumberer():
@@ -86,6 +87,24 @@ def getLinks(path, filterexp=None):
 			filelist.append(absLink)
 
 	return filelist
+
+def getSpeedValue(speedstring, validspeeds):
+	"Returns value of speed in speedstring, converted to MHz"
+	speedtype = None
+	for id in validspeeds:
+		if id in speedstring:
+			speedtype = id
+			break
+	
+	if speedtype is not None:
+		rawvalue = speedstring.rstrip(speedtype).strip()
+		try:
+			value = str(int(float(rawvalue)))
+			if speedtype == "GHz":
+				value = str(int(float(rawvalue)*1000))
+			return value
+		except ValueError:
+			return None
 
 def numberMultiples(listin):
 	"Numbers repeated elements in list, leaves it alone if element is solo"

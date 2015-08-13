@@ -18,20 +18,48 @@ Address = namedtuple("Address", "start end")
 PAGE_SIZE = "0x1000"
 PAGE_MIN_SIZE = PAGE_SIZE
 MEM_ALLOCATABLE_MINSIZE = "0x100000" #1 MB
+PROCESSOR_SPEED_KEYWORDS = ["GHz", "MHz"]
 
 class ProcessorCreator():
 
 	@staticmethod
 	def createElem():
 		print "> Creating element: processor"
-		cpuinfo = extractor.extractData(paths.CPUINFO)
+		cpuinfopath = paths.CPUINFO
+		cpuinfo = extractor.extractData(cpuinfopath)
 		processor = Element("processor", "processorType")
 		processor["logicalCpus"] = parseutil.count(cpuinfo,"processor")
-		processor["speed"] = float(parseutil.parseData_Sep(cpuinfo, "cpu MHz", ":"))
+		
+		modelnamedata = parseutil.parseData_Sep(cpuinfo, "model name", ":")
+		try:
+			procspeed = ProcessorCreator.getSpeed(modelnamedata)
+		except customExceptions.ProcessorSpeedNotFound:
+			processor["speed"] = "0"
+			#TODO: exception not catched if no keys match PROCESSOR_SPEED_KEYWORDS, speed becomes None in util.getSpeedValue
+			message.addError(
+				"Could not find processor speed in: %s\n" % cpuinfopath +
+				"Values do not match speed keywords: %s" % ", ".join(PROCESSOR_SPEED_KEYWORDS)
+				)
+		else:	
+			processor["speed"] = procspeed
 		processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate()
 		print "Element created: processor"
 		return processor
 
+	@staticmethod
+	def getSpeed(modelnamedata):
+		tokens = modelnamedata.split()
+		speedtoken = None
+		for token in tokens:
+			for speedtype in PROCESSOR_SPEED_KEYWORDS:
+				if speedtype in token:
+					speedtoken = token
+					break
+		if speedtoken is None:
+			raise customExceptions.ProcessorSpeedNotFound()
+		else:
+			return util.getSpeedValue(speedtoken,PROCESSOR_SPEED_KEYWORDS)
+	
 	@staticmethod
 	def getVmxTimerRate():
 		#check for MSR
