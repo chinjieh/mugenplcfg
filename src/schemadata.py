@@ -157,10 +157,23 @@ def generateBindings(schemafile):
 	outpath = paths.CURRENTDIR
 	outname = "schemaconfig"
 	print "Generating binding file with PyXB submodule..."
+	
+	# Prepare copy of current environment to use in subprocess, so that pyxbgen
+	# will inherit PYTHONPATH
+	def copyEnvWithPythonPath():
+		myenv = os.environ.copy()
+		pathstr = ""
+		for dir in sys.path:
+			pathstr = pathstr + dir + ":"
+		myenv["PYTHONPATH"] = pathstr
+		return myenv
+	myenv = copyEnvWithPythonPath()
+	
 	try:
 		proc = subprocess.Popen(
 			[pyxbgen,"-u",infile,"-m",os.path.join(outpath,outname)],
-			stdout=subprocess.PIPE )
+			env=myenv,
+			stdout=subprocess.PIPE)
 		pyxbmsg = proc.stdout.read()
 		open(os.path.join(outpath,outname+".py"))
 		print "PyXB > ", pyxbmsg

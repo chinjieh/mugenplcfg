@@ -1,7 +1,7 @@
 # /home/cj/Programming/ConfigTool/schemaconfig.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:e92452c8d3e28a9e27abfc9994d2007779e7f4c9
-# Generated 2015-08-12 15:00:01.069039 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
+# Generated 2015-08-13 10:55:21.933211 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
 # Namespace AbsentNamespace0
 
 from __future__ import unicode_literals
@@ -14,7 +14,7 @@ import pyxb.utils.domutils
 import sys
 import pyxb.utils.six as _six
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:0aac8cb6-40f2-11e5-be2b-001999a78414')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:07a3b4de-4199-11e5-913f-001999a78414')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.5-DEV'
@@ -333,11 +333,11 @@ class optionalOffsetType (pyxb.binding.basis.STD_union):
     _Documentation = None
 
     _MemberTypes = ( word64Type, noneType, )
-optionalOffsetType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=optionalOffsetType)
 optionalOffsetType._CF_pattern = pyxb.binding.facets.CF_pattern()
+optionalOffsetType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=optionalOffsetType)
 optionalOffsetType.none = 'none'                  # originally noneType.none
-optionalOffsetType._InitializeFacetMap(optionalOffsetType._CF_enumeration,
-   optionalOffsetType._CF_pattern)
+optionalOffsetType._InitializeFacetMap(optionalOffsetType._CF_pattern,
+   optionalOffsetType._CF_enumeration)
 Namespace.addCategoryObject('typeBinding', 'optionalOffsetType', optionalOffsetType)
 _module_typeBindings.optionalOffsetType = optionalOffsetType
 
