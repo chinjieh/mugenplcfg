@@ -4,8 +4,8 @@ import unittest
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import testpaths
-from src import schemadata
-from src import customExceptions
+from src import schemadata, customExceptions
+from collections import namedtuple
 # == Class that tests extractor.py ==
 import src.extractor as extractor
 class ExtractorTestCase(unittest.TestCase):
@@ -139,8 +139,21 @@ class CreatorTestCase(unittest.TestCase):
 		loc = self.testdir + "memorycreator/"
 
 		#Test isAllocatable function
-		self.assertEqual(creator.MemoryCreator.isAllocatable("System RAM"),True, "isAllocatable function is not working")
-		self.assertNotEqual(creator.MemoryCreator.isAllocatable("System RAMs"), True, "isAllocatable function is not working")
+		memblock_1 = Element("memoryBlock", "memoryBlockType")
+		memblock_1["name", "size"] = "System RAM", "0x10000f"
+		
+		memblock_2 = Element("memoryBlock", "memoryBlockType")
+		memblock_2["name", "size"] = "System RAM2", "0x10000f"
+		
+		memblock_3 = Element("memoryBlock", "memoryBlockType")
+		memblock_3["name", "size"] = "System RAM", "0xfffff"
+		
+		memblock_4 = Element("memoryBlock", "memoryBlockType")
+		memblock_4["name", "size"] = "System RAM2", "0x1000"
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_1),True, "isAllocatable function is not working")
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_2), False, "isAllocatable function is not working")
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_3),False,"isAllocatable function is not working")
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_4), False, "isAllocatable function is not working")
 
 		#Test getMemoryBlocks
 		memoryBlockList = creator.MemoryCreator.getMemoryBlocks(loc)
@@ -473,6 +486,14 @@ class UtilTestCase(unittest.TestCase):
 		print "UtilTestCase: test_toWord64 - begin"
 		self.assertEqual(util.toWord64("0x5faFFaD"), "16#05fa_FFaD#", "toWord64 function not working")
 		self.assertEqual(util.toWord64("0x0"), "16#0000#", "toWord64 function not working")
+		
+	def test_unwrapWord64(self):
+		"Tests the unwrapWord64 function"
+		print "UtilTestCase: test_unwrapWord64 - begin"
+		self.assertEqual(util.unwrapWord64("16#0009_a000#"), "0x9a000", "unwrapWord64 function not working")
+		self.assertEqual(util.unwrapWord64("16#0000#"), "0x0", "unwrapWord64 function not working")
+		self.assertEqual(util.unwrapWord64("0x1234"),"0x1234", "unwrapWord64 function not working")
+		self.assertRaises(ValueError, util.unwrapWord64, "15#0009_a000#")
 
 	def test_wrap16(self):
 		"Tests the wrap16 function"

@@ -17,6 +17,7 @@ from schemadata import Element
 Address = namedtuple("Address", "start end")
 PAGE_SIZE = "0x1000"
 PAGE_MIN_SIZE = PAGE_SIZE
+MEM_ALLOCATABLE_MINSIZE = "0x100000" #1 MB
 
 class ProcessorCreator():
 
@@ -125,13 +126,7 @@ class MemoryCreator():
 	@staticmethod
 	def generateMemoryBlock(endfile,typefile,startfile):
 		memoryBlock = Element("memoryBlock", "memoryBlockType")
-
 		memoryBlock["name"] = extractor.extractData(typefile)
-		if MemoryCreator.isAllocatable(memoryBlock["name"]):
-			memoryBlock["allocatable"] = "true"
-		else:
-			memoryBlock["allocatable"] = "false"
-
 		memaddr = extractor.extractData(startfile)
 		memoryBlock["physicalAddress"] = util.toWord64(memaddr)
 		memsize = util.sizeOf(extractor.extractData(endfile),
@@ -143,12 +138,19 @@ class MemoryCreator():
 				memsize, memaddr, memrounded )
 			memsize = memrounded
 		memoryBlock["size"] = util.toWord64(memsize)
+		
+		if MemoryCreator.isAllocatable(memoryBlock):
+			memoryBlock["allocatable"] = "true"
+		else:
+			memoryBlock["allocatable"] = "false"
 
 		return memoryBlock
 
 	@staticmethod
-	def isAllocatable(name):
-		if name == "System RAM":
+	def isAllocatable(memoryBlock):
+		size = int(util.unwrapWord64(memoryBlock["size"]),16)
+		if (memoryBlock["name"] == "System RAM" and
+			size >= int(MEM_ALLOCATABLE_MINSIZE,16) ):
 			return True
 		else:
 			return False
@@ -543,6 +545,7 @@ class SerialDevicesCreator():
 		for serialdevice in self.createSerialDevices(filteredlist):
 			serialdevicelist.append(serialdevice)
 		"""
+		#TODO TEST this omission
 		return serialdevicelist
 
 	def getSerialAddresses(self):

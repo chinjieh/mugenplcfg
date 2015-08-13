@@ -47,7 +47,7 @@ of the Muen Kernel:
 Memory :
 	- Omit memory blocks that are reserved
 	- Size of memoryBlocks are rounded down to the nearest multiple of a page
-	- Sets "allocatable" to false for memoryBlocks with a size < 1 MB
+	- Sets "allocatable" to false for memoryBlocks with a size < allocatable (1MB)
 
 Devices (PCI):
 	- Omit PCI Bridges

@@ -144,6 +144,20 @@ def wrap16(value):
 	wrapper = "16#_#"
 	return wrapper.replace("_", value)
 
+def unwrapWord64(word64):
+	"Dewraps word64 format to hex e.g. 16#0009_a000# -> 0x9a000"
+	result = word64
+	value = word64.lstrip("16#").rstrip("#").lstrip("0").lstrip("x")
+	result = value.replace("_","")
+	result = "0x" + result
+	if result == "0x":
+		result = "0x0"
+	try:
+		int(result,16) #Check if result is a hex string
+	except ValueError as e:
+		raise ValueError("unwrapWord64: Invalid word64 format to unwrap: %s" % word64)
+	return result
+
 def spacesToUnderscores(value):
 	"Converts spaces to underscores"
 	return value.replace(" ", "_")
