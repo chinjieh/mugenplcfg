@@ -201,7 +201,7 @@ def hexRoundToMultiple(hexval, hexmultiple, rounddown=False):
 	if intval % intmultiple == 0:
 		return hexval
 	else:
-		factor = intval / intmultiple
+		factor = intval // intmultiple
 		if rounddown:
 			return hex(intmultiple * factor)
 		else:
