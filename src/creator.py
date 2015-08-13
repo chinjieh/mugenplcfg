@@ -148,9 +148,9 @@ class MemoryCreator():
 
 	@staticmethod
 	def isAllocatable(memoryBlock):
-		size = int(util.unwrapWord64(memoryBlock["size"]),16)
+		addr = int(util.unwrapWord64(memoryBlock["physicalAddress"]),16)
 		if (memoryBlock["name"] == "System RAM" and
-			size >= int(MEM_ALLOCATABLE_MINSIZE,16) ):
+			addr >= int(MEM_ALLOCATABLE_MINSIZE,16) ):
 			return True
 		else:
 			return False

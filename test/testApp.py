@@ -140,16 +140,16 @@ class CreatorTestCase(unittest.TestCase):
 
 		#Test isAllocatable function
 		memblock_1 = Element("memoryBlock", "memoryBlockType")
-		memblock_1["name", "size"] = "System RAM", "0x10000f"
+		memblock_1["name", "physicalAddress"] = "System RAM", "16#0010_000f#"
 		
 		memblock_2 = Element("memoryBlock", "memoryBlockType")
-		memblock_2["name", "size"] = "System RAM2", "0x10000f"
+		memblock_2["name", "physicalAddress"] = "System RAM2", "16#0010_000f"
 		
 		memblock_3 = Element("memoryBlock", "memoryBlockType")
-		memblock_3["name", "size"] = "System RAM", "0xfffff"
+		memblock_3["name", "physicalAddress"] = "System RAM", "0xfffff"
 		
 		memblock_4 = Element("memoryBlock", "memoryBlockType")
-		memblock_4["name", "size"] = "System RAM2", "0x1000"
+		memblock_4["name", "physicalAddress"] = "System RAM2", "0x1000"
 		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_1),True, "isAllocatable function is not working")
 		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_2), False, "isAllocatable function is not working")
 		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_3),False,"isAllocatable function is not working")
