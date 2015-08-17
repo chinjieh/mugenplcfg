@@ -69,7 +69,7 @@ def getBit(number, bitno):
 		return 0
 
 def getLinks(path, filterexp=None):
-	"Returns list of absolute links in path (with optional filter)"
+	"Reads symbolic links in path and returns list (with filter expression)"
 	filelist = []
 
 	if filterexp is None:
@@ -77,15 +77,16 @@ def getLinks(path, filterexp=None):
 			return True
 
 	files = sorted(os.listdir(path))
-
 	for filename in files:
 		if filterexp(filename):
 			#Get the absolute location of symbolic links in path
 			filePath = os.path.join(path,filename)
-			relativeLink = os.readlink(filePath)
-			absLink = os.path.join(os.path.dirname(filePath), relativeLink)
-			filelist.append(absLink)
-
+			if os.path.islink(filePath):
+				relativeLink = os.readlink(filePath)
+				absLink = os.path.join(os.path.dirname(filePath), relativeLink)
+				filelist.append(absLink)
+				
+			
 	return filelist
 
 def getSpeedValue(speedstring, validspeeds):
@@ -98,7 +99,7 @@ def getSpeedValue(speedstring, validspeeds):
 	
 	if speedtype is not None:
 		rawvalue = speedstring.rstrip(speedtype).strip()
-		if rawvalue is None:
+		if rawvalue == "":
 			return None
 		try:
 			value = str(int(float(rawvalue)))

@@ -486,10 +486,19 @@ class UtilTestCase(unittest.TestCase):
 				return True
 			else:
 				return False
-
+			
+		testlist = ["doc1", "file0", "file1", "file2", "file3"]
 		testfilteredlist = ["file0", "file1", "file2", "file3"]
+		
 
 		#Get the absolute location of symbolic links in path
+		testnotfilteredpaths = []
+		for filename in testlist:
+			filePath = os.path.join(testdir,filename)
+			relativeLink = os.readlink(filePath)
+			absLink = os.path.join(os.path.dirname(filePath), relativeLink)
+			testnotfilteredpaths.append(absLink)
+			
 		testfilteredpaths = []
 		for filename in testfilteredlist:
 			filePath = os.path.join(testdir,filename)
@@ -497,9 +506,13 @@ class UtilTestCase(unittest.TestCase):
 			absLink = os.path.join(os.path.dirname(filePath), relativeLink)
 			testfilteredpaths.append(absLink)
 
+		self.assertEqual(util.getLinks(testdir),
+						 testnotfilteredpaths,
+						 "getFilesInPath function not working")
+
 		self.assertEqual(util.getLinks(testdir,filterexp),
-				testfilteredpaths,
-				"getFilesInPath function not working")
+						 testfilteredpaths,
+						 "getFilesInPath function not working")
 		
 	def test_getSpeedValue(self):
 		"Tests the getSpeedValue function"
@@ -507,8 +520,9 @@ class UtilTestCase(unittest.TestCase):
 		validspeeds = ["GHz", "MHz"]
 		self.assertEqual(util.getSpeedValue("3.20GHz",validspeeds), "3200", "getSpeedValue function not working")
 		self.assertEqual(util.getSpeedValue("800.0MHz",validspeeds),"800","getSpeedValue function not working")
-		self.assertRaises(util.getSpeedValue("800KHz",validspeeds), None, "getSpeedValue function not working")
+		self.assertEqual(util.getSpeedValue("800KHz",validspeeds), None, "getSpeedValue function not working")
 		self.assertEqual(util.getSpeedValue("0GHz",validspeeds),"0", "getSpeedValue function not working")
+		self.assertEqual(util.getSpeedValue("TenGHz", validspeeds), None, "getSpeedValue function not working")
 
 	def test_numberMultiples(self):
 		"Tests the numberMultiples function"
@@ -540,12 +554,14 @@ class UtilTestCase(unittest.TestCase):
 		"Tests the stripvalue function"
 		print "UtilTestCase:test_stripvalue - begin"
 		self.assertEqual(util.stripvalue("0x5123fa"), "5123fa", "stripvalue function not working")
+		self.assertEqual(util.stripvalue("100"), "100", "stripvalud function not working")
 
 	def test_toWord64(self):
 		"Tests the toWord64 function"
 		print "UtilTestCase: test_toWord64 - begin"
 		self.assertEqual(util.toWord64("0x5faFFaD"), "16#05fa_FFaD#", "toWord64 function not working")
 		self.assertEqual(util.toWord64("0x0"), "16#0000#", "toWord64 function not working")
+		self.assertEqual(util.toWord64(""), "", "toWords64 function not working")
 		
 	def test_unwrapWord64(self):
 		"Tests the unwrapWord64 function"
@@ -611,6 +627,8 @@ class UpdateTestCase(unittest.TestCase):
 		self.assertRaises(customExceptions.PciIdsInvalidLink,
 						  update.updatePciIds,
 						  INVALID_ADDR, testfile)
+		update.updatePciIds(os.path.join(self.testdir,"test_newupdate.ids"),
+							testfile)
 		
 # == Class that tests message.py ==
 from src import message
