@@ -143,6 +143,24 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline3, speedkeywords)
 		self.assertEqual(creator.ProcessorCreator.getSpeed(testline4, speedkeywords), "3200", "getSpeed function not working")
 		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline5, speedkeywords)
+		
+		#Test getVmxFromMSR function
+		msrpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr")
+		with open(msrpath, "wb") as f:
+			f.write(b"\x01\x02\x03\x04")
+		OFFSET = 0
+		VMX_BITSIZE = 5
+		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 1, "getVmxFromMSR function not working")
+		with open(msrpath, "wb") as f:
+			f.write(b"\x05\x02\x03\x04")
+		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 5, "getVmxFromMSR function not working")
+		with open(msrpath, "wb") as f:
+			f.write(b"\x11\x02\x03\x04")
+		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 17, "getVmxFromMSR function not working")
+		msrinvalidpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr_invalid")
+		self.assertRaises(customExceptions.MSRFileNotFound, creator.ProcessorCreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
+				
+		
 
 	## -- MemoryCreator testcases
 	def test_MemoryCreator(self):

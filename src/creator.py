@@ -69,35 +69,48 @@ class ProcessorCreator():
 	def getVmxTimerRate():
 		#check for MSR
 		vmxTimerRate = 0
-		MSRfound = False
 		OFFSET = 0x485
-		VMX_BITS_START = 0
-		VMX_BITS_END = 4
+		VMX_BITSIZE = 5
+		
+		MSRfound = False
 		for path in paths.MSR:
 			try:
 				#Try to find MSR file
-				byte = extractor.extractBinaryData(path, OFFSET, 1)
-			except IOError:
-				continue
+				vmxTimerRate = ProcessorCreator.getVmxFromMSR(path,
+															  OFFSET,
+															  VMX_BITSIZE)
+			except customExceptions.MSRFileNotFound:
+				pass
 			else:
 				MSRfound = True
 				break
-
-		if MSRfound is False:
+		if not MSRfound:
 			errormsg = "MSR could not be located at directories:\n"
 			for path in paths.MSR:
 				errormsg += ("%s\n" % path)
-
+		
 			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
 						 "probe for MSR, then run the tool again.")
 			message.addError(errormsg)
+
+		return vmxTimerRate
+	
+	@staticmethod
+	def getVmxFromMSR(msrpath, offset, vmxbitsize):
+		"Gets VmxTimerRate value from a given msr path"
+		try:
+			#Try to find MSR file
+			byte = extractor.extractBinaryData(msrpath, offset, 1)
+		except IOError:
+			raise customExceptions.MSRFileNotFound()
 		else:
 			vmxbits = 0
 			#Get bits from VMX_BITS_START to VMX_BITS_END
-			for bitnum in range(VMX_BITS_START, VMX_BITS_END+1):
+			for bitnum in range(0, vmxbitsize):
 				vmxbits += util.getBit(int(byte, 16), bitnum) << bitnum
 			vmxTimerRate = int(vmxbits)
 		return vmxTimerRate
+		
 
 class MemoryCreator():
 

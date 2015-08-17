@@ -3,6 +3,9 @@ class CustomException(Exception):
 	def __init__(self,msg=""):
 		self.msg = msg
 		super(CustomException, self).__init__(msg)
+		
+class MSRFileNotFound(CustomException):
+	pass
 
 class CapabilityUnknown(CustomException):
 	pass
