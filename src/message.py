@@ -49,8 +49,6 @@ def printMessages():
 
 def add(Message):
 	exists = False
-	print "Checking object: ", Message
-	print "Messagequeue: ", messagequeue
 	for message in messagequeue:
 		if Message.msg == message.msg:
 			exists = True
@@ -62,10 +60,8 @@ def add(Message):
 def addWarning(msg):
 	add(WarningMessage(msg))
 
-def addMessage(msg, forcequit=False):
+def addMessage(msg):
 	add(Message(msg))
-	if forcequit:
-		forceQuit()
 
 def addError(msg, forcequit=True):
 	"Adds Error Message class to messagequeue; Sets flag to end program if"

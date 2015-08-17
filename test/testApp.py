@@ -626,7 +626,6 @@ class MessageTestCase(unittest.TestCase):
 	
 	def test_reset(self):
 		message.reset()
-		print "After reset: ", message.messagequeue
 		self.assertEqual(len(message.messagequeue),0,"Reset function not working")
 
 	def test_addMessage(self):
@@ -634,9 +633,13 @@ class MessageTestCase(unittest.TestCase):
 		message.addWarning("Warning1")
 		message.addError("Error1",False)
 		message.addError("Error1",False)
+		message.addMessage("Message1")
 		#Should not keep duplicate messages
-		print len(message.messagequeue)
-		self.assertEqual(len(message.messagequeue),2,"Message duplication handling failed")
+		self.assertEqual(len(message.messagequeue),3,"Message duplication handling failed")
+		self.assertRaises(customExceptions.ForceQuit, message.addError, "QuitError")
+		
+	def test_printMessages(self):
+		message.printMessages()
 
 # == Class that tests parseutil.py ==
 from src import parseutil
