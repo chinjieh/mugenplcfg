@@ -3,7 +3,7 @@ import sys
 import customExceptions
 import textwrap
 
-textWrapper = textwrap.TextWrapper(break_long_words=False)
+textWrapper = textwrap.TextWrapper(break_long_words=False, replace_whitespace=False)
 
 class Message():
 	shortname = "message(s)"
@@ -52,6 +52,7 @@ def add(Message):
 	for message in messagequeue:
 		if Message.msg == message.msg:
 			exists = True
+			break
 
 	if not exists:
 		messagequeue.append(Message)
@@ -65,7 +66,8 @@ def addMessage(msg, forcequit=False):
 		forceQuit()
 
 def addError(msg, forcequit=True):
-	"Adds Error Message class to messagequeue; Quits program by default"
+	"Adds Error Message class to messagequeue; Sets flag to end program if"
+	"forcequit is True"
 	add(ErrorMessage(msg))
 	if forcequit:
 		forceQuit()
