@@ -1,0 +1,13 @@
+bf66f000-bf7fffff : System RAM
+bf800000-bfffffff : RAM buffer
+e0000000-efffffff : PCI MMCONFIG 0000 [bus 00-ff]
+  e0000000-efffffff : pnp 00:00
+f0000000-ffffffff : PCI Bus 0000:00
+  f0000000-f9ffffff : PCI Bus 0000:01
+    f0000000-f7ffffff : 0000:01:00.0
+    f8000000-f9ffffff : 0000:01:00.0
+  fa000000-fb0fffff : PCI Bus 0000:01
+    fa000000-faffffff : 0000:01:00.0
+    fb000000-fb07ffff : 0000:01:00.0
+    fb080000-fb083fff : 0000:01:00.1
+      fb080000-fb083fff : ICH HD audio

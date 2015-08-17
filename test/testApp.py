@@ -76,12 +76,17 @@ class CreatorTestCase(unittest.TestCase):
 
 		#Test getPciConfigAddress function
 		testiomem = os.path.join(self.testdir,"devicescreator/test_iomem")
+		testinvalidloc = os.path.join(self.testdir,"devicescreator")
+		testnokey = os.path.join(self.testdir,"devicescreator/test_iomem_nopciconfig")
 		self.assertEqual(creator.DevicesCreator.getPciConfigAddress(testiomem), "e0000000", "getPciConfigAddress function not working")
+		creator.DevicesCreator.getPciConfigAddress(testinvalidloc)
+		creator.DevicesCreator.getPciConfigAddress(testnokey)
 
 	## -- PciDevicesCreator testcases
 	def test_PciDevicesCreator(self):
 		"Tests the PciDevicesCreator class"
 		pcicreator = creator.PciDevicesCreator()
+		devloc = os.path.join(self.testdir, "devicescreator/devices")
 
 		#Test isDeviceName function
 		self.assertEqual(pcicreator.isDeviceName("0000:01:00.0"), True, "isDeviceName function not working")
@@ -91,6 +96,10 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(pcicreator.isDeviceName("0000:10:01"), False, "isDeviceName function not working")
 		self.assertEqual(pcicreator.isDeviceName("000:10:01.1"), False, "isDeviceName function not working")
 		self.assertEqual(pcicreator.isDeviceName("0003:0E0F:0003.0001"), False, "isDeviceName function not working")
+		
+		#Test isBridge function
+		self.assertEqual(pcicreator.isBridge(os.path.join(devloc, "pcibridge0")), True, "isBridge function not working")
+		self.assertEqual(pcicreator.isBridge(os.path.join(devloc, "dev0")), False, "isBridge function not working")
 
 		#Test getDeviceBus function
 		self.assertEqual(pcicreator.getDeviceBus("0011:01:02.3"), "01", "getDeviceBus function not working")
