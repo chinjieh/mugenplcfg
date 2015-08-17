@@ -224,6 +224,7 @@ class SchemaDataTestCase(unittest.TestCase):
 
 	def setUp(self):
 		print "<> SchemaDataTestCase:setUp - begin"
+		self.testdir = testpaths.PATH_TEST_SCHEMADATA
 
 	def tearDown(self):
 		print "<> SchemaDataTestCase:tearDown - begin"
@@ -397,6 +398,30 @@ class SchemaDataTestCase(unittest.TestCase):
 		self.assertEqual(devices_pyxb.device[1].irq[1].name, "device2_irq2", "Deep nesting of elements failed")
 		self.assertEqual(devices_pyxb.device[0].capabilities.capability[0].name, "Device1 Capability1", "Deep nesting of elements failed")
 		self.assertEqual(devices_pyxb.device[1].shared, "false", "Deep nesting of elements failed")
+		
+	def test_createBindings(self):
+		testschema = os.path.join(self.testdir, "testschema.xsd")
+		testschema_invalid = os.path.join(self.testdir, "testschema_invalid.file")
+
+		#Normal function
+		with open(testschema, "r") as f:
+			schemadata.createBindings(f, self.testdir, "testschemaoutput")
+			
+		#Invalid schema file chosen
+		with open(testschema_invalid, "r") as f:
+			schemadata.createBindings(f, self.testdir, "testschemaoutput")
+			
+		
+	
+		
+	def test_copyEnvWithPythonPath(self):
+		myenv = os.environ.copy()
+		pythonpathstr = ""
+		for pythonpath in sys.path:
+			pythonpathstr  = pythonpathstr + pythonpath + ":"
+		myenv["PYTHONPATH"] = pythonpathstr
+		
+		self.assertEqual(schemadata.copyEnvWithPythonPath(),myenv,"copyEnvWithPythonPath test failed")
 
 
 # == Class that tests devicecap.py ==

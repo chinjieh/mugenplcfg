@@ -152,53 +152,9 @@ class Element():
 			
 def generateBindings(schemafile):
 	"Creates a .py PyXB binding file from schemafile"
-	pyxbgen = paths.PYXB_GEN
-	infile = schemafile.name
-	outpath = paths.CURRENTDIR
 	outname = "schemaconfig"
 	print "Generating binding file with PyXB submodule..."
-	
-	# Prepare copy of current environment to use in subprocess, so that pyxbgen
-	# will inherit PYTHONPATH
-	def copyEnvWithPythonPath():
-		myenv = os.environ.copy()
-		pathstr = ""
-		for dir in sys.path:
-			pathstr = pathstr + dir + ":"
-		myenv["PYTHONPATH"] = pathstr
-		return myenv
-	myenv = copyEnvWithPythonPath()
-	
-	try:
-		proc = subprocess.Popen(
-			[pyxbgen,"-u",infile,"-m",os.path.join(outpath,outname)],
-			env=myenv,
-			stdout=subprocess.PIPE)
-		pyxbmsg = proc.stdout.read()
-		open(os.path.join(outpath,outname+".py"))
-		print "PyXB > ", pyxbmsg
-		
-	except OSError as e:
-		if e.errno == os.errno.ENOENT: #pyxb does not exist
-			print ("'pyxbgen' script could not be found at: %s") % pyxbgen
-			print "Failed to generate bindings."
-			
-	except IOError: #Check if file has been generated
-			print "Failed to generate bindings. Invalid schema: %s" % infile
-			
-	else:
-		print "Generated binding file '%s.py' to: %s\n" % (outname,paths.CURRENTDIR)
-		
-		def getChoice():
-			accepted = ["Y","y","N","n",""]
-			while True:
-				choice = raw_input("Move to and overwrite previous binding file "
-				   "in /schemaconfig? [Y/n]")
-				if choice in accepted:
-					return choice
-				else:
-					print "Please enter a valid input"
-					
+	if createBindings(schemafile,paths.CURRENTDIR,outname):			
 		ans = getChoice()
 		if ans == "n" or ans == "N":
 			print "Done. Please move the file %s.py to /schemaconfig." % outname
@@ -206,6 +162,67 @@ def generateBindings(schemafile):
 			shutil.move(os.path.join(paths.CURRENTDIR,outname+".py"),
 						paths.SCHEMACONFIG+".py")
 			print "DONE"
+
+def createBindings(schemafile,outpath,outname):
+	"Produces binding file from schema"
+	infile = schemafile.name
+	pyxbgen = paths.PYXB_GEN
+	#Copy current environments including PYTHONPATH
+	myenv = copyEnvWithPythonPath()
+	success = False
+	try:
+		#Clear any existing generated file first
+		generatedfileloc = os.path.join(outpath,outname+".py")
+		if os.path.isfile(generatedfileloc):
+			os.remove(generatedfileloc)
+		
+		proc = subprocess.Popen(
+			[pyxbgen,"-u",infile,"-m",os.path.join(outpath,outname)],
+			env=myenv,
+			stdout=subprocess.PIPE)
+		pyxbmsg = proc.stdout.read()
+
+		open(generatedfileloc)
+		print "PyXB > ", pyxbmsg
+		
+	except OSError as e:
+		if e.errno == os.errno.ENOENT: #pyxb does not exist
+			print ("'pyxbgen' script could not be found at: %s") % pyxbgen
+			print "Failed to generate bindings."
+			
+	except IOError:
+		# Bad schema chosen.
+		# The only way to do presently is to check for the generated file, as
+		# this coder hasn't found a way to capture the exception raised by
+		# pyxbgen :c
+			print "Failed to generate bindings. Invalid schema: %s" % infile
+			
+	else:
+		print "Generated binding file '%s.py' to: %s\n" % (outname,paths.CURRENTDIR)
+		success = True
+	
+	return success
+
+def copyEnvWithPythonPath():
+	"Returns copy of current environment to use in subprocess, so that pyxbgen"
+	"subprocess will inherit PYTHONPATH"
+	myenv = os.environ.copy()
+	pathstr = ""
+	for dir in sys.path:
+		pathstr = pathstr + dir + ":"
+	myenv["PYTHONPATH"] = pathstr
+	return myenv
+
+def getChoice():
+	accepted = ["Y","y","N","n",""]
+	while True:
+		choice = raw_input("Move to and overwrite previous binding file "
+		   "in /schemaconfig? [Y/n]")
+		if choice in accepted:
+			return choice
+		else:
+			print "Please enter a valid input"
+
 
 		
 		
