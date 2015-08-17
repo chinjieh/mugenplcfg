@@ -611,7 +611,32 @@ class UpdateTestCase(unittest.TestCase):
 		self.assertRaises(customExceptions.PciIdsInvalidLink,
 						  update.updatePciIds,
 						  INVALID_ADDR, testfile)
+		
+# == Class that tests message.py ==
+from src import message
+class MessageTestCase(unittest.TestCase):
+	"Tests the message.py file"
+	def setUp(self):
+		"Setup code"
+		print "<> MessageTestCase:setUp - begin"
+	
+	def tearDown(self):
+		"Cleanup code"
+		print "MessageTestCase:tearDown - begin"
+	
+	def test_reset(self):
+		message.reset()
+		print "After reset: ", message.messagequeue
+		self.assertEqual(len(message.messagequeue),0,"Reset function not working")
 
+	def test_addMessage(self):
+		message.reset()
+		message.addWarning("Warning1")
+		message.addError("Error1",False)
+		message.addError("Error1",False)
+		#Should not keep duplicate messages
+		print len(message.messagequeue)
+		self.assertEqual(len(message.messagequeue),2,"Message duplication handling failed")
 
 # == Class that tests parseutil.py ==
 from src import parseutil

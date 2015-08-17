@@ -49,6 +49,8 @@ def printMessages():
 
 def add(Message):
 	exists = False
+	print "Checking object: ", Message
+	print "Messagequeue: ", messagequeue
 	for message in messagequeue:
 		if Message.msg == message.msg:
 			exists = True
@@ -74,6 +76,10 @@ def addError(msg, forcequit=True):
 
 def forceQuit():
 	raise customExceptions.ForceQuit()
+
+def reset():
+	globals()["messagequeue"] = []
+	globals()["messagecount"] = {}
 
 messagecount = {} #Message, count
 messagequeue = []

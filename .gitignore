@@ -1,4 +1,4 @@
 *~
 output.xml
 htmlcov
-.coverage
+*.coverage
