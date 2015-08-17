@@ -132,14 +132,17 @@ class CreatorTestCase(unittest.TestCase):
 		print "CreatorTestCase:test_ProcessorCreator - begin"
 		
 		#Test getSpeed function
+		speedkeywords = ["GHz","MHz"]
 		testline = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz"""
 		testline2 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 800MHz"""
 		testline3 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GH"""
 		testline4 = """model name	: 3.20GHz Intel(R) Xeon(R) CPU E31230"""
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline), "3200", "getSpeed function not working")
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline2), "800", "getSpeed function not working")
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline3)
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline4), "3200", "getSpeed function not working")
+		testline5 = """model name	: 3.20 GHz Intel(R) Xeon(R) CPU"""
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline, speedkeywords), "3200", "getSpeed function not working")
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline2, speedkeywords), "800", "getSpeed function not working")
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline3, speedkeywords)
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline4, speedkeywords), "3200", "getSpeed function not working")
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline5, speedkeywords)
 
 	## -- MemoryCreator testcases
 	def test_MemoryCreator(self):

@@ -32,13 +32,14 @@ class ProcessorCreator():
 		
 		modelnamedata = parseutil.parseData_Sep(cpuinfo, "model name", ":")
 		try:
-			procspeed = ProcessorCreator.getSpeed(modelnamedata)
+			speedkeywords = PROCESSOR_SPEED_KEYWORDS
+			procspeed = ProcessorCreator.getSpeed(modelnamedata, speedkeywords)
 		except customExceptions.ProcessorSpeedNotFound:
 			processor["speed"] = "0"
 			#TODO: exception not catched if no keys match PROCESSOR_SPEED_KEYWORDS, speed becomes None in util.getSpeedValue
 			message.addError(
 				"Could not find processor speed in: %s\n" % cpuinfopath +
-				"Values do not match speed keywords: %s" % ", ".join(PROCESSOR_SPEED_KEYWORDS)
+				"Values do not match speed keywords: %s" % ", ".join(speedkeywords)
 				)
 		else:	
 			processor["speed"] = procspeed
@@ -47,18 +48,22 @@ class ProcessorCreator():
 		return processor
 
 	@staticmethod
-	def getSpeed(modelnamedata):
+	def getSpeed(modelnamedata, speedkeywords):
 		tokens = modelnamedata.split()
 		speedtoken = None
 		for token in tokens:
-			for speedtype in PROCESSOR_SPEED_KEYWORDS:
+			for speedtype in speedkeywords:
 				if speedtype in token:
 					speedtoken = token
 					break
 		if speedtoken is None:
 			raise customExceptions.ProcessorSpeedNotFound()
 		else:
-			return util.getSpeedValue(speedtoken,PROCESSOR_SPEED_KEYWORDS)
+			speedvalue = util.getSpeedValue(speedtoken,speedkeywords)
+			if speedvalue is None:
+				raise customExceptions.ProcessorSpeedNotFound()
+			else:
+				return speedvalue
 	
 	@staticmethod
 	def getVmxTimerRate():

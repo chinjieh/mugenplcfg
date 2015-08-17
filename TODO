@@ -8,7 +8,6 @@ Add Devicemanager
 *Implement -everything arg that does not filter or modify anything
 
 [High Priority]
-Use constant CPU freq instead of variable
 Test serial device extraction
 Test vmxTimerRate*
 Test coverage*

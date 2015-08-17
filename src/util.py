@@ -98,6 +98,8 @@ def getSpeedValue(speedstring, validspeeds):
 	
 	if speedtype is not None:
 		rawvalue = speedstring.rstrip(speedtype).strip()
+		if rawvalue is None:
+			return None
 		try:
 			value = str(int(float(rawvalue)))
 			if speedtype == "GHz":
@@ -105,6 +107,8 @@ def getSpeedValue(speedstring, validspeeds):
 			return value
 		except ValueError:
 			return None
+	else:
+		return None
 
 def numberMultiples(listin):
 	"Numbers repeated elements in list, leaves it alone if element is solo"
