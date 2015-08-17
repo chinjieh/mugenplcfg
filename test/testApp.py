@@ -420,6 +420,14 @@ class DevicecapTestCase(unittest.TestCase):
 		"Tests the DevicecapManager class"
 		print "DevicecapTestCase:test_DevicecapManager - begin"
 		devicecapmgr = devicecap.DevicecapManager()
+		devloc = os.path.join(self.testdir,"devices")
+		
+		devpaths = [os.path.join(devloc,subdir) for subdir in os.listdir(devloc)]
+		devicecapmgr.extractCapabilities(devpaths)
+		devicecapmgr.getCapList(devpaths[0], False)
+		devicecapmgr.getCapList(devpaths[1])
+		devicecapmgr.getCapValue(devpaths[0], "0x09")
+		devicecapmgr.getCapValue(devpaths[1], "0x09")
 		
 		# -- readCapFile function
 		loc = os.path.join(self.testdir, "testReadCapFile")
@@ -430,9 +438,12 @@ class DevicecapTestCase(unittest.TestCase):
 		test_capcode2 = [cap.code for cap in devicecapmgr._readCapFile(loc,0x02,1,1,0x0,3)]
 		self.assertEqual(test_capcode1, ["0x0a", "0x0b", "0x0c", "0x0d", "0x0e", "0x0f"], "readCapFile function not working")
 		self.assertEqual(test_capcode2, ["0x0a", "0x0b", "0x0c"], "readCapFile function not working")
-		
-		# -- getCap function
-
+		noaccessloc = os.path.join(devloc, "dev1_noaccess/config")
+		# Read out of bounds offset to simulate "no access" - only 64 bytes
+		# can be read without being root user
+		self.assertRaises(customExceptions.NoAccessToFile,
+						  devicecapmgr._readCapFile,
+						  noaccessloc, os.stat(noaccessloc).st_size + 1, 1, 1)
 
 
 # == Class that tests util.py ==

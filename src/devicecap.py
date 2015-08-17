@@ -6,6 +6,7 @@ import os
 import customExceptions
 import util
 import struct
+import message
 from collections import namedtuple
 
 # CAPABILITY CODES
@@ -55,7 +56,7 @@ translated = {
 
 Cap = namedtuple("Cap", ["code", "value"])
 
-# CAPABILITY VALUES
+# CAPABILITY VALUES (CapValue objects)
 CAP_MSI_VALUE = namedtuple("MSI", "enable")
 CAP_MSIX_VALUE = namedtuple("MSIX", "enable")
 
@@ -87,13 +88,13 @@ class DevicecapManager():
 	def extractCapabilities(self,devicepaths):
 		"Checks if device capabilities can be found and creates capability dict"
 		#Attempt to fill dictionary
-		try:
-			for devicepath in devicepaths:
+		for devicepath in devicepaths:
+			try:
 				self._extractCapability(devicepath, "config")
-		except customExceptions.NoAccessToFile:
-			message.addError("Not enough permissions to access capabilities of "
-							 "devices. It is advised to run the tool again with "
-							 "the proper permissions.", False)
+			except customExceptions.NoAccessToFile:
+				message.addError("Not enough permissions to access capabilities "
+							 "of devices. It is advised to run the tool again "
+							 "with the proper permissions.", False)
 
 	def _extractCapability(self, devicepath, configfilename):
 		"Gets capability for device"
@@ -132,7 +133,7 @@ class DevicecapManager():
 		return result
 	
 	def getCapValue(self, devicepath, capcode):
-		"Returns CapValue object for a device"
+		"Returns CapValue tuple for a device (additional information on capability)"
 		result = None
 		caplist = self.capabilities.get(devicepath)
 		if caplist is not None:
@@ -146,7 +147,7 @@ class DevicecapManager():
 		"reads address from startpos, reads data in address, reads address from "
 		"ptroffset..."
 		result = []
-	
+		print "Reading data for: ", file
 		def readdata(f,size):
 			data = f.read(size)
 			if data != "":
@@ -155,7 +156,7 @@ class DevicecapManager():
 			else:
 				raise customExceptions.NoAccessToFile(
 					"No permission to read file: %s" % file )
-	
+
 		with open(file, "rb") as f:
 			f.seek(startpos)
 			nextaddr = readdata(f, capsize)
@@ -187,4 +188,3 @@ def translate(capcode):
 	except KeyError:
 		raise customExceptions.CapabilityUnknown(
 			"Capability Code %s is unknown." % capcode )
-		return capcode

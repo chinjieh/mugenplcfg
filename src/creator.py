@@ -269,6 +269,7 @@ class PciDevicesCreator():
 	def getDependencies(self):
 		"Checks whether dependencies are fulfilled and fills up the class attributes"
 		self.devicecapmgr = devicecap.DevicecapManager()
+		print "Getting device capabilities..."
 		self.devicecapmgr.extractCapabilities(self.devicepaths)
 		#self.devicenames = self.getDeviceNames(self.devicepaths)
 		self.deviceShortNames = self.getDeviceShortNames(self.devicepaths)
@@ -541,6 +542,7 @@ class PciDevicesCreator():
 							 False)
 
 		#capabilities
+		
 		"""
 		caplist = self.devicecapmgr.getCapList(devicepath)
 		if caplist:
