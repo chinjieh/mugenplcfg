@@ -1,0 +1,40 @@
+03e0-0cf7 : PCI Bus 0000:00
+  03f8-03ff : serial
+  0400-0403 : ACPI PM1a_EVT_BLK
+  0404-0405 : ACPI PM1a_CNT_BLK
+  0408-040b : ACPI PM_TMR
+  0420-042f : ACPI GPE0_BLK
+    0428-042f : gpio_ich
+  0430-0433 : iTCO_wdt
+  0450-0450 : ACPI PM2_CNT_BLK
+  0454-0457 : pnp 00:0b
+  0458-047f : pnp 00:0a
+    0460-047f : iTCO_wdt
+  04d0-04d1 : pnp 00:07
+  0500-057f : gpio_ich
+    0500-057f : pnp 00:0a
+      0500-052f : gpio_ich
+      0530-053f : gpio_ich
+      0540-054f : gpio_ich
+  0600-063f : pnp 00:01
+  0640-064f : pnp 00:01
+  0778-077f : pnp 00:01
+  0ff0-0ff8 : serial
+  0ff9-0fff : serial
+0cf8-0cff : PCI conf1
+0d00-ffff : PCI Bus 0000:00
+  1180-119f : pnp 00:0a
+  e000-efff : PCI Bus 0000:01
+    e000-e07f : 0000:01:00.0
+  f000-f01f : 0000:00:1f.3
+  f020-f03f : 0000:00:1f.2
+    f020-f03f : ahci
+  f040-f05f : 0000:00:19.0
+  f060-f063 : 0000:00:1f.2
+    f060-f063 : ahci
+  f070-f077 : 0000:00:1f.2
+    f070-f077 : ahci
+  f080-f083 : 0000:00:1f.2
+    f080-f083 : ahci
+  f090-f097 : 0000:00:1f.2
+    f090-f097 : ahci

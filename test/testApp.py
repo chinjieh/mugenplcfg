@@ -93,9 +93,7 @@ class CreatorTestCase(unittest.TestCase):
 			"speed_nokey" : """ processorspeed	: 3.20 GHz Intel(R) Xeon(R) CPU"""
 		}
 		files = {}
-		print "PROCESSOR START"
 		for line in lines.iterkeys():
-			print "LINE:", line
 			filepath = os.path.join(self.testdir,"processorcreator/%s" % line)
 			with open(filepath,"w") as f:
 				f.write(lines[line])
@@ -238,6 +236,58 @@ class CreatorTestCase(unittest.TestCase):
 	def test_SerialDevicesCreator(self):
 		"Tests the SerialDevicesCreator class"
 		serialcreator = creator.SerialDevicesCreator()
+		
+		#Test getSerialAddresses function
+		ioportloc = os.path.join(self.testdir, "devicescreator/test_ioports")
+		ioportloc_nokey = os.path.join(self.testdir, "devicescreator/test_ioports_nokey")
+		print serialcreator.getSerialAddresses(ioportloc)
+		self.assertEqual(serialcreator.getSerialAddresses(ioportloc),
+						 [("03f8", "03ff"),("0ff0", "0ff8"),("0ff9","0fff")],
+						 "getSerialAddresses function not working")
+		self.assertEqual(serialcreator.getSerialAddresses("test_ioport_invalid_location"),
+						 [],
+						 "getSerialAddresses function not working")
+		self.assertEqual(serialcreator.getSerialAddresses(ioportloc_nokey),
+						 [],
+						 "getSerialAddresses function not working")
+		
+		#Test createComDevices
+		Address = namedtuple("Address", ["start", "end"])
+		comAddresses = {
+			Address("03f8", "03ff") : "com_1",
+			Address("02f8", "02ff") : "com_2",
+			Address("03e8", "03ef") : "com_3",
+			Address("02e8", "02ef") : "com_4"
+			}
+		serialAddresses = [
+			Address("03e8", "03ef"),
+			Address("0ff0", "0fff"),
+			Address("02f8", "02ff"),
+			Address("03f8", "03ff"),
+			Address("02e8", "02ef")
+			]
+		
+		testresult = ["com_1", "com_2", "com_3", "com_4"]
+		comdev = serialcreator.createComDevices(serialAddresses,comAddresses)
+		names = []
+		for dev in comdev:
+			names.append(dev["name"])
+		
+		self.assertEqual(set(names), set(testresult), "createComDevices not working")
+		
+		#Test createSerialDevices
+		Address = namedtuple("Address", ["start", "end"])
+		serialAddresses = [
+			Address("03e8", "03ef"),
+			Address("0ff0", "0fff"),
+			Address("02f8", "02ff"),
+			]
+		testresult = ["serial_0", "serial_1", "serial_2"]
+		serialdev = serialcreator.createSerialDevices(serialAddresses)
+		names = []
+		for dev in serialdev:
+			names.append(dev["name"])
+		self.assertEqual(set(names), set(testresult), "createSerialDevices not working")
 
 		#Test getAddressFromLine function
 		self.assertEqual(serialcreator.getAddressFromLine("  3e0f-3e50 : serial"), ("3e0f", "3e50"), "getAddressFromLine function not working")
@@ -247,10 +297,44 @@ class CreatorTestCase(unittest.TestCase):
 	def test_IommuDevicesCreator(self):
 		"Tests the IommuDevicesCreator class"
 		iommucreator = creator.IommuDevicesCreator()
+		
+		#Test _genDMAR_maketempfolder function
+		tempfolder = os.path.join(self.testdir,"genDMARtempfolder")
+		if os.path.isdir(tempfolder):
+			os.rmdir(tempfolder)
+		iommucreator._genDMAR_maketempfolder(tempfolder)
+		self.assertEqual(os.path.isdir(tempfolder), True, "_genDMAR_maketempfolder failed")
+		os.rmdir(tempfolder)
+		os.mkdir(tempfolder)
+		iommucreator._genDMAR_maketempfolder(tempfolder) #see if fails when exists
+		os.rmdir(tempfolder)
+		
+		#Test _genDMAR_copyDMAR function
+		dmarloc = os.path.join(self.testdir,"devicescreator/testdmar.dat")
+		dmarloc_invalid = "testdmar_invalidloc.dat"
+		dest = os.path.join(self.testdir,"devicescreator/testdmar_copy.dat")
+		dest_invalid = ""
+		
+		self.assertRaises(customExceptions.DmarFileNotFound,
+						  iommucreator._genDMAR_copyDMAR,
+						  dmarloc_invalid, dest)
+		
+		self.assertRaises(customExceptions.DmarFileNotCopied,
+						  iommucreator._genDMAR_copyDMAR,
+						  dmarloc, dest_invalid)
 
+		#Test _genDMAR_parseDMAR function
+		dmarloc = os.path.join(self.testdir,"testdmar.dat")
+		invalidcmd = "ia -d"
+		self.assertRaises(customExceptions.IaslToolNotFound,
+						  iommucreator._genDMAR_parseDMAR,
+						  invalidcmd, dmarloc)
+		
 		#Test getIommuAddrs function
 		loc = os.path.join(self.testdir, "devicescreator/testdmar.dsl")
 		emptyloc = os.path.join(self.testdir, "devicescreator/testdmar_empty.dsl")
+		invalidloc = "get_IommuAddrs_invalidloc"
+		
 
 		self.assertEqual(iommucreator.getIommuAddrs(loc),
 				["0xfed91000", "0xfed91100"],
@@ -258,6 +342,9 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(iommucreator.getIommuAddrs(emptyloc),
 				[],
 				"getIommuAddrs function not working")
+		self.assertEqual(iommucreator.getIommuAddrs(invalidloc),
+						 [],
+						 "getIommuAddrs function not working")
 
 
 # == Tests schemadata.py ==
