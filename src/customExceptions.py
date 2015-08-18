@@ -10,6 +10,9 @@ class MSRFileNotFound(CustomException):
 class CapabilityUnknown(CustomException):
 	pass
 
+class DeviceCapabilitiesNotRead(CustomException):
+	pass
+
 class InvalidAttribute(CustomException):
 	pass
 

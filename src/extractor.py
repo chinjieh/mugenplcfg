@@ -30,9 +30,9 @@ def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN", chunks=False):
 				intbyte = struct.unpack('B', byte)[0]
 				if chunks:
 					hexbyte = "0x{:02x}".format(intbyte)
-					if endian is "LITTLE_ENDIAN":
+					if endian == "LITTLE_ENDIAN":
 						bytelist.append(hexbyte)
-					elif endian is "BIG_ENDIAN":
+					elif endian == "BIG_ENDIAN":
 						bytelist.insert(0, hexbyte)
 					else:
 						raise ValueError("Incorrect argument value '%s' " % endian +

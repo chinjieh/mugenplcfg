@@ -105,11 +105,13 @@ class PciIdsParser():
 					devicecode = tokens[0].strip()
 					if (lastVendor, devicecode) not in self.deviceData:
 						self.deviceData[(lastVendor, devicecode)] = tokens[2].strip()
-					else:
-						self.deviceData[(lastVendor, devicecode)] = tokens[2].strip()
-						raise customExceptions.PciIdsMultipleEntries(
-							"Multiple instances of device with the same id and "
-							"vendor detected")
+					# Will not fail as isVendor will detect the duplicate first,
+					# leaving this here in case
+					#else:
+						#self.deviceData[(lastVendor, devicecode)] = tokens[2].strip()
+						#raise customExceptions.PciIdsMultipleEntries(
+						#	"Multiple instances of device with the same id and "
+						#	"vendor detected")
 
 				#find Class
 				if self.isClass(line):
@@ -145,6 +147,7 @@ class PciIdsParser():
 				"Could not find device: %s of vendor: %s" % (devhex, venhex) )
 
 	def getClassName(self,clshex):
+		"Searches first 4 digits of class code e.g. 0604 in self.classData"
 		clscode = util.stripvalue(clshex, True)
 		result = ""
 		try:
@@ -225,7 +228,6 @@ def findLines(data, key):
 			result.append(line)
 	if found is False:
 		raise customExceptions.KeyNotFound("Key %s not found in data" % key)
-		return ""
 
 	return result
 

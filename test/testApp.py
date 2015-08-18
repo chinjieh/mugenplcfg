@@ -58,6 +58,7 @@ class ExtractorTestCase(unittest.TestCase):
 		self.assertEqual(extractor.extractBinaryData(loc, 2, 2, chunks=True), ["0x04","0x03"], "extractBinaryData function not working")
 		self.assertEqual(extractor.extractBinaryData(loc, 0, 2, "LITTLE_ENDIAN", chunks=True), ["0x01", "0x02"], "extractBinaryData function not working")
 		self.assertRaises(customExceptions.NoAccessToFile, extractor.extractBinaryData, loc, 3, 2)
+		self.assertRaises(ValueError, extractor.extractBinaryData, loc, 0, 4, "MIDDLE_ENDIAN", chunks=True)
 
 # == Class that tests creator.py ==
 import src.creator as creator
@@ -217,11 +218,26 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(pcicreator.isDeviceName("010:10:01.2"), False, "isDeviceName function not working")
 		self.assertEqual(pcicreator.isDeviceName("0000:10:01"), False, "isDeviceName function not working")
 		self.assertEqual(pcicreator.isDeviceName("000:10:01.1"), False, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("000:10:010.1"), False, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("000:10:01.11"), False, "isDeviceName function not working")
+		self.assertEqual(pcicreator.isDeviceName("000:10:01:00.1"), False, "isDeviceName function not working")
 		self.assertEqual(pcicreator.isDeviceName("0003:0E0F:0003.0001"), False, "isDeviceName function not working")
 		
 		#Test isBridge function
 		self.assertEqual(pcicreator.isBridge(os.path.join(devloc, "pcibridge0")), True, "isBridge function not working")
 		self.assertEqual(pcicreator.isBridge(os.path.join(devloc, "dev0")), False, "isBridge function not working")
+		
+		#Test isPciExpress function
+		dev0 = os.path.join(self.testdir, "devicescreator/devices_testcap/dev0")
+		dev1 = os.path.join(self.testdir, "devicescreator/devices_testcap/dev1")
+		devicecapmgr = devicecap.DevicecapManager()
+		devicecapmgr.extractCapabilities([dev0,dev1])
+		self.assertEqual(pcicreator.isPciExpress(dev0,devicecapmgr),
+						 True,
+						 "isPciExpress function not working")
+		self.assertEqual(pcicreator.isPciExpress(dev1,devicecapmgr),
+						 False,
+						 "isPciExpress function not working")
 
 		#Test getDeviceBus function
 		self.assertEqual(pcicreator.getDeviceBus("0011:01:02.3"), "01", "getDeviceBus function not working")
@@ -231,6 +247,36 @@ class CreatorTestCase(unittest.TestCase):
 
 		#Test getDeviceFunction function
 		self.assertEqual(pcicreator.getDeviceFunction("0000:01:02.3"), "3", "getDeviceFunction function not working")
+		
+		#Test getDeviceShortNames function
+		testpciids = os.path.join(self.testdir,"devicescreator/testpciids_class")
+		devdir = os.path.join(self.testdir,"devicescreator/devices_testshortnames")
+		devpaths = []
+		for dir in sorted(os.listdir(devdir)):
+			devpaths.append(os.path.join(devdir,dir))
+		testresult = {
+			os.path.join(devdir,"dev0") : "host_bridge",
+			os.path.join(devdir,"dev1") : "0x06ff00",
+			os.path.join(devdir,"dev2") : "pci_bridge"
+		}
+		
+		result = pcicreator.getDeviceShortNames(devpaths,testpciids)
+		self.assertEqual(result, testresult, "getDeviceShortNames not working")
+		self.assertRaises(customExceptions.PciIdsFileNotFound,
+						  pcicreator.getDeviceShortNames,
+						  devpaths,"invalidpciidsloc" )
+		
+		#Test getClassName function
+		testpciids = os.path.join(self.testdir,"devicescreator/testpciids_class")
+		pciidsparser = parseutil.PciIdsParser(testpciids)
+		devpath = os.path.join(self.testdir,"devicescreator/devices/dev0")
+		devpath_invalidclass = os.path.join(self.testdir,"devicescreator/devices/dev_invalidclass")
+		self.assertEqual(pcicreator.getClassName(devpath, pciidsparser),
+						 "host_bridge",
+						 "getClassName function not working")
+		self.assertEqual(pcicreator.getClassName(devpath_invalidclass, pciidsparser),
+						 "0x06ff00",
+						 "getClassName function not working")
 
 	## -- SerialDevicesCreator testcases
 	def test_SerialDevicesCreator(self):
@@ -389,6 +435,18 @@ class CreatorTestCase(unittest.TestCase):
 												   AGAW_BIT_START),
 						 "agaw",
 						 "getIommuAGAW function not working" )
+		
+		#Test IommuNamer class
+		iommuaddrlist = ["addr1", "addr2", "addr3", "addr4"]
+		iommunamer1 = creator.IommuDevicesCreator.IommuNamer(iommuaddrlist)
+		self.assertEqual(iommunamer1.getName(), "iommu_1", "IommuNamer class not working")
+		self.assertEqual(iommunamer1.getName(), "iommu_2", "IommuNamer class not working")
+		self.assertEqual(iommunamer1.getName(), "iommu_3", "IommuNamer class not working")
+		self.assertEqual(iommunamer1.getName(), "iommu_4", "IommuNamer class not working")
+		
+		iommuaddrlist2 = ["addr1"]
+		iommunamer2 = creator.IommuDevicesCreator.IommuNamer(iommuaddrlist2)
+		self.assertEqual(iommunamer2.getName(), "iommu", "IommuNamer class not working")
 
 
 # == Tests schemadata.py ==
@@ -641,14 +699,24 @@ class DevicecapTestCase(unittest.TestCase):
 		"Tests the DevicecapManager class"
 		print "DevicecapTestCase:test_DevicecapManager - begin"
 		devicecapmgr = devicecap.DevicecapManager()
-		devloc = os.path.join(self.testdir,"devices")
 		
-		devpaths = [os.path.join(devloc,subdir) for subdir in os.listdir(devloc)]
+		# -- extractCapabilities function
+		devloc = os.path.join(self.testdir,"devices")
+		devpaths = []
+		devpaths.append(os.path.join(devloc,"dev0"))
+		devpaths.append(os.path.join(devloc,"pcibridge0"))
+		devpaths = sorted(devpaths)
 		devicecapmgr.extractCapabilities(devpaths)
-		devicecapmgr.getCapList(devpaths[0], False)
-		devicecapmgr.getCapList(devpaths[1])
-		devicecapmgr.getCapValue(devpaths[0], "0x09")
-		devicecapmgr.getCapValue(devpaths[1], "0x09")
+		
+		devicecapmgr.getCapList(os.path.join(devloc,"dev0"), False)
+		devicecapmgr.getCapList(os.path.join(devloc,"pcibridge0"))
+		devicecapmgr.getCapValue(os.path.join(devloc,"dev0"), "0x09")
+		devicecapmgr.getCapValue(os.path.join(devloc,"pcibridge0"), "0x09")
+		
+		devpath_noaccess = os.path.join(devloc,"dev1_noaccess")
+		self.assertRaises(customExceptions.DeviceCapabilitiesNotRead,
+						  devicecapmgr.extractCapabilities,
+						  [devpath_noaccess])
 		
 		# -- readCapFile function
 		loc = os.path.join(self.testdir, "testReadCapFile")
@@ -1032,9 +1100,10 @@ class ParseUtilTestCase(unittest.TestCase):
 		self.assertEqual(parser.isValidVendorCode("#"), False, "isValidVendorCode function not working")
 
 		#isValidDeviceCode function
-		self.assertEqual(parser.isValidVendorCode("0000"), True, "isValidDeviceCode function not working")
-		self.assertEqual(parser.isValidVendorCode("12"), False, "isValidDeviceCodefunction not working")
-		self.assertEqual(parser.isValidVendorCode("#"), False, "isValidDeviceCode function not working")
+		self.assertEqual(parser.isValidDeviceCode("0000"), True, "isValidDeviceCode function not working")
+		self.assertEqual(parser.isValidDeviceCode("12"), False, "isValidDeviceCodefunction not working")
+		self.assertEqual(parser.isValidDeviceCode("#"), False, "isValidDeviceCode function not working")
+		self.assertEqual(parser.isValidDeviceCode("____"), False, "isValidDeviceCode function not working")
 
 		#isValidClassCode function
 		self.assertEqual(parser.isValidClassCode("02"), True, "isValidClassCode function not working")

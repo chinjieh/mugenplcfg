@@ -281,11 +281,24 @@ class PciDevicesCreator():
 
 	def getDependencies(self):
 		"Checks whether dependencies are fulfilled and fills up the class attributes"
+
 		self.devicecapmgr = devicecap.DevicecapManager()
 		print "Getting device capabilities..."
-		self.devicecapmgr.extractCapabilities(self.devicepaths)
-		#self.devicenames = self.getDeviceNames(self.devicepaths)
-		self.deviceShortNames = self.getDeviceShortNames(self.devicepaths)
+		try:
+			self.devicecapmgr.extractCapabilities(self.devicepaths)
+			#self.devicenames = self.getDeviceNames(self.devicepaths)
+			self.deviceShortNames = self.getDeviceShortNames(self.devicepaths, paths.PCIIDS)
+		except customExceptions.PciIdsFileNotFound:
+			message.addError("pci.ids file could not be located in tool "
+							 "directory: %s. " % paths.CURRENTDIR + "Device "
+							 "names could not be obtained. Please ensure that "
+							 "the file is in the directory.",
+							 False)
+			
+		except customExceptions.DeviceCapabilitiesNotRead:
+			message.addError("Not enough permissions to access capabilities "
+				 "of devices. It is advised to run the tool again "
+				 "with the proper permissions.", False)
 
 	def findDevicePaths(self, path):
 		"Gets paths to all PCI devices in system"
@@ -302,7 +315,7 @@ class PciDevicesCreator():
 		nonPciExpressPaths = []
 		resultPaths = []
 		for devicepath in devicePaths:
-			if self.isPciExpress(devicepath):
+			if self.isPciExpress(devicepath, self.devicecapmgr):
 				pciExpressPaths.append(devicepath)
 
 			if self.isBridge(devicepath):
@@ -313,7 +326,7 @@ class PciDevicesCreator():
 							bridgedDevicePaths.append(os.path.join(root,subdir))
 
 		for bridgedDevice in bridgedDevicePaths:
-			if self.isPciExpress(bridgedDevice) is False:
+			if self.isPciExpress(bridgedDevice, self.devicecapmgr) is False:
 				nonPciExpressPaths.append(bridgedDevice)
 
 		print "PCI Devices found: %d\n------------------" % len(self.devicepaths)
@@ -342,11 +355,11 @@ class PciDevicesCreator():
 
 		return isBridge
 
-	def isPciExpress(self, devicepath):
+	def isPciExpress(self, devicepath, devicecapmgr):
 		isPciExpress = False
 		PCI_EXPRESS = "0x10"
 
-		if PCI_EXPRESS in self.devicecapmgr.getCapList(devicepath):
+		if PCI_EXPRESS in devicecapmgr.getCapList(devicepath):
 			isPciExpress = True
 
 		return isPciExpress
@@ -354,25 +367,30 @@ class PciDevicesCreator():
 	def isDeviceName(self, value):
 		"Checks for format: ####:##:##.#"
 		splitcolon = value.split(':')
-		if len(splitcolon) != 3:
-			return False
-
-		if '.' not in splitcolon[2]:
-			return False
-
-		if len(splitcolon[0]) != 4: #Host bus no. length
-			return False
+		result = True
 		
-		if len(splitcolon[1]) != 2: #Bus no. length
-			return False
-		
-		if len(splitcolon[2].split('.')[0]) != 2: #Device no. length
-			return False
-		
-		if len(splitcolon[2].split('.')[1]) != 1: #Function no. length
-			return False
+		try:
+			if len(splitcolon) != 3:
+				result = False
+	
+			if '.' not in splitcolon[2]:
+				result = False
+	
+			if len(splitcolon[0]) != 4: #Host bus no. length
+				result = False
+			
+			if len(splitcolon[1]) != 2: #Bus no. length
+				result = False
+			
+			if len(splitcolon[2].split('.')[0]) != 2: #Device no. length
+				result = False
+			
+			if len(splitcolon[2].split('.')[1]) != 1: #Function no. length
+				result = False
+		except IndexError:
+			result = False
 
-		return True
+		return result
 
 	def getDeviceBus(self, devicestr):
 		return devicestr.split(':')[1]
@@ -423,39 +441,15 @@ class PciDevicesCreator():
 		return names
 	"""
 
-	def getDeviceShortNames(self, devicepaths):
+	def getDeviceShortNames(self, devicepaths, pciids):
 		shortnames = OrderedDict()
 		namecount = {}
-		#Initialise PciIdsParser
-		try:
-			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS)
+		#Initialise PciIdsParser, throws customExceptions.PciIdsFileNotFound if fail
+		pciIdsParser = parseutil.PciIdsParser(pciids)
 
-		except customExceptions.PciIdsFileNotFound:
-			message.addError("pci.ids file could not be located in tool "
-							 "directory: %s. " % paths.CURRENTDIR + "Device "
-							 "names could not be obtained. Please ensure that "
-							 "the file is in the directory.",
-							 False)
-
-		else:
-			for devicepath in devicepaths:
-				#Get class code from "class" file"
-				classcode = extractor.extractData(
-					os.path.join(devicepath, "class") )[0:6]
-				classname = classcode
-				try:
-					classname = pciIdsParser.getClassName(classcode)
-
-				except (customExceptions.PciIdsFailedSearch,
-					customExceptions.PciIdsSubclassNotFound):
-					message.addWarning(("Name for Device at: %s " % devicepath +
-										"could not be found. It would " +
-										"be a good idea to update pci.ids "+
-										"(try '-update' or '-u')" ))
-
-				classname = util.spacesToUnderscores(classname.lower())
-				#Add entry to dictionary shortnames
-				shortnames[devicepath] = classname
+		for devicepath in devicepaths:
+			#Add entry to dictionary shortnames
+			shortnames[devicepath] = self.getClassName(devicepath, pciIdsParser)
 
 		namelist = []
 		for value in shortnames.itervalues():
@@ -466,6 +460,23 @@ class PciDevicesCreator():
 			shortnames[devicepath] = listnumberer.getName(shortnames[devicepath])
 
 		return shortnames
+	
+	def getClassName(self, devicepath, pciIdsParser):
+		"Checks the pciIdsParser object and gets the class name for the device"
+		#Get class code from "class" file"
+		classcode = extractor.extractData(
+			os.path.join(devicepath, "class") )[0:8]
+		classname = classcode
+		try:
+			classname = pciIdsParser.getClassName(classcode[0:6])
+			classname = util.spacesToUnderscores(classname.lower())
+		except (customExceptions.PciIdsFailedSearch,
+			customExceptions.PciIdsSubclassNotFound):
+			message.addWarning(("Name for Device at: %s " % devicepath +
+								"could not be found. It would " +
+								"be a good idea to update pci.ids "+
+								"(try '-update' or '-u')" ))
+		return classname
 
 	def createDeviceFromPath(self, devicepath):
 		pcistr = os.path.basename(devicepath)
@@ -685,13 +696,24 @@ class SerialDevicesCreator():
 		return devices
 
 class IommuDevicesCreator():
+	
+	class IommuNamer():
+		def __init__(self, iommuaddrs):
+			self.iommunames = deque([])
+			for addr in iommuaddrs:
+				self.iommunames.append("iommu")
+			self.iommunames = deque(util.numberMultiples(self.iommunames))
+	
+		def getName(self):
+			return self.iommunames.popleft()
+	
 	def __init__(self):
 		self.DMAR_TEMPNAME = "dmar.dat"
 		self.DMAR_NAME = "dmar.dsl"
 		self.OUTPUTPATH = paths.TEMP
 		self.DEVMEM = paths.DEVMEM
 		self.iommuaddrs = []
-		self.iommunames = deque([])
+		self.iommunamer = None
 
 	def createElems(self):
 		elemlist = []
@@ -708,6 +730,8 @@ class IommuDevicesCreator():
 		else:
 			self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
 															  self.DMAR_NAME) )
+			#Instantiate IommuNamer to set names for iommu devices
+			self.iommunamer = self.IommuNamer(self.iommuaddrs)
 			for addr in self.iommuaddrs:
 				elemlist.append(self.createDeviceFromAddr(addr))
 
@@ -821,10 +845,7 @@ class IommuDevicesCreator():
 		device["shared"] = "false"
 
 		#name attr
-		for addr in self.iommuaddrs:
-			self.iommunames.append("iommu")
-		self.iommunames = deque(util.numberMultiples(self.iommunames))
-		device["name"] = self.iommunames.popleft()
+		device["name"] = self.iommunamer.getName()
 
 		#memory
 		memory = Element("memory", "deviceMemoryType")

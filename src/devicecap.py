@@ -92,9 +92,8 @@ class DevicecapManager():
 			try:
 				self._extractCapability(devicepath, "config")
 			except customExceptions.NoAccessToFile:
-				message.addError("Not enough permissions to access capabilities "
-							 "of devices. It is advised to run the tool again "
-							 "with the proper permissions.", False)
+				raise customExceptions.DeviceCapabilitiesNotRead(
+					"Could not read capability: %s" % devicepath)
 
 	def _extractCapability(self, devicepath, configfilename):
 		"Gets capability for device"
