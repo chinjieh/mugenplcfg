@@ -16,6 +16,9 @@ class InvalidAttribute(CustomException):
 class AttributeMismatch(CustomException):
 	pass
 
+class PyxbgenInvalidSchema(CustomException):
+	pass
+
 class NoAccessToFile(CustomException):
 	pass
 

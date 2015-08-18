@@ -4,6 +4,8 @@ import unittest
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import testpaths
+import paths
+import shutil
 from src import schemadata, customExceptions
 from collections import namedtuple
 # == Class that tests extractor.py ==
@@ -68,6 +70,84 @@ class CreatorTestCase(unittest.TestCase):
 
 	def tearDown(self):
 		print "<> CreatorTestCase:tearDown - begin"
+
+	## -- ProcessorCreator testcases
+	def test_ProcessorCreator(self):
+		"Tests the ProcessorCreator class"
+		print "CreatorTestCase:test_ProcessorCreator - begin"
+		
+		#Test getSpeed function
+		speedkeywords = ["GHz","MHz"]
+		testline = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz"""
+		testline2 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 800MHz"""
+		testline3 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GH"""
+		testline4 = """model name	: 3.20GHz Intel(R) Xeon(R) CPU E31230"""
+		testline5 = """model name	: 3.20 GHz Intel(R) Xeon(R) CPU"""
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline, speedkeywords), "3200", "getSpeed function not working")
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline2, speedkeywords), "800", "getSpeed function not working")
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline3, speedkeywords)
+		self.assertEqual(creator.ProcessorCreator.getSpeed(testline4, speedkeywords), "3200", "getSpeed function not working")
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline5, speedkeywords)
+		
+		#Test getVmxFromMSR function
+		msrpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr")
+		with open(msrpath, "wb") as f:
+			f.write(b"\x01\x02\x03\x04")
+		OFFSET = 0
+		VMX_BITSIZE = 5
+		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 1, "getVmxFromMSR function not working")
+		with open(msrpath, "wb") as f:
+			f.write(b"\x05\x02\x03\x04")
+		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 5, "getVmxFromMSR function not working")
+		with open(msrpath, "wb") as f:
+			f.write(b"\x11\x02\x03\x04")
+		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 17, "getVmxFromMSR function not working")
+		msrinvalidpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr_invalid")
+		self.assertRaises(customExceptions.MSRFileNotFound, creator.ProcessorCreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
+
+
+	## -- MemoryCreator testcases
+	def test_MemoryCreator(self):
+		"Tests the MemoryCreator class"
+		print "ExtractorTestCase:test_MemoryCreator - begin"
+
+		loc = self.testdir + "memorycreator/"
+
+		#Test isAllocatable function
+		memblock_1 = Element("memoryBlock", "memoryBlockType")
+		memblock_1["name", "physicalAddress"] = "System RAM", "16#0010_000f#"
+		
+		memblock_2 = Element("memoryBlock", "memoryBlockType")
+		memblock_2["name", "physicalAddress"] = "System RAM2", "16#0010_000f"
+		
+		memblock_3 = Element("memoryBlock", "memoryBlockType")
+		memblock_3["name", "physicalAddress"] = "System RAM", "0xfffff"
+		
+		memblock_4 = Element("memoryBlock", "memoryBlockType")
+		memblock_4["name", "physicalAddress"] = "System RAM2", "0x1000"
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_1),True, "isAllocatable function is not working")
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_2), False, "isAllocatable function is not working")
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_3),False,"isAllocatable function is not working")
+		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_4), False, "isAllocatable function is not working")
+
+		#Test getMemoryBlocks
+		memoryBlockList = creator.MemoryCreator.getMemoryBlocks(loc)
+		memoryBlock0 = memoryBlockList[0].compileToPyxb()
+		memoryBlock1 = memoryBlockList[1].compileToPyxb()
+		self.assertEqual(memoryBlock0.physicalAddress,"16#000a#", "getMemoryBlocks function not working")
+		self.assertEqual(memoryBlock0.size,"16#f000#", "getMemoryBlocks function not working")
+		self.assertEqual(memoryBlock1.name,"1_type", "getMemoryBlocks function not working")
+
+		#Test generateMemoryBlock
+		startfile = loc + "0/start"
+		endfile = loc + "0/end"
+		typefile = loc + "0/type"
+
+		memoryBlock = creator.MemoryCreator.generateMemoryBlock(endfile, typefile, startfile)
+		memoryBlock_pyxb = memoryBlock.compileToPyxb()
+		self.assertEqual(memoryBlock_pyxb.name, "0_type", "generateMemoryBlock not working")
+		self.assertEqual(memoryBlock_pyxb.physicalAddress, "16#000a#", "generateMemoryBlock not working")
+
 
 	## -- DevicesCreator testcases
 	def test_DevicesCreator(self):
@@ -134,84 +214,6 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(iommucreator.getIommuAddrs(emptyloc),
 				[],
 				"getIommuAddrs function not working")
-		
-	## -- ProcessorCreator testcases
-	def test_ProcessorCreator(self):
-		"Tests the ProcessorCreator class"
-		print "CreatorTestCase:test_ProcessorCreator - begin"
-		
-		#Test getSpeed function
-		speedkeywords = ["GHz","MHz"]
-		testline = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz"""
-		testline2 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 800MHz"""
-		testline3 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GH"""
-		testline4 = """model name	: 3.20GHz Intel(R) Xeon(R) CPU E31230"""
-		testline5 = """model name	: 3.20 GHz Intel(R) Xeon(R) CPU"""
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline, speedkeywords), "3200", "getSpeed function not working")
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline2, speedkeywords), "800", "getSpeed function not working")
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline3, speedkeywords)
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline4, speedkeywords), "3200", "getSpeed function not working")
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline5, speedkeywords)
-		
-		#Test getVmxFromMSR function
-		msrpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr")
-		with open(msrpath, "wb") as f:
-			f.write(b"\x01\x02\x03\x04")
-		OFFSET = 0
-		VMX_BITSIZE = 5
-		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 1, "getVmxFromMSR function not working")
-		with open(msrpath, "wb") as f:
-			f.write(b"\x05\x02\x03\x04")
-		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 5, "getVmxFromMSR function not working")
-		with open(msrpath, "wb") as f:
-			f.write(b"\x11\x02\x03\x04")
-		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 17, "getVmxFromMSR function not working")
-		msrinvalidpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr_invalid")
-		self.assertRaises(customExceptions.MSRFileNotFound, creator.ProcessorCreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
-				
-		
-
-	## -- MemoryCreator testcases
-	def test_MemoryCreator(self):
-		"Tests the MemoryCreator class"
-		print "ExtractorTestCase:test_MemoryCreator - begin"
-
-		loc = self.testdir + "memorycreator/"
-
-		#Test isAllocatable function
-		memblock_1 = Element("memoryBlock", "memoryBlockType")
-		memblock_1["name", "physicalAddress"] = "System RAM", "16#0010_000f#"
-		
-		memblock_2 = Element("memoryBlock", "memoryBlockType")
-		memblock_2["name", "physicalAddress"] = "System RAM2", "16#0010_000f"
-		
-		memblock_3 = Element("memoryBlock", "memoryBlockType")
-		memblock_3["name", "physicalAddress"] = "System RAM", "0xfffff"
-		
-		memblock_4 = Element("memoryBlock", "memoryBlockType")
-		memblock_4["name", "physicalAddress"] = "System RAM2", "0x1000"
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_1),True, "isAllocatable function is not working")
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_2), False, "isAllocatable function is not working")
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_3),False,"isAllocatable function is not working")
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_4), False, "isAllocatable function is not working")
-
-		#Test getMemoryBlocks
-		memoryBlockList = creator.MemoryCreator.getMemoryBlocks(loc)
-		memoryBlock0 = memoryBlockList[0].compileToPyxb()
-		memoryBlock1 = memoryBlockList[1].compileToPyxb()
-		self.assertEqual(memoryBlock0.physicalAddress,"16#000a#", "getMemoryBlocks function not working")
-		self.assertEqual(memoryBlock0.size,"16#f000#", "getMemoryBlocks function not working")
-		self.assertEqual(memoryBlock1.name,"1_type", "getMemoryBlocks function not working")
-
-		#Test generateMemoryBlock
-		startfile = loc + "0/start"
-		endfile = loc + "0/end"
-		typefile = loc + "0/type"
-
-		memoryBlock = creator.MemoryCreator.generateMemoryBlock(endfile, typefile, startfile)
-		memoryBlock_pyxb = memoryBlock.compileToPyxb()
-		self.assertEqual(memoryBlock_pyxb.name, "0_type", "generateMemoryBlock not working")
-		self.assertEqual(memoryBlock_pyxb.physicalAddress, "16#000a#", "generateMemoryBlock not working")
 
 
 # == Tests schemadata.py ==
@@ -405,22 +407,41 @@ class SchemaDataTestCase(unittest.TestCase):
 
 		#Normal function
 		with open(testschema, "r") as f:
-			schemadata.createBindings(f, self.testdir, "testschemaoutput")
+			schemadata.createBindings(f, self.testdir, "testschemaoutput", paths.PYXB_GEN)
 			
 		#Invalid schema file chosen
 		with open(testschema_invalid, "r") as f:
-			schemadata.createBindings(f, self.testdir, "testschemaoutput")
+			self.assertRaises(customExceptions.PyxbgenInvalidSchema,
+							  schemadata.createBindings,
+							  f, self.testdir, "testschemaoutput", paths.PYXB_GEN)
+
+		#No pyxb detected
+		with open(testschema, "r") as f:
+			self.assertRaises(OSError,
+							  schemadata.createBindings,
+							  f, self.testdir, "testschemaoutput", "invalidcommand")
 			
+	def test_moveGeneratedFile(self):
+		testschema = os.path.join(self.testdir, "testmoveschema.xsd")
+		testdest = os.path.join(self.testdir, "testmoveschema_dest.xsd")
+		schemadata.moveGeneratedFile(testschema, testdest)
+		open(testdest)
+		schemadata.moveGeneratedFile(testdest, testschema)
 		
-	
-		
+	def test_getChoice(self):
+		acceptedvalues = ["y"]
+		def raw_input_y(msg):
+			return "y"
+		self.assertEqual(schemadata.getChoice(acceptedvalues, raw_input=raw_input_y),
+						 "y",
+						 "getChoice not working")
+
 	def test_copyEnvWithPythonPath(self):
 		myenv = os.environ.copy()
 		pythonpathstr = ""
 		for pythonpath in sys.path:
 			pythonpathstr  = pythonpathstr + pythonpath + ":"
 		myenv["PYTHONPATH"] = pythonpathstr
-		
 		self.assertEqual(schemadata.copyEnvWithPythonPath(),myenv,"copyEnvWithPythonPath test failed")
 
 

@@ -104,7 +104,10 @@ def handleArgs():
 		runMain = False
 	
 	if args.gen is not None:
-		schemadata.generateBindings(args.gen)
+		#args.gen: schemafile
+		outname = "schemaconfig"
+		outpath = paths.CURRENTDIR
+		schemadata.generateBindings(args.gen, outpath, outname)
 		runMain = False
 
 	if runMain:

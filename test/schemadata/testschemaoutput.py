@@ -1,7 +1,7 @@
-# /home/cj/Programming/ConfigTool/schemaconfig.py
+# /home/cj/Programming/ConfigTool/test/schemadata/testschemaoutput.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:e92452c8d3e28a9e27abfc9994d2007779e7f4c9
-# Generated 2015-08-18 10:03:37.737516 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
+# Generated 2015-08-18 10:11:10.674459 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
 # Namespace AbsentNamespace0
 
 from __future__ import unicode_literals
@@ -14,7 +14,7 @@ import pyxb.utils.domutils
 import sys
 import pyxb.utils.six as _six
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:a175f79a-457f-11e5-b9f9-001999a78414')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:af6f02f0-4580-11e5-8bec-001999a78414')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.5-DEV'
@@ -82,7 +82,7 @@ class word64Type (pyxb.binding.datatypes.string):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'word64Type')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 3, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 3, 2)
     _Documentation = None
 word64Type._CF_pattern = pyxb.binding.facets.CF_pattern()
 word64Type._CF_pattern.addPattern(pattern='16#[0-9a-fA-F]{4}(_([0-9a-fA-F]{4})){0,3}#')
@@ -96,7 +96,7 @@ class byteType (pyxb.binding.datatypes.string):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'byteType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 18, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 18, 2)
     _Documentation = None
 byteType._CF_pattern = pyxb.binding.facets.CF_pattern()
 byteType._CF_pattern.addPattern(pattern='16#[0-9a-fA-F]{2}#')
@@ -110,7 +110,7 @@ class booleanType (pyxb.binding.datatypes.string, pyxb.binding.basis.enumeration
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'booleanType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 23, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 23, 2)
     _Documentation = None
 booleanType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=booleanType, enum_prefix=None)
 booleanType.true = booleanType._CF_enumeration.addEnumeration(unicode_value='true', tag='true')
@@ -125,7 +125,7 @@ class nameType (pyxb.binding.datatypes.string):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'nameType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 29, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 29, 2)
     _Documentation = None
 nameType._CF_minLength = pyxb.binding.facets.CF_minLength(value=pyxb.binding.datatypes.nonNegativeInteger(1))
 nameType._CF_maxLength = pyxb.binding.facets.CF_maxLength(value=pyxb.binding.datatypes.nonNegativeInteger(63))
@@ -140,7 +140,7 @@ class noneType (pyxb.binding.datatypes.string, pyxb.binding.basis.enumeration_mi
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'noneType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 35, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 35, 2)
     _Documentation = None
 noneType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=noneType, enum_prefix=None)
 noneType.none = noneType._CF_enumeration.addEnumeration(unicode_value='none', tag='none')
@@ -154,7 +154,7 @@ class pciDeviceNumberType (pyxb.binding.datatypes.string):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'pciDeviceNumberType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 56, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 56, 2)
     _Documentation = None
 pciDeviceNumberType._CF_pattern = pyxb.binding.facets.CF_pattern()
 pciDeviceNumberType._CF_pattern.addPattern(pattern='16#[0|1][0-9a-fA-F]#')
@@ -168,7 +168,7 @@ class pciFunctionNumberType (pyxb.binding.datatypes.nonNegativeInteger):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'pciFunctionNumberType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 61, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 61, 2)
     _Documentation = None
 pciFunctionNumberType._CF_maxInclusive = pyxb.binding.facets.CF_maxInclusive(value_datatype=pciFunctionNumberType, value=pyxb.binding.datatypes.nonNegativeInteger(7))
 pciFunctionNumberType._InitializeFacetMap(pciFunctionNumberType._CF_maxInclusive)
@@ -181,7 +181,7 @@ class vmxTimerRateType (pyxb.binding.datatypes.nonNegativeInteger):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'vmxTimerRateType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 84, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 77, 2)
     _Documentation = None
 vmxTimerRateType._CF_maxInclusive = pyxb.binding.facets.CF_maxInclusive(value_datatype=vmxTimerRateType, value=pyxb.binding.datatypes.nonNegativeInteger(31))
 vmxTimerRateType._InitializeFacetMap(vmxTimerRateType._CF_maxInclusive)
@@ -194,7 +194,7 @@ class vectorType (pyxb.binding.datatypes.nonNegativeInteger):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'vectorType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 101, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 94, 2)
     _Documentation = None
 vectorType._CF_maxInclusive = pyxb.binding.facets.CF_maxInclusive(value_datatype=vectorType, value=pyxb.binding.datatypes.nonNegativeInteger(255))
 vectorType._InitializeFacetMap(vectorType._CF_maxInclusive)
@@ -207,7 +207,7 @@ class irqNumberType (pyxb.binding.datatypes.nonNegativeInteger):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'irqNumberType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 106, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 99, 2)
     _Documentation = None
 irqNumberType._CF_maxInclusive = pyxb.binding.facets.CF_maxInclusive(value_datatype=irqNumberType, value=pyxb.binding.datatypes.nonNegativeInteger(220))
 irqNumberType._InitializeFacetMap(irqNumberType._CF_maxInclusive)
@@ -220,7 +220,7 @@ class cachingType (pyxb.binding.datatypes.string):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'cachingType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 160, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 153, 2)
     _Documentation = None
 cachingType._CF_pattern = pyxb.binding.facets.CF_pattern()
 cachingType._CF_pattern.addPattern(pattern='UC|WC|WT|WB|WP')
@@ -234,7 +234,7 @@ class memoryKindType (pyxb.binding.datatypes.string, pyxb.binding.basis.enumerat
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memoryKindType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 165, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 158, 2)
     _Documentation = None
 memoryKindType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=memoryKindType, enum_prefix=None)
 memoryKindType.system = memoryKindType._CF_enumeration.addEnumeration(unicode_value='system', tag='system')
@@ -274,7 +274,7 @@ class word32Type (word64Type):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'word32Type')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 8, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 8, 2)
     _Documentation = None
 word32Type._CF_maxLength = pyxb.binding.facets.CF_maxLength(value=pyxb.binding.datatypes.nonNegativeInteger(13))
 word32Type._InitializeFacetMap(word32Type._CF_maxLength)
@@ -287,7 +287,7 @@ class word16Type (word64Type):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'word16Type')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 13, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 13, 2)
     _Documentation = None
 word16Type._CF_length = pyxb.binding.facets.CF_length(value=pyxb.binding.datatypes.nonNegativeInteger(8))
 word16Type._InitializeFacetMap(word16Type._CF_length)
@@ -300,7 +300,7 @@ class memorySizeType (word64Type):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memorySizeType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 150, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 143, 2)
     _Documentation = None
 memorySizeType._InitializeFacetMap()
 Namespace.addCategoryObject('typeBinding', 'memorySizeType', memorySizeType)
@@ -312,7 +312,7 @@ class alignmentType (word64Type, pyxb.binding.basis.enumeration_mixin):
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'alignmentType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 153, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 146, 2)
     _Documentation = None
 alignmentType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=alignmentType, enum_prefix=None)
 alignmentType.n161000 = alignmentType._CF_enumeration.addEnumeration(unicode_value='16#1000#', tag='n161000')
@@ -329,15 +329,15 @@ class optionalOffsetType (pyxb.binding.basis.STD_union):
     """Simple type that is a union of word64Type, noneType."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'optionalOffsetType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 212, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 205, 2)
     _Documentation = None
 
     _MemberTypes = ( word64Type, noneType, )
-optionalOffsetType._CF_pattern = pyxb.binding.facets.CF_pattern()
 optionalOffsetType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=optionalOffsetType)
+optionalOffsetType._CF_pattern = pyxb.binding.facets.CF_pattern()
 optionalOffsetType.none = 'none'                  # originally noneType.none
-optionalOffsetType._InitializeFacetMap(optionalOffsetType._CF_pattern,
-   optionalOffsetType._CF_enumeration)
+optionalOffsetType._InitializeFacetMap(optionalOffsetType._CF_enumeration,
+   optionalOffsetType._CF_pattern)
 Namespace.addCategoryObject('typeBinding', 'optionalOffsetType', optionalOffsetType)
 _module_typeBindings.optionalOffsetType = optionalOffsetType
 
@@ -347,7 +347,7 @@ class subjectMemoryKindType (memoryKindType, pyxb.binding.basis.enumeration_mixi
     """An atomic simple type."""
 
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'subjectMemoryKindType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 263, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 256, 2)
     _Documentation = None
 subjectMemoryKindType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=subjectMemoryKindType, enum_prefix=None)
 subjectMemoryKindType.subject = subjectMemoryKindType._CF_enumeration.addEnumeration(unicode_value='subject', tag='subject')
@@ -375,13 +375,13 @@ class capabilitiesType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'capabilitiesType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 89, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 82, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element capability uses Python identifier capability
-    __capability = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'capability'), 'capability', '__AbsentNamespace0_capabilitiesType_capability', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 91, 3), )
+    __capability = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'capability'), 'capability', '__AbsentNamespace0_capabilitiesType_capability', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 84, 3), )
 
     
     capability = property(__capability.value, __capability.set, None, None)
@@ -403,15 +403,15 @@ class capabilityType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_SIMPLE
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'capabilityType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 94, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 87, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.string
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__AbsentNamespace0_capabilityType_name', pyxb.binding.datatypes.string, required=True)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 97, 4)
-    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 97, 4)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 90, 4)
+    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 90, 4)
     
     name = property(__name.value, __name.set, None, None)
 
@@ -432,13 +432,13 @@ class devicesRefType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'devicesRefType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 120, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 113, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element device uses Python identifier device
-    __device = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'device'), 'device', '__AbsentNamespace0_devicesRefType_device', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 122, 3), )
+    __device = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'device'), 'device', '__AbsentNamespace0_devicesRefType_device', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 115, 3), )
 
     
     device = property(__device.value, __device.set, None, None)
@@ -460,20 +460,20 @@ class resourcesType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'resourcesType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 144, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 137, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element irq uses Python identifier irq
-    __irq = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'irq'), 'irq', '__AbsentNamespace0_resourcesType_irq', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 146, 3), )
+    __irq = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'irq'), 'irq', '__AbsentNamespace0_resourcesType_irq', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 139, 3), )
 
     
     irq = property(__irq.value, __irq.set, None, None)
 
     
     # Element ioPort uses Python identifier ioPort
-    __ioPort = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'ioPort'), 'ioPort', '__AbsentNamespace0_resourcesType_ioPort', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 147, 3), )
+    __ioPort = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'ioPort'), 'ioPort', '__AbsentNamespace0_resourcesType_ioPort', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 140, 3), )
 
     
     ioPort = property(__ioPort.value, __ioPort.set, None, None)
@@ -496,13 +496,13 @@ class memRegionsType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memRegionsType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 218, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 211, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element memory uses Python identifier memory
-    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_memRegionsType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 220, 3), )
+    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_memRegionsType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 213, 3), )
 
     
     memory = property(__memory.value, __memory.set, None, None)
@@ -524,13 +524,13 @@ class memoryRefsType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memoryRefsType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 223, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 216, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element memory uses Python identifier memory
-    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_memoryRefsType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 225, 3), )
+    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_memoryRefsType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 218, 3), )
 
     
     memory = property(__memory.value, __memory.set, None, None)
@@ -552,13 +552,13 @@ class physicalMemoryType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'physicalMemoryType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 281, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 274, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element memoryBlock uses Python identifier memoryBlock
-    __memoryBlock = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memoryBlock'), 'memoryBlock', '__AbsentNamespace0_physicalMemoryType_memoryBlock', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 283, 3), )
+    __memoryBlock = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memoryBlock'), 'memoryBlock', '__AbsentNamespace0_physicalMemoryType_memoryBlock', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 276, 3), )
 
     
     memoryBlock = property(__memoryBlock.value, __memoryBlock.set, None, None)
@@ -580,27 +580,27 @@ class platformType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'platformType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 286, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 279, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element processor uses Python identifier processor
-    __processor = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'processor'), 'processor', '__AbsentNamespace0_platformType_processor', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 288, 3), )
+    __processor = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'processor'), 'processor', '__AbsentNamespace0_platformType_processor', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 281, 3), )
 
     
     processor = property(__processor.value, __processor.set, None, None)
 
     
     # Element memory uses Python identifier memory
-    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_platformType_memory', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 289, 3), )
+    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_platformType_memory', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 282, 3), )
 
     
     memory = property(__memory.value, __memory.set, None, None)
 
     
     # Element devices uses Python identifier devices
-    __devices = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'devices'), 'devices', '__AbsentNamespace0_platformType_devices', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 290, 3), )
+    __devices = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'devices'), 'devices', '__AbsentNamespace0_platformType_devices', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 283, 3), )
 
     
     devices = property(__devices.value, __devices.set, None, None)
@@ -624,41 +624,41 @@ class deviceType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'deviceType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 40, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 40, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element pci uses Python identifier pci
-    __pci = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'pci'), 'pci', '__AbsentNamespace0_deviceType_pci', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 42, 3), )
+    __pci = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'pci'), 'pci', '__AbsentNamespace0_deviceType_pci', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 42, 3), )
 
     
     pci = property(__pci.value, __pci.set, None, None)
 
     
     # Element irq uses Python identifier irq
-    __irq = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'irq'), 'irq', '__AbsentNamespace0_deviceType_irq', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 43, 3), )
+    __irq = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'irq'), 'irq', '__AbsentNamespace0_deviceType_irq', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 43, 3), )
 
     
     irq = property(__irq.value, __irq.set, None, None)
 
     
     # Element memory uses Python identifier memory
-    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_deviceType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 44, 3), )
+    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_deviceType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 44, 3), )
 
     
     memory = property(__memory.value, __memory.set, None, None)
 
     
     # Element ioPort uses Python identifier ioPort
-    __ioPort = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'ioPort'), 'ioPort', '__AbsentNamespace0_deviceType_ioPort', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 45, 3), )
+    __ioPort = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'ioPort'), 'ioPort', '__AbsentNamespace0_deviceType_ioPort', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 45, 3), )
 
     
     ioPort = property(__ioPort.value, __ioPort.set, None, None)
 
     
     # Element capabilities uses Python identifier capabilities
-    __capabilities = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'capabilities'), 'capabilities', '__AbsentNamespace0_deviceType_capabilities', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 46, 3), )
+    __capabilities = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'capabilities'), 'capabilities', '__AbsentNamespace0_deviceType_capabilities', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 46, 3), )
 
     
     capabilities = property(__capabilities.value, __capabilities.set, None, None)
@@ -666,16 +666,16 @@ class deviceType (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__AbsentNamespace0_deviceType_name', _module_typeBindings.nameType, required=True)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 48, 2)
-    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 48, 2)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 48, 2)
+    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 48, 2)
     
     name = property(__name.value, __name.set, None, None)
 
     
     # Attribute shared uses Python identifier shared
     __shared = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'shared'), 'shared', '__AbsentNamespace0_deviceType_shared', _module_typeBindings.booleanType, required=True)
-    __shared._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 49, 2)
-    __shared._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 49, 2)
+    __shared._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 49, 2)
+    __shared._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 49, 2)
     
     shared = property(__shared.value, __shared.set, None, None)
 
@@ -694,38 +694,38 @@ _module_typeBindings.deviceType = deviceType
 Namespace.addCategoryObject('typeBinding', 'deviceType', deviceType)
 
 
-# Complex type pciAddressType with content type EMPTY
-class pciAddressType (pyxb.binding.basis.complexTypeDefinition):
-    """Complex type pciAddressType with content type EMPTY"""
+# Complex type pciType with content type EMPTY
+class pciType (pyxb.binding.basis.complexTypeDefinition):
+    """Complex type pciType with content type EMPTY"""
     _TypeDefinition = None
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'pciAddressType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 51, 2)
+    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'pciType')
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 51, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute bus uses Python identifier bus
-    __bus = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'bus'), 'bus', '__AbsentNamespace0_pciAddressType_bus', _module_typeBindings.byteType, required=True)
-    __bus._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 52, 2)
-    __bus._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 52, 2)
+    __bus = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'bus'), 'bus', '__AbsentNamespace0_pciType_bus', _module_typeBindings.byteType)
+    __bus._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 52, 2)
+    __bus._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 52, 2)
     
     bus = property(__bus.value, __bus.set, None, None)
 
     
     # Attribute device uses Python identifier device
-    __device = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'device'), 'device', '__AbsentNamespace0_pciAddressType_device', _module_typeBindings.pciDeviceNumberType, required=True)
-    __device._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 53, 2)
-    __device._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 53, 2)
+    __device = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'device'), 'device', '__AbsentNamespace0_pciType_device', _module_typeBindings.pciDeviceNumberType)
+    __device._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 53, 2)
+    __device._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 53, 2)
     
     device = property(__device.value, __device.set, None, None)
 
     
     # Attribute function uses Python identifier function
-    __function = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'function'), 'function', '__AbsentNamespace0_pciAddressType_function', _module_typeBindings.pciFunctionNumberType, required=True)
-    __function._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 54, 2)
-    __function._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 54, 2)
+    __function = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'function'), 'function', '__AbsentNamespace0_pciType_function', _module_typeBindings.pciFunctionNumberType)
+    __function._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 54, 2)
+    __function._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 54, 2)
     
     function = property(__function.value, __function.set, None, None)
 
@@ -737,8 +737,8 @@ class pciAddressType (pyxb.binding.basis.complexTypeDefinition):
         __device.name() : __device,
         __function.name() : __function
     })
-_module_typeBindings.pciAddressType = pciAddressType
-Namespace.addCategoryObject('typeBinding', 'pciAddressType', pciAddressType)
+_module_typeBindings.pciType = pciType
+Namespace.addCategoryObject('typeBinding', 'pciType', pciType)
 
 
 # Complex type devicesType with content type ELEMENT_ONLY
@@ -748,13 +748,13 @@ class devicesType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'devicesType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 73, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 66, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element device uses Python identifier device
-    __device = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'device'), 'device', '__AbsentNamespace0_devicesType_device', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 75, 3), )
+    __device = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'device'), 'device', '__AbsentNamespace0_devicesType_device', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 68, 3), )
 
     
     device = property(__device.value, __device.set, None, None)
@@ -762,8 +762,8 @@ class devicesType (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute pciConfigAddress uses Python identifier pciConfigAddress
     __pciConfigAddress = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'pciConfigAddress'), 'pciConfigAddress', '__AbsentNamespace0_devicesType_pciConfigAddress', _module_typeBindings.word64Type)
-    __pciConfigAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 77, 2)
-    __pciConfigAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 77, 2)
+    __pciConfigAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 70, 2)
+    __pciConfigAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 70, 2)
     
     pciConfigAddress = property(__pciConfigAddress.value, __pciConfigAddress.set, None, None)
 
@@ -784,31 +784,31 @@ class processorType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'processorType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 79, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 72, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute logicalCpus uses Python identifier logicalCpus
     __logicalCpus = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'logicalCpus'), 'logicalCpus', '__AbsentNamespace0_processorType_logicalCpus', pyxb.binding.datatypes.positiveInteger, required=True)
-    __logicalCpus._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 80, 2)
-    __logicalCpus._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 80, 2)
+    __logicalCpus._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 73, 2)
+    __logicalCpus._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 73, 2)
     
     logicalCpus = property(__logicalCpus.value, __logicalCpus.set, None, None)
 
     
     # Attribute speed uses Python identifier speed
     __speed = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'speed'), 'speed', '__AbsentNamespace0_processorType_speed', pyxb.binding.datatypes.positiveInteger, required=True)
-    __speed._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 81, 2)
-    __speed._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 81, 2)
+    __speed._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 74, 2)
+    __speed._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 74, 2)
     
     speed = property(__speed.value, __speed.set, None, None)
 
     
     # Attribute vmxTimerRate uses Python identifier vmxTimerRate
     __vmxTimerRate = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'vmxTimerRate'), 'vmxTimerRate', '__AbsentNamespace0_processorType_vmxTimerRate', _module_typeBindings.vmxTimerRateType, required=True)
-    __vmxTimerRate._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 82, 2)
-    __vmxTimerRate._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 82, 2)
+    __vmxTimerRate._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 75, 2)
+    __vmxTimerRate._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 75, 2)
     
     vmxTimerRate = property(__vmxTimerRate.value, __vmxTimerRate.set, None, None)
 
@@ -831,23 +831,23 @@ class irqType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'irqType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 116, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 109, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__AbsentNamespace0_irqType_name', _module_typeBindings.nameType, required=True)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 117, 2)
-    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 117, 2)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 110, 2)
+    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 110, 2)
     
     name = property(__name.value, __name.set, None, None)
 
     
     # Attribute number uses Python identifier number
     __number = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'number'), 'number', '__AbsentNamespace0_irqType_number', _module_typeBindings.irqNumberType, required=True)
-    __number._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 118, 2)
-    __number._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 118, 2)
+    __number._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 111, 2)
+    __number._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 111, 2)
     
     number = property(__number.value, __number.set, None, None)
 
@@ -869,34 +869,34 @@ class deviceRefType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'deviceRefType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 125, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 118, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element pci uses Python identifier pci
-    __pci = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'pci'), 'pci', '__AbsentNamespace0_deviceRefType_pci', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 127, 3), )
+    __pci = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'pci'), 'pci', '__AbsentNamespace0_deviceRefType_pci', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 120, 3), )
 
     
     pci = property(__pci.value, __pci.set, None, None)
 
     
     # Element memory uses Python identifier memory
-    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_deviceRefType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 128, 3), )
+    __memory = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'memory'), 'memory', '__AbsentNamespace0_deviceRefType_memory', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 121, 3), )
 
     
     memory = property(__memory.value, __memory.set, None, None)
 
     
     # Element ioPort uses Python identifier ioPort
-    __ioPort = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'ioPort'), 'ioPort', '__AbsentNamespace0_deviceRefType_ioPort', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 129, 3), )
+    __ioPort = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'ioPort'), 'ioPort', '__AbsentNamespace0_deviceRefType_ioPort', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 122, 3), )
 
     
     ioPort = property(__ioPort.value, __ioPort.set, None, None)
 
     
     # Element irq uses Python identifier irq
-    __irq = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'irq'), 'irq', '__AbsentNamespace0_deviceRefType_irq', True, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 130, 3), )
+    __irq = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'irq'), 'irq', '__AbsentNamespace0_deviceRefType_irq', True, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 123, 3), )
 
     
     irq = property(__irq.value, __irq.set, None, None)
@@ -904,16 +904,16 @@ class deviceRefType (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute logical uses Python identifier logical
     __logical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'logical'), 'logical', '__AbsentNamespace0_deviceRefType_logical', _module_typeBindings.nameType, required=True)
-    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 132, 2)
-    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 132, 2)
+    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 125, 2)
+    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 125, 2)
     
     logical = property(__logical.value, __logical.set, None, None)
 
     
     # Attribute physical uses Python identifier physical
     __physical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'physical'), 'physical', '__AbsentNamespace0_deviceRefType_physical', _module_typeBindings.nameType, required=True)
-    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 133, 2)
-    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 133, 2)
+    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 126, 2)
+    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 126, 2)
     
     physical = property(__physical.value, __physical.set, None, None)
 
@@ -938,23 +938,23 @@ class ioPortRefType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'ioPortRefType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 135, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 128, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute logical uses Python identifier logical
     __logical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'logical'), 'logical', '__AbsentNamespace0_ioPortRefType_logical', _module_typeBindings.nameType, required=True)
-    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 136, 2)
-    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 136, 2)
+    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 129, 2)
+    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 129, 2)
     
     logical = property(__logical.value, __logical.set, None, None)
 
     
     # Attribute physical uses Python identifier physical
     __physical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'physical'), 'physical', '__AbsentNamespace0_ioPortRefType_physical', _module_typeBindings.nameType, required=True)
-    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 137, 2)
-    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 137, 2)
+    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 130, 2)
+    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 130, 2)
     
     physical = property(__physical.value, __physical.set, None, None)
 
@@ -976,31 +976,31 @@ class irqRefType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'irqRefType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 139, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 132, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute logical uses Python identifier logical
     __logical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'logical'), 'logical', '__AbsentNamespace0_irqRefType_logical', _module_typeBindings.nameType, required=True)
-    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 140, 2)
-    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 140, 2)
+    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 133, 2)
+    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 133, 2)
     
     logical = property(__logical.value, __logical.set, None, None)
 
     
     # Attribute physical uses Python identifier physical
     __physical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'physical'), 'physical', '__AbsentNamespace0_irqRefType_physical', _module_typeBindings.nameType, required=True)
-    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 141, 2)
-    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 141, 2)
+    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 134, 2)
+    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 134, 2)
     
     physical = property(__physical.value, __physical.set, None, None)
 
     
     # Attribute vector uses Python identifier vector
     __vector = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'vector'), 'vector', '__AbsentNamespace0_irqRefType_vector', _module_typeBindings.vectorType, required=True)
-    __vector._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 142, 2)
-    __vector._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 142, 2)
+    __vector._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 135, 2)
+    __vector._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 135, 2)
     
     vector = property(__vector.value, __vector.set, None, None)
 
@@ -1023,15 +1023,15 @@ class fillContentType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'fillContentType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 215, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 208, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute pattern uses Python identifier pattern
     __pattern = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'pattern'), 'pattern', '__AbsentNamespace0_fillContentType_pattern', _module_typeBindings.byteType, required=True)
-    __pattern._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 216, 2)
-    __pattern._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 216, 2)
+    __pattern._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 209, 2)
+    __pattern._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 209, 2)
     
     pattern = property(__pattern.value, __pattern.set, None, None)
 
@@ -1052,47 +1052,47 @@ class memRefType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memRefType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 252, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 245, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute logical uses Python identifier logical
     __logical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'logical'), 'logical', '__AbsentNamespace0_memRefType_logical', _module_typeBindings.nameType, required=True)
-    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 229, 2)
-    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 229, 2)
+    __logical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 222, 2)
+    __logical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 222, 2)
     
     logical = property(__logical.value, __logical.set, None, None)
 
     
     # Attribute physical uses Python identifier physical
     __physical = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'physical'), 'physical', '__AbsentNamespace0_memRefType_physical', _module_typeBindings.nameType, required=True)
-    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 230, 2)
-    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 230, 2)
+    __physical._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 223, 2)
+    __physical._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 223, 2)
     
     physical = property(__physical.value, __physical.set, None, None)
 
     
     # Attribute writable uses Python identifier writable
     __writable = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'writable'), 'writable', '__AbsentNamespace0_memRefType_writable', _module_typeBindings.booleanType, required=True)
-    __writable._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 231, 2)
-    __writable._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 231, 2)
+    __writable._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 224, 2)
+    __writable._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 224, 2)
     
     writable = property(__writable.value, __writable.set, None, None)
 
     
     # Attribute executable uses Python identifier executable
     __executable = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'executable'), 'executable', '__AbsentNamespace0_memRefType_executable', _module_typeBindings.booleanType, required=True)
-    __executable._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 232, 2)
-    __executable._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 232, 2)
+    __executable._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 225, 2)
+    __executable._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 225, 2)
     
     executable = property(__executable.value, __executable.set, None, None)
 
     
     # Attribute virtualAddress uses Python identifier virtualAddress
     __virtualAddress = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'virtualAddress'), 'virtualAddress', '__AbsentNamespace0_memRefType_virtualAddress', _module_typeBindings.word64Type)
-    __virtualAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 254, 2)
-    __virtualAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 254, 2)
+    __virtualAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 247, 2)
+    __virtualAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 247, 2)
     
     virtualAddress = property(__virtualAddress.value, __virtualAddress.set, None, None)
 
@@ -1110,41 +1110,6 @@ _module_typeBindings.memRefType = memRefType
 Namespace.addCategoryObject('typeBinding', 'memRefType', memRefType)
 
 
-# Complex type pciType with content type EMPTY
-class pciType (pciAddressType):
-    """Complex type pciType with content type EMPTY"""
-    _TypeDefinition = None
-    _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
-    _Abstract = False
-    _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'pciType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 66, 2)
-    _ElementMap = pciAddressType._ElementMap.copy()
-    _AttributeMap = pciAddressType._AttributeMap.copy()
-    # Base type is pciAddressType
-    
-    # Attribute bus inherited from pciAddressType
-    
-    # Attribute device inherited from pciAddressType
-    
-    # Attribute function inherited from pciAddressType
-    
-    # Attribute msi uses Python identifier msi
-    __msi = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'msi'), 'msi', '__AbsentNamespace0_pciType_msi', pyxb.binding.datatypes.boolean, required=True)
-    __msi._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 69, 4)
-    __msi._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 69, 4)
-    
-    msi = property(__msi.value, __msi.set, None, None)
-
-    _ElementMap.update({
-        
-    })
-    _AttributeMap.update({
-        __msi.name() : __msi
-    })
-_module_typeBindings.pciType = pciType
-Namespace.addCategoryObject('typeBinding', 'pciType', pciType)
-
-
 # Complex type ioPortType with content type EMPTY
 class ioPortType (pyxb.binding.basis.complexTypeDefinition):
     """Complex type ioPortType with content type EMPTY"""
@@ -1152,31 +1117,31 @@ class ioPortType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'ioPortType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 111, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 104, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__AbsentNamespace0_ioPortType_name', _module_typeBindings.nameType, required=True)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 112, 2)
-    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 112, 2)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 105, 2)
+    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 105, 2)
     
     name = property(__name.value, __name.set, None, None)
 
     
     # Attribute start uses Python identifier start
     __start = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'start'), 'start', '__AbsentNamespace0_ioPortType_start', _module_typeBindings.word16Type, required=True)
-    __start._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 113, 2)
-    __start._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 113, 2)
+    __start._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 106, 2)
+    __start._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 106, 2)
     
     start = property(__start.value, __start.set, None, None)
 
     
     # Attribute end uses Python identifier end
     __end = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'end'), 'end', '__AbsentNamespace0_ioPortType_end', _module_typeBindings.word16Type, required=True)
-    __end._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 114, 2)
-    __end._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 114, 2)
+    __end._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 107, 2)
+    __end._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 107, 2)
     
     end = property(__end.value, __end.set, None, None)
 
@@ -1199,31 +1164,31 @@ class memoryBlockBaseType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = True
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memoryBlockBaseType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 196, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 189, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__AbsentNamespace0_memoryBlockBaseType_name', _module_typeBindings.nameType, required=True)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 197, 2)
-    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 197, 2)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 190, 2)
+    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 190, 2)
     
     name = property(__name.value, __name.set, None, None)
 
     
     # Attribute physicalAddress uses Python identifier physicalAddress
     __physicalAddress = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'physicalAddress'), 'physicalAddress', '__AbsentNamespace0_memoryBlockBaseType_physicalAddress', _module_typeBindings.word64Type, required=True)
-    __physicalAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 198, 2)
-    __physicalAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 198, 2)
+    __physicalAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 191, 2)
+    __physicalAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 191, 2)
     
     physicalAddress = property(__physicalAddress.value, __physicalAddress.set, None, None)
 
     
     # Attribute size uses Python identifier size
     __size = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'size'), 'size', '__AbsentNamespace0_memoryBlockBaseType_size', _module_typeBindings.memorySizeType, required=True)
-    __size._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 199, 2)
-    __size._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 199, 2)
+    __size._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 192, 2)
+    __size._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 192, 2)
     
     size = property(__size.value, __size.set, None, None)
 
@@ -1246,23 +1211,23 @@ class fileContentType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'fileContentType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 208, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 201, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Attribute filename uses Python identifier filename
     __filename = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'filename'), 'filename', '__AbsentNamespace0_fileContentType_filename', pyxb.binding.datatypes.string, required=True)
-    __filename._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 209, 2)
-    __filename._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 209, 2)
+    __filename._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 202, 2)
+    __filename._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 202, 2)
     
     filename = property(__filename.value, __filename.set, None, None)
 
     
     # Attribute offset uses Python identifier offset
     __offset = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'offset'), 'offset', '__AbsentNamespace0_fileContentType_offset', _module_typeBindings.optionalOffsetType, required=True)
-    __offset._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 210, 2)
-    __offset._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 210, 2)
+    __offset._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 203, 2)
+    __offset._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 203, 2)
     
     offset = property(__offset.value, __offset.set, None, None)
 
@@ -1284,20 +1249,20 @@ class memoryBaseType (pyxb.binding.basis.complexTypeDefinition):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = True
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memoryBaseType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 234, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 227, 2)
     _ElementMap = {}
     _AttributeMap = {}
     # Base type is pyxb.binding.datatypes.anyType
     
     # Element file uses Python identifier file
-    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'file'), 'file', '__AbsentNamespace0_memoryBaseType_file', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 236, 3), )
+    __file = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'file'), 'file', '__AbsentNamespace0_memoryBaseType_file', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 229, 3), )
 
     
     file = property(__file.value, __file.set, None, None)
 
     
     # Element fill uses Python identifier fill
-    __fill = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'fill'), 'fill', '__AbsentNamespace0_memoryBaseType_fill', False, pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 237, 3), )
+    __fill = pyxb.binding.content.ElementDeclaration(pyxb.namespace.ExpandedName(None, 'fill'), 'fill', '__AbsentNamespace0_memoryBaseType_fill', False, pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 230, 3), )
 
     
     fill = property(__fill.value, __fill.set, None, None)
@@ -1305,24 +1270,24 @@ class memoryBaseType (pyxb.binding.basis.complexTypeDefinition):
     
     # Attribute name uses Python identifier name
     __name = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'name'), 'name', '__AbsentNamespace0_memoryBaseType_name', _module_typeBindings.nameType, required=True)
-    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 239, 2)
-    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 239, 2)
+    __name._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 232, 2)
+    __name._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 232, 2)
     
     name = property(__name.value, __name.set, None, None)
 
     
     # Attribute size uses Python identifier size
     __size = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'size'), 'size', '__AbsentNamespace0_memoryBaseType_size', _module_typeBindings.memorySizeType, required=True)
-    __size._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 240, 2)
-    __size._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 240, 2)
+    __size._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 233, 2)
+    __size._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 233, 2)
     
     size = property(__size.value, __size.set, None, None)
 
     
     # Attribute caching uses Python identifier caching
     __caching = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'caching'), 'caching', '__AbsentNamespace0_memoryBaseType_caching', _module_typeBindings.cachingType, required=True)
-    __caching._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 241, 2)
-    __caching._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 241, 2)
+    __caching._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 234, 2)
+    __caching._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 234, 2)
     
     caching = property(__caching.value, __caching.set, None, None)
 
@@ -1346,7 +1311,7 @@ class deviceMemoryType (memoryBlockBaseType):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'deviceMemoryType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 201, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 194, 2)
     _ElementMap = memoryBlockBaseType._ElementMap.copy()
     _AttributeMap = memoryBlockBaseType._AttributeMap.copy()
     # Base type is memoryBlockBaseType
@@ -1359,8 +1324,8 @@ class deviceMemoryType (memoryBlockBaseType):
     
     # Attribute caching uses Python identifier caching
     __caching = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'caching'), 'caching', '__AbsentNamespace0_deviceMemoryType_caching', _module_typeBindings.cachingType, required=True)
-    __caching._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 204, 4)
-    __caching._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 204, 4)
+    __caching._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 197, 4)
+    __caching._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 197, 4)
     
     caching = property(__caching.value, __caching.set, None, None)
 
@@ -1381,7 +1346,7 @@ class memoryType (memoryBaseType):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_ELEMENT_ONLY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memoryType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 243, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 236, 2)
     _ElementMap = memoryBaseType._ElementMap.copy()
     _AttributeMap = memoryBaseType._AttributeMap.copy()
     # Base type is memoryBaseType
@@ -1398,24 +1363,24 @@ class memoryType (memoryBaseType):
     
     # Attribute type uses Python identifier type
     __type = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'type'), 'type', '__AbsentNamespace0_memoryType_type', _module_typeBindings.subjectMemoryKindType)
-    __type._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 246, 4)
-    __type._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 246, 4)
+    __type._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 239, 4)
+    __type._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 239, 4)
     
     type = property(__type.value, __type.set, None, None)
 
     
     # Attribute alignment uses Python identifier alignment
     __alignment = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'alignment'), 'alignment', '__AbsentNamespace0_memoryType_alignment', _module_typeBindings.alignmentType)
-    __alignment._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 247, 4)
-    __alignment._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 247, 4)
+    __alignment._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 240, 4)
+    __alignment._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 240, 4)
     
     alignment = property(__alignment.value, __alignment.set, None, None)
 
     
     # Attribute physicalAddress uses Python identifier physicalAddress
     __physicalAddress = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'physicalAddress'), 'physicalAddress', '__AbsentNamespace0_memoryType_physicalAddress', _module_typeBindings.word64Type)
-    __physicalAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 248, 4)
-    __physicalAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 248, 4)
+    __physicalAddress._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 241, 4)
+    __physicalAddress._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 241, 4)
     
     physicalAddress = property(__physicalAddress.value, __physicalAddress.set, None, None)
 
@@ -1438,7 +1403,7 @@ class memoryBlockType (memoryBlockBaseType):
     _ContentTypeTag = pyxb.binding.basis.complexTypeDefinition._CT_EMPTY
     _Abstract = False
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'memoryBlockType')
-    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 256, 2)
+    _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 249, 2)
     _ElementMap = memoryBlockBaseType._ElementMap.copy()
     _AttributeMap = memoryBlockBaseType._AttributeMap.copy()
     # Base type is memoryBlockBaseType
@@ -1451,8 +1416,8 @@ class memoryBlockType (memoryBlockBaseType):
     
     # Attribute allocatable uses Python identifier allocatable
     __allocatable = pyxb.binding.content.AttributeUse(pyxb.namespace.ExpandedName(None, 'allocatable'), 'allocatable', '__AbsentNamespace0_memoryBlockType_allocatable', _module_typeBindings.booleanType)
-    __allocatable._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 259, 4)
-    __allocatable._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 259, 4)
+    __allocatable._DeclarationLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 252, 4)
+    __allocatable._UseLocation = pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 252, 4)
     
     allocatable = property(__allocatable.value, __allocatable.set, None, None)
 
@@ -1466,12 +1431,12 @@ _module_typeBindings.memoryBlockType = memoryBlockType
 Namespace.addCategoryObject('typeBinding', 'memoryBlockType', memoryBlockType)
 
 
-platform = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'platform'), platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 293, 2))
+platform = pyxb.binding.basis.element(pyxb.namespace.ExpandedName(Namespace, 'platform'), platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 286, 2))
 Namespace.addCategoryObject('elementBinding', platform.name().localName(), platform)
 
 
 
-capabilitiesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'capability'), capabilityType, scope=capabilitiesType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 91, 3)))
+capabilitiesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'capability'), capabilityType, scope=capabilitiesType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 84, 3)))
 
 def _BuildAutomaton ():
     # Remove this helper function from the namespace after it is invoked
@@ -1482,7 +1447,7 @@ def _BuildAutomaton ():
     counters = set()
     states = []
     final_update = set()
-    symbol = pyxb.binding.content.ElementUse(capabilitiesType._UseForTag(pyxb.namespace.ExpandedName(None, 'capability')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 91, 3))
+    symbol = pyxb.binding.content.ElementUse(capabilitiesType._UseForTag(pyxb.namespace.ExpandedName(None, 'capability')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 84, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1495,7 +1460,7 @@ capabilitiesType._Automaton = _BuildAutomaton()
 
 
 
-devicesRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'device'), deviceRefType, scope=devicesRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 122, 3)))
+devicesRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'device'), deviceRefType, scope=devicesRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 115, 3)))
 
 def _BuildAutomaton_ ():
     # Remove this helper function from the namespace after it is invoked
@@ -1504,12 +1469,12 @@ def _BuildAutomaton_ ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 122, 3))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 115, 3))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(devicesRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'device')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 122, 3))
+    symbol = pyxb.binding.content.ElementUse(devicesRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'device')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 115, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1522,9 +1487,9 @@ devicesRefType._Automaton = _BuildAutomaton_()
 
 
 
-resourcesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'irq'), irqType, scope=resourcesType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 146, 3)))
+resourcesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'irq'), irqType, scope=resourcesType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 139, 3)))
 
-resourcesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'ioPort'), ioPortType, scope=resourcesType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 147, 3)))
+resourcesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'ioPort'), ioPortType, scope=resourcesType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 140, 3)))
 
 def _BuildAutomaton_2 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1533,19 +1498,19 @@ def _BuildAutomaton_2 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 146, 3))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 139, 3))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 147, 3))
+    cc_1 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 140, 3))
     counters.add(cc_1)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(resourcesType._UseForTag(pyxb.namespace.ExpandedName(None, 'irq')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 146, 3))
+    symbol = pyxb.binding.content.ElementUse(resourcesType._UseForTag(pyxb.namespace.ExpandedName(None, 'irq')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 139, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(resourcesType._UseForTag(pyxb.namespace.ExpandedName(None, 'ioPort')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 147, 3))
+    symbol = pyxb.binding.content.ElementUse(resourcesType._UseForTag(pyxb.namespace.ExpandedName(None, 'ioPort')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 140, 3))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []
@@ -1564,7 +1529,7 @@ resourcesType._Automaton = _BuildAutomaton_2()
 
 
 
-memRegionsType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), memoryType, scope=memRegionsType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 220, 3)))
+memRegionsType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), memoryType, scope=memRegionsType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 213, 3)))
 
 def _BuildAutomaton_3 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1575,7 +1540,7 @@ def _BuildAutomaton_3 ():
     counters = set()
     states = []
     final_update = set()
-    symbol = pyxb.binding.content.ElementUse(memRegionsType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 220, 3))
+    symbol = pyxb.binding.content.ElementUse(memRegionsType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 213, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1588,7 +1553,7 @@ memRegionsType._Automaton = _BuildAutomaton_3()
 
 
 
-memoryRefsType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), memRefType, scope=memoryRefsType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 225, 3)))
+memoryRefsType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), memRefType, scope=memoryRefsType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 218, 3)))
 
 def _BuildAutomaton_4 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1599,7 +1564,7 @@ def _BuildAutomaton_4 ():
     counters = set()
     states = []
     final_update = set()
-    symbol = pyxb.binding.content.ElementUse(memoryRefsType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 225, 3))
+    symbol = pyxb.binding.content.ElementUse(memoryRefsType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 218, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1612,7 +1577,7 @@ memoryRefsType._Automaton = _BuildAutomaton_4()
 
 
 
-physicalMemoryType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memoryBlock'), memoryBlockType, scope=physicalMemoryType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 283, 3)))
+physicalMemoryType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memoryBlock'), memoryBlockType, scope=physicalMemoryType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 276, 3)))
 
 def _BuildAutomaton_5 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1621,12 +1586,12 @@ def _BuildAutomaton_5 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 283, 3))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 276, 3))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(physicalMemoryType._UseForTag(pyxb.namespace.ExpandedName(None, 'memoryBlock')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 283, 3))
+    symbol = pyxb.binding.content.ElementUse(physicalMemoryType._UseForTag(pyxb.namespace.ExpandedName(None, 'memoryBlock')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 276, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1639,11 +1604,11 @@ physicalMemoryType._Automaton = _BuildAutomaton_5()
 
 
 
-platformType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'processor'), processorType, scope=platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 288, 3)))
+platformType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'processor'), processorType, scope=platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 281, 3)))
 
-platformType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), physicalMemoryType, scope=platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 289, 3)))
+platformType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), physicalMemoryType, scope=platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 282, 3)))
 
-platformType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'devices'), devicesType, scope=platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 290, 3)))
+platformType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'devices'), devicesType, scope=platformType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 283, 3)))
 
 def _BuildAutomaton_6 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1654,15 +1619,15 @@ def _BuildAutomaton_6 ():
     counters = set()
     states = []
     final_update = None
-    symbol = pyxb.binding.content.ElementUse(platformType._UseForTag(pyxb.namespace.ExpandedName(None, 'processor')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 288, 3))
+    symbol = pyxb.binding.content.ElementUse(platformType._UseForTag(pyxb.namespace.ExpandedName(None, 'processor')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 281, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = None
-    symbol = pyxb.binding.content.ElementUse(platformType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 289, 3))
+    symbol = pyxb.binding.content.ElementUse(platformType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 282, 3))
     st_1 = fac.State(symbol, is_initial=False, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
-    symbol = pyxb.binding.content.ElementUse(platformType._UseForTag(pyxb.namespace.ExpandedName(None, 'devices')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 290, 3))
+    symbol = pyxb.binding.content.ElementUse(platformType._UseForTag(pyxb.namespace.ExpandedName(None, 'devices')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 283, 3))
     st_2 = fac.State(symbol, is_initial=False, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     transitions = []
@@ -1681,15 +1646,15 @@ platformType._Automaton = _BuildAutomaton_6()
 
 
 
-deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'pci'), pciType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 42, 3)))
+deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'pci'), pciType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 42, 3)))
 
-deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'irq'), irqType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 43, 3)))
+deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'irq'), irqType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 43, 3)))
 
-deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), deviceMemoryType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 44, 3)))
+deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), deviceMemoryType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 44, 3)))
 
-deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'ioPort'), ioPortType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 45, 3)))
+deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'ioPort'), ioPortType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 45, 3)))
 
-deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'capabilities'), capabilitiesType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 46, 3)))
+deviceType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'capabilities'), capabilitiesType, scope=deviceType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 46, 3)))
 
 def _BuildAutomaton_7 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1698,40 +1663,40 @@ def _BuildAutomaton_7 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 42, 3))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 42, 3))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 43, 3))
+    cc_1 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 43, 3))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 44, 3))
+    cc_2 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 44, 3))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 45, 3))
+    cc_3 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 45, 3))
     counters.add(cc_3)
-    cc_4 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 46, 3))
+    cc_4 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 46, 3))
     counters.add(cc_4)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'pci')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 42, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'pci')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 42, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'irq')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 43, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'irq')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 43, 3))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 44, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 44, 3))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'ioPort')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 45, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'ioPort')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 45, 3))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_4, False))
-    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'capabilities')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 46, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceType._UseForTag(pyxb.namespace.ExpandedName(None, 'capabilities')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 46, 3))
     st_4 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_4)
     transitions = []
@@ -1780,7 +1745,7 @@ deviceType._Automaton = _BuildAutomaton_7()
 
 
 
-devicesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'device'), deviceType, scope=devicesType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 75, 3)))
+devicesType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'device'), deviceType, scope=devicesType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 68, 3)))
 
 def _BuildAutomaton_8 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1789,12 +1754,12 @@ def _BuildAutomaton_8 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 75, 3))
+    cc_0 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 68, 3))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(devicesType._UseForTag(pyxb.namespace.ExpandedName(None, 'device')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 75, 3))
+    symbol = pyxb.binding.content.ElementUse(devicesType._UseForTag(pyxb.namespace.ExpandedName(None, 'device')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 68, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     transitions = []
@@ -1807,13 +1772,13 @@ devicesType._Automaton = _BuildAutomaton_8()
 
 
 
-deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'pci'), pciAddressType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 127, 3)))
+deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'pci'), pciType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 120, 3)))
 
-deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), memRefType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 128, 3)))
+deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'memory'), memRefType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 121, 3)))
 
-deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'ioPort'), ioPortRefType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 129, 3)))
+deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'ioPort'), ioPortRefType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 122, 3)))
 
-deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'irq'), irqRefType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 130, 3)))
+deviceRefType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'irq'), irqRefType, scope=deviceRefType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 123, 3)))
 
 def _BuildAutomaton_9 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1822,33 +1787,33 @@ def _BuildAutomaton_9 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 127, 3))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 120, 3))
     counters.add(cc_0)
-    cc_1 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 128, 3))
+    cc_1 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 121, 3))
     counters.add(cc_1)
-    cc_2 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 129, 3))
+    cc_2 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 122, 3))
     counters.add(cc_2)
-    cc_3 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 130, 3))
+    cc_3 = fac.CounterCondition(min=0, max=None, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 123, 3))
     counters.add(cc_3)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'pci')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 127, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'pci')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 120, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_1, False))
-    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 128, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'memory')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 121, 3))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_2, False))
-    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'ioPort')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 129, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'ioPort')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 122, 3))
     st_2 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_2)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_3, False))
-    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'irq')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 130, 3))
+    symbol = pyxb.binding.content.ElementUse(deviceRefType._UseForTag(pyxb.namespace.ExpandedName(None, 'irq')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 123, 3))
     st_3 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_3)
     transitions = []
@@ -1885,9 +1850,9 @@ deviceRefType._Automaton = _BuildAutomaton_9()
 
 
 
-memoryBaseType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'file'), fileContentType, scope=memoryBaseType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 236, 3)))
+memoryBaseType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'file'), fileContentType, scope=memoryBaseType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 229, 3)))
 
-memoryBaseType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'fill'), fillContentType, scope=memoryBaseType, location=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 237, 3)))
+memoryBaseType._AddElement(pyxb.binding.basis.element(pyxb.namespace.ExpandedName(None, 'fill'), fillContentType, scope=memoryBaseType, location=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 230, 3)))
 
 def _BuildAutomaton_10 ():
     # Remove this helper function from the namespace after it is invoked
@@ -1896,17 +1861,17 @@ def _BuildAutomaton_10 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 235, 2))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 228, 2))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(memoryBaseType._UseForTag(pyxb.namespace.ExpandedName(None, 'file')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 236, 3))
+    symbol = pyxb.binding.content.ElementUse(memoryBaseType._UseForTag(pyxb.namespace.ExpandedName(None, 'file')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 229, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(memoryBaseType._UseForTag(pyxb.namespace.ExpandedName(None, 'fill')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 237, 3))
+    symbol = pyxb.binding.content.ElementUse(memoryBaseType._UseForTag(pyxb.namespace.ExpandedName(None, 'fill')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 230, 3))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []
@@ -1934,17 +1899,17 @@ def _BuildAutomaton_11 ():
     import pyxb.utils.fac as fac
 
     counters = set()
-    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 235, 2))
+    cc_0 = fac.CounterCondition(min=0, max=1, metadata=pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 228, 2))
     counters.add(cc_0)
     states = []
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(memoryType._UseForTag(pyxb.namespace.ExpandedName(None, 'file')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 236, 3))
+    symbol = pyxb.binding.content.ElementUse(memoryType._UseForTag(pyxb.namespace.ExpandedName(None, 'file')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 229, 3))
     st_0 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_0)
     final_update = set()
     final_update.add(fac.UpdateInstruction(cc_0, False))
-    symbol = pyxb.binding.content.ElementUse(memoryType._UseForTag(pyxb.namespace.ExpandedName(None, 'fill')), pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 237, 3))
+    symbol = pyxb.binding.content.ElementUse(memoryType._UseForTag(pyxb.namespace.ExpandedName(None, 'fill')), pyxb.utils.utility.Location('/home/cj/Programming/ConfigTool/test/schemadata/testschema.xsd', 230, 3))
     st_1 = fac.State(symbol, is_initial=True, final_update=final_update, is_unordered_catenation=False)
     states.append(st_1)
     transitions = []

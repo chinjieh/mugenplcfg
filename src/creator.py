@@ -43,7 +43,12 @@ class ProcessorCreator():
 				)
 		else:	
 			processor["speed"] = procspeed
-		processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate()
+		
+		VMX_OFFSET = 0x485
+		VMX_BITSIZE = 5
+		processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(paths.MSR,
+																	 VMX_OFFSET,
+																	 VMX_BITSIZE)
 		print "Element created: processor"
 		return processor
 
@@ -66,19 +71,17 @@ class ProcessorCreator():
 				return speedvalue
 	
 	@staticmethod
-	def getVmxTimerRate():
+	def getVmxTimerRate(msrpaths, offset, vmxbitsize):
 		#check for MSR
 		vmxTimerRate = 0
-		OFFSET = 0x485
-		VMX_BITSIZE = 5
 		
 		MSRfound = False
-		for path in paths.MSR:
+		for path in msrpaths:
 			try:
 				#Try to find MSR file
 				vmxTimerRate = ProcessorCreator.getVmxFromMSR(path,
-															  OFFSET,
-															  VMX_BITSIZE)
+															  offset,
+															  vmxbitsize)
 			except customExceptions.MSRFileNotFound:
 				pass
 			else:
@@ -86,7 +89,7 @@ class ProcessorCreator():
 				break
 		if not MSRfound:
 			errormsg = "MSR could not be located at directories:\n"
-			for path in paths.MSR:
+			for path in msrpaths:
 				errormsg += ("%s\n" % path)
 		
 			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
