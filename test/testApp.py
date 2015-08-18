@@ -335,7 +335,6 @@ class CreatorTestCase(unittest.TestCase):
 		emptyloc = os.path.join(self.testdir, "devicescreator/testdmar_empty.dsl")
 		invalidloc = "get_IommuAddrs_invalidloc"
 		
-
 		self.assertEqual(iommucreator.getIommuAddrs(loc),
 				["0xfed91000", "0xfed91100"],
 				"getIommuAddrs function not working")
@@ -345,6 +344,51 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(iommucreator.getIommuAddrs(invalidloc),
 						 [],
 						 "getIommuAddrs function not working")
+		
+		#Test getIommuAGAW function
+		testdevmem = os.path.join(self.testdir, "devicescreator/testdevmem")
+		testdevmem_invalid = "test_devmem_invalid"
+		IOMMUADDR = "0x0"
+		CAP_OFFSET = "0x0"
+		CAP_REG_BYTE_SIZE = 3
+		AGAW_BIT_START = 0
+		
+		with open(testdevmem, "wb") as f:
+			f.write(b"\x02\x02\x03\x04")
+		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+												   testdevmem,
+												   CAP_OFFSET,
+												   CAP_REG_BYTE_SIZE,
+												   AGAW_BIT_START),
+						 "39",
+						 "getIommuAGAW function not working")
+		
+		with open(testdevmem, "wb") as f:
+			f.write(b"\x04\x02\x03\x04")
+		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+												   testdevmem,
+												   CAP_OFFSET,
+												   CAP_REG_BYTE_SIZE,
+												   AGAW_BIT_START),
+						 "48",
+						 "getIommuAGAW function not working")
+		with open(testdevmem, "wb") as f:
+			f.write(b"\x01\x02\x03\x04")
+		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+												   testdevmem,
+												   CAP_OFFSET,
+												   CAP_REG_BYTE_SIZE,
+												   AGAW_BIT_START),
+						 "agaw",
+						 "getIommuAGAW function not working")
+		
+		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+												   testdevmem_invalid,
+												   CAP_OFFSET,
+												   CAP_REG_BYTE_SIZE,
+												   AGAW_BIT_START),
+						 "agaw",
+						 "getIommuAGAW function not working" )
 
 
 # == Tests schemadata.py ==
