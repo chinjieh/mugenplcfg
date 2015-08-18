@@ -25,15 +25,15 @@ class ProcessorCreator():
 	@staticmethod
 	def createElem():
 		print "> Creating element: processor"
-		cpuinfopath = paths.CPUINFO
-		cpuinfo = extractor.extractData(cpuinfopath)
 		processor = Element("processor", "processorType")
-		processor["logicalCpus"] = parseutil.count(cpuinfo,"processor")
+		cpuinfopath = paths.CPUINFO
+		# Logical Cpus
+		processor["logicalCpus"] = ProcessorCreator.getLogicalCpus(cpuinfopath)
 		
-		modelnamedata = parseutil.parseData_Sep(cpuinfo, "model name", ":")
+		# Speed
 		try:
-			speedkeywords = PROCESSOR_SPEED_KEYWORDS
-			procspeed = ProcessorCreator.getSpeed(modelnamedata, speedkeywords)
+			processor["speed"] = ProcessorCreator.getSpeed(cpuinfopath,
+														   PROCESSOR_SPEED_KEYWORDS)
 		except customExceptions.ProcessorSpeedNotFound:
 			processor["speed"] = "0"
 			#TODO: exception not catched if no keys match PROCESSOR_SPEED_KEYWORDS, speed becomes None in util.getSpeedValue
@@ -41,19 +41,38 @@ class ProcessorCreator():
 				"Could not find processor speed in: %s\n" % cpuinfopath +
 				"Values do not match speed keywords: %s" % ", ".join(speedkeywords)
 				)
-		else:	
-			processor["speed"] = procspeed
 		
+		# vmxTimerRate
 		VMX_OFFSET = 0x485
 		VMX_BITSIZE = 5
-		processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(paths.MSR,
-																	 VMX_OFFSET,
-																	 VMX_BITSIZE)
+		try:
+			processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(paths.MSR,
+																		VMX_OFFSET,
+																		VMX_BITSIZE)
+		except customExceptions.MSRFileNotFound:
+			errormsg = "MSR could not be located at directories:\n"
+			for path in paths.MSR:
+				errormsg += ("%s\n" % path)
+		
+			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
+						 "probe for MSR, then run the tool again.")
+			message.addError(errormsg)
+
 		print "Element created: processor"
 		return processor
+	
+	@staticmethod
+	def getLogicalCpus(cpuinfopath):
+		cpuinfo = extractor.extractData(cpuinfopath)
+		return parseutil.count(cpuinfo,"processor")
 
 	@staticmethod
-	def getSpeed(modelnamedata, speedkeywords):
+	def getSpeed(cpuinfopath, speedkeywords):
+		try:
+			modelnamedata = parseutil.parseData_Sep(extractor.extractData(cpuinfopath),
+													"model name", ":")
+		except customExceptions.KeyNotFound:
+			raise customExceptions.ProcessorSpeedNotFound()
 		tokens = modelnamedata.split()
 		speedtoken = None
 		for token in tokens:
@@ -82,36 +101,27 @@ class ProcessorCreator():
 				vmxTimerRate = ProcessorCreator.getVmxFromMSR(path,
 															  offset,
 															  vmxbitsize)
-			except customExceptions.MSRFileNotFound:
+			except IOError:
 				pass
 			else:
 				MSRfound = True
 				break
 		if not MSRfound:
-			errormsg = "MSR could not be located at directories:\n"
-			for path in msrpaths:
-				errormsg += ("%s\n" % path)
-		
-			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
-						 "probe for MSR, then run the tool again.")
-			message.addError(errormsg)
+			raise customExceptions.MSRFileNotFound()
 
 		return vmxTimerRate
 	
 	@staticmethod
 	def getVmxFromMSR(msrpath, offset, vmxbitsize):
 		"Gets VmxTimerRate value from a given msr path"
-		try:
-			#Try to find MSR file
-			byte = extractor.extractBinaryData(msrpath, offset, 1)
-		except IOError:
-			raise customExceptions.MSRFileNotFound()
-		else:
-			vmxbits = 0
-			#Get bits from VMX_BITS_START to VMX_BITS_END
-			for bitnum in range(0, vmxbitsize):
-				vmxbits += util.getBit(int(byte, 16), bitnum) << bitnum
-			vmxTimerRate = int(vmxbits)
+		#Try to find MSR file
+		byte = extractor.extractBinaryData(msrpath, offset, 1)
+		#Raises IOError here if not found
+		vmxbits = 0
+		#Get bits from VMX_BITS_START to VMX_BITS_END
+		for bitnum in range(0, vmxbitsize):
+			vmxbits += util.getBit(int(byte, 16), bitnum) << bitnum
+		vmxTimerRate = int(vmxbits)
 		return vmxTimerRate
 		
 

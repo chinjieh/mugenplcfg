@@ -76,21 +76,59 @@ class CreatorTestCase(unittest.TestCase):
 		"Tests the ProcessorCreator class"
 		print "CreatorTestCase:test_ProcessorCreator - begin"
 		
+		#Test getLogicalCpus function
+		cpuinfoloc = os.path.join(self.testdir, "processorcreator/cpuinfo")
+		self.assertEqual(
+			creator.ProcessorCreator.getLogicalCpus(cpuinfoloc), 8,
+			"getLogicalCpus function not working")
+		
 		#Test getSpeed function
 		speedkeywords = ["GHz","MHz"]
-		testline = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz"""
-		testline2 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 800MHz"""
-		testline3 = """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GH"""
-		testline4 = """model name	: 3.20GHz Intel(R) Xeon(R) CPU E31230"""
-		testline5 = """model name	: 3.20 GHz Intel(R) Xeon(R) CPU"""
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline, speedkeywords), "3200", "getSpeed function not working")
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline2, speedkeywords), "800", "getSpeed function not working")
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline3, speedkeywords)
-		self.assertEqual(creator.ProcessorCreator.getSpeed(testline4, speedkeywords), "3200", "getSpeed function not working")
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,testline5, speedkeywords)
+		lines = {
+			"speed1" : """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz""",
+			"speed2" : """model name	: Intel(R) Xeon(R) CPU E31230 @ 800MHz""",
+			"speed3" : """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GH""",
+			"speed4" : """model name	: 3.20GHz Intel(R) Xeon(R) CPU E31230""",
+			"speed5" : """model name	: 3.20 GHz Intel(R) Xeon(R) CPU""",
+			"speed_nokey" : """ processorspeed	: 3.20 GHz Intel(R) Xeon(R) CPU"""
+		}
+		files = {}
+		print "PROCESSOR START"
+		for line in lines.iterkeys():
+			print "LINE:", line
+			filepath = os.path.join(self.testdir,"processorcreator/%s" % line)
+			with open(filepath,"w") as f:
+				f.write(lines[line])
+			files[line] = filepath
+
+
+		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed1"], speedkeywords), "3200", "getSpeed function not working")
+		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed2"], speedkeywords), "800", "getSpeed function not working")
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed3"], speedkeywords)
+		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed4"], speedkeywords), "3200", "getSpeed function not working")
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed5"], speedkeywords)
+		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed_nokey"],speedkeywords)
+
+		#Test getVmxTimerRate function
+		msrpath1 = os.path.join(self.testdir, "testmsr_path1")
+		msrpath_invalid = "invalidpath"
+		msrpathlist = [msrpath_invalid]
+		OFFSET = 0
+		VMX_BITSIZE = 5
+		self.assertRaises(customExceptions.MSRFileNotFound,
+						  creator.ProcessorCreator.getVmxTimerRate,
+						  msrpathlist, OFFSET, VMX_BITSIZE)
 		
+		with open(msrpath1, "wb") as f:
+			f.write(b"\x01\x02\x03\x04")
+		msrpathlist.append(msrpath1)
+		
+		self.assertEqual(creator.ProcessorCreator.getVmxTimerRate(msrpathlist,OFFSET,VMX_BITSIZE),
+						 1,
+						 "getVmxTimerRate function not working")
+
 		#Test getVmxFromMSR function
-		msrpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr")
+		msrpath = os.path.join(self.testdir, "testmsr")
 		with open(msrpath, "wb") as f:
 			f.write(b"\x01\x02\x03\x04")
 		OFFSET = 0
@@ -102,8 +140,8 @@ class CreatorTestCase(unittest.TestCase):
 		with open(msrpath, "wb") as f:
 			f.write(b"\x11\x02\x03\x04")
 		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 17, "getVmxFromMSR function not working")
-		msrinvalidpath = os.path.join(testpaths.PATH_TEST_CREATOR, "testmsr_invalid")
-		self.assertRaises(customExceptions.MSRFileNotFound, creator.ProcessorCreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
+		msrinvalidpath = os.path.join(self.testdir, "testmsr_invalid")
+		self.assertRaises(IOError, creator.ProcessorCreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
 
 
 	## -- MemoryCreator testcases
@@ -112,6 +150,7 @@ class CreatorTestCase(unittest.TestCase):
 		print "ExtractorTestCase:test_MemoryCreator - begin"
 
 		loc = self.testdir + "memorycreator/"
+		invalidloc = self.testdir + "memorycreator_invalid/"
 
 		#Test isAllocatable function
 		memblock_1 = Element("memoryBlock", "memoryBlockType")
@@ -131,6 +170,7 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_4), False, "isAllocatable function is not working")
 
 		#Test getMemoryBlocks
+		memoryBlockList_invalid = creator.MemoryCreator.getMemoryBlocks(invalidloc)
 		memoryBlockList = creator.MemoryCreator.getMemoryBlocks(loc)
 		memoryBlock0 = memoryBlockList[0].compileToPyxb()
 		memoryBlock1 = memoryBlockList[1].compileToPyxb()
@@ -140,6 +180,7 @@ class CreatorTestCase(unittest.TestCase):
 
 		#Test generateMemoryBlock
 		startfile = loc + "0/start"
+		startfile_invalid = loc + "0/start_invalid"
 		endfile = loc + "0/end"
 		typefile = loc + "0/type"
 
@@ -147,6 +188,9 @@ class CreatorTestCase(unittest.TestCase):
 		memoryBlock_pyxb = memoryBlock.compileToPyxb()
 		self.assertEqual(memoryBlock_pyxb.name, "0_type", "generateMemoryBlock not working")
 		self.assertEqual(memoryBlock_pyxb.physicalAddress, "16#000a#", "generateMemoryBlock not working")
+		self.assertRaises(IOError,
+						  creator.MemoryCreator.generateMemoryBlock,
+						  endfile, typefile, startfile_invalid )
 
 
 	## -- DevicesCreator testcases
