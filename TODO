@@ -11,6 +11,19 @@ Add Devicemanager
 Test serial device extraction
 Test coverage*
 
+[Medium Priority]
+Running the tests creates an unclean git working copy
+(test/schemadata/testschemaoutput.py)
+
+Add Makefile to conveniently run the tests
+
+[Low Priority]
+Only update pci.ids if oldver < newvern
+
+Maybe use pep8/autopep8 tools to make coding style comply with PEP 0008
+(https://www.python.org/dev/peps/pep-0008/)?
+-> autopep8 -i srcfile fixes most problems automatically
+
 Dependencies:
 --------
 Pyxb
