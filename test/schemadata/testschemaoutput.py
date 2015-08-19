@@ -1,7 +1,7 @@
 # /home/cj/Programming/ConfigTool/test/schemadata/testschemaoutput.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:e92452c8d3e28a9e27abfc9994d2007779e7f4c9
-# Generated 2015-08-19 11:04:27.333986 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
+# Generated 2015-08-19 13:29:50.279474 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
 # Namespace AbsentNamespace0
 
 from __future__ import unicode_literals
@@ -14,7 +14,7 @@ import pyxb.utils.domutils
 import sys
 import pyxb.utils.six as _six
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:4b344f58-4651-11e5-8dc4-001999a78414')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:9a7c0d76-4665-11e5-a617-001999a78414')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.5-DEV'

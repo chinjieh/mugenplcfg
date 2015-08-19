@@ -307,12 +307,75 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 						 "0x06ff00",
 						 "getClassName function not working")
 		
+	def test_getIrq(self):
+		print "PciDevicesCreatorTestCase:test_getIrq - begin"
+		testloc = os.path.join(self.testdir,"devices_testirq")
+		dev0 = os.path.join(testloc,"dev0")
+		dev1 = os.path.join(testloc,"dev1")
+		
+		dev0_irq = self.pcicreator.getIrq(dev0)
+		dev1_irq = self.pcicreator.getIrq(dev1)
+		
+		self.assertEqual(dev1_irq["number"], "15", "getIrq function not working")
+		self.assertEqual(dev0_irq, None, "getIrqfunction not working")
+		
 	def test_getDeviceMemoryBlocks(self):
 		print "PciDevicesCreatorTestCase:test_getDeviceMemoryBlocks - begin"
 		testloc = os.path.join(self.testdir, "devices_testresource")
-		#TODO
-		#TODO
 		
+		Memblock = namedtuple("Memblock", ["name", "start", "size"])
+		
+		#No filter: actual data
+		dev0_loc = os.path.join(testloc, "dev0")
+		dev2_loc = os.path.join(testloc, "dev2")
+		dev_emptyresource = os.path.join(testloc, "dev_emptyresource")
+		
+		dev0_testmemblock_nofilter = [Memblock(name="mem0", start="16#fb22_5000#", size="16#0800#")]
+		dev2_testmemblock_nofilter = [
+			Memblock(name="mem0", start="16#fb20_0000#", size="16#0002_0000#"),
+			Memblock(name="mem1", start="16#fb22_8000#", size="16#1000#")
+		]
+		
+		NOFILTERSIZE = "0x0"
+		dev0_memblocks_nofilter = self.pcicreator.getDeviceMemoryBlocks(dev0_loc,NOFILTERSIZE)
+		dev2_memblocks_nofilter = self.pcicreator.getDeviceMemoryBlocks(dev2_loc,NOFILTERSIZE)
+		
+		dev0_memblocktuplelist_nofilter = []
+		for memblock in dev0_memblocks_nofilter:
+			dev0_memblocktuplelist_nofilter.append(
+				Memblock(name=memblock["name"],
+						 start=memblock["physicalAddress"],
+						 size=memblock["size"])
+			)
+		dev2_memblocktuplelist_nofilter = []
+		for memblock in dev2_memblocks_nofilter:
+			dev2_memblocktuplelist_nofilter.append(
+				Memblock(name=memblock["name"],
+						 start=memblock["physicalAddress"],
+						 size=memblock["size"])
+			)
+
+		self.assertEqual(dev0_memblocktuplelist_nofilter,dev0_testmemblock_nofilter,"getDeviceMemoryBlocks not working")
+		self.assertEqual(dev2_memblocktuplelist_nofilter,dev2_testmemblock_nofilter,"getDeviceMemoryBlocks not working")
+		
+		#Filter on
+		dev0_testmemblock_filter = [Memblock(name="mem0", start="16#fb22_5000#", size="16#1000#")]
+		dev0_memblocks_filter = self.pcicreator.getDeviceMemoryBlocks(dev0_loc)
+		dev0_memblocktuplelist_filter = []
+		for memblock in dev0_memblocks_filter:
+			dev0_memblocktuplelist_filter.append(
+				Memblock(name=memblock["name"],
+						 start=memblock["physicalAddress"],
+						 size=memblock["size"])
+			)
+		
+		self.assertEqual(dev0_memblocktuplelist_filter, dev0_testmemblock_filter, "getDeviceMemoryBlocks not working")
+		
+		#Test empty resource
+		dev_testemptyresource = []
+		dev_emptyresource_list = self.pcicreator.getDeviceMemoryBlocks(dev_emptyresource)
+		self.assertEqual(dev_emptyresource_list, dev_testemptyresource, "getDeviceMemoryBlocks not working")
+
 	def test_getIoports(self):
 		print "PciDevicesCreatorTestCase:test_getIoports - begin"
 		testloc = os.path.join(self.testdir, "devices_testresource")

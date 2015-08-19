@@ -52,7 +52,7 @@ Memory :
 Devices (PCI):
 	- Omit PCI Bridges
 	- Omit non PCI-Express devices behind bridges
-	- Size of memoryBlocks are rounded up to match the size of a page
+	- Size of memoryBlocks are rounded up to match the size of a page (4KiB)
 
 Devices (Serial):
 	- Omits serial devices on ports other than COM ports

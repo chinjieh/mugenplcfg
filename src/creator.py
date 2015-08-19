@@ -479,10 +479,18 @@ class PciDevicesCreator():
 								"(try '-update' or '-u')" ))
 		return classname
 	
+	def getIrq(self, devicepath):
+		irqNo = extractor.extractData(os.path.join(devicepath,"irq"))
+		if irqNo is not "0":
+			irq = Element("irq", "irqType")
+			irq["name", "number"] = "irq", irqNo
+			return irq
+		else:
+			return None
+	
 	def getDeviceMemoryBlocks(self, devicepath, minsize=PAGE_MIN_SIZE):
 		devmemblocks = []
-		resourceData = extractor.extractData(os.path.join(devicepath,
-														  "resource") )
+		resourceData = extractor.extractData(os.path.join(devicepath,"resource"))
 		memcount = 0
 		for line in resourceData.splitlines():
 			tokens = line.split(' ')
@@ -550,20 +558,15 @@ class PciDevicesCreator():
 
 		#irq
 		try:
-			irqNo = extractor.extractData(os.path.join(devicepath,"irq"))
-			if irqNo is not "0":
-				irq = Element("irq", "irqType")
-				irq["name", "number"] = "irq", irqNo
-				device.appendChild(irq)
-
+				device.appendChild(self.getIrq(devicepath))
 		except IOError:
 			message.addError("Could not obtain irq number for device: %s" % pcistr,
 							 False)
 
 		#memory, includes expansion roms
 		try:
-				for devmemblock in self.getDeviceMemoryBlocks(devicepath):
-					device.appendChild(devmemblock)
+			for devmemblock in self.getDeviceMemoryBlocks(devicepath):
+				device.appendChild(devmemblock)
 		except IOError:
 			message.addError("Could not obtain memory information for device: "
 							 "%s" % pcistr,

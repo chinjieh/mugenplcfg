@@ -140,8 +140,11 @@ class Element():
 		if type(elems[0]) is list:
 			elems = tuple(elems[0]) 
 		for elem in elems:
-			elem.parent = self
-			self.childElements.append(elem)
+			if elem is None:
+				pass
+			else:
+				elem.parent = self
+				self.childElements.append(elem)
 
 	def removeChild(self,obj):
 		"Removes single Element object from child of this element"
