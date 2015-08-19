@@ -1,0 +1,8 @@
+00:1f.3 SMBus: Intel Corporation 6 Series/C200 Series Chipset Family SMBus Controller (rev 04)
+	Subsystem: Fujitsu Technology Solutions Device 11ba
+	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B+ ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Interrupt: pin C routed to IRQ 3
+	Region 0: Memory at fb224000 (64-bit, non-prefetchable) [size=256]
+	Region 4: I/O ports at f000 [size=32]
+

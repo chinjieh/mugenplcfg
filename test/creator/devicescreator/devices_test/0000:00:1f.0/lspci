@@ -1,0 +1,8 @@
+00:1f.0 ISA bridge: Intel Corporation C206 Chipset Family LPC Controller (rev 04)
+	Subsystem: Fujitsu Technology Solutions Device 11ba
+	Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=medium >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Latency: 0
+	Capabilities: [e0] Vendor Specific Information: Len=0c <?>
+	Kernel driver in use: lpc_ich
+
