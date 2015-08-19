@@ -519,22 +519,23 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 		dmarloc_invalid = os.path.join(self.testdir,"testdmar_invalidloc.dat")
 		dest = os.path.join(self.testdir,"testdmar_copy.dat")
 		dest_invalid = ""
+
+		self.assertEqual(self.iommucreator._genDMAR_copyDMAR(dmarloc_invalid, dest),
+						 False,
+						 "_genDMAR_copyDMAR function not working")
 		
-		self.assertRaises(customExceptions.DmarFileNotFound,
-						  self.iommucreator._genDMAR_copyDMAR,
-						  dmarloc_invalid, dest)
-		
-		self.assertRaises(customExceptions.DmarFileNotCopied,
-						  self.iommucreator._genDMAR_copyDMAR,
-						  dmarloc, dest_invalid)
+		self.assertEqual(self.iommucreator._genDMAR_copyDMAR(dmarloc, dest_invalid),
+						 False,
+						 "_genDMAR_copyDMAR function not working")
 
 	def test_genDMAR_parseDMAR(self):
 		print "IommuDevicesCreatorTestCase:test_genDMAR_parseDMAR - begin"
 		dmarloc = os.path.join(self.testdir,"testdmar.dat")
 		invalidcmd = "ia -d"
-		self.assertRaises(customExceptions.IaslToolNotFound,
-						  self.iommucreator._genDMAR_parseDMAR,
-						  invalidcmd, dmarloc)
+		
+		self.assertEqual(self.iommucreator._genDMAR_parseDMAR(invalidcmd, dmarloc),
+						 False,
+						 "_genDMAR_parseDMAR function not working" )
 		
 	def test_getIommuAddrs(self):
 		print "IommuDevicesCreatorTestCase:test_getIommuAddrs - begin"

@@ -738,16 +738,9 @@ class IommuDevicesCreator():
 	def createElems(self):
 		elemlist = []
 		print "> Parsing DMAR table with iasl tool..."
-		try:
-			self.genDMAR(paths.DMAR, self.OUTPUTPATH)
-		except customExceptions.DmarFileNotFound:
-			message.addMessage("No DMAR file found at: '%s'; " % paths.DMAR +\
-							   "No IOMMU devices found.")
-		except (customExceptions.DmarFileNotCopied,
-				customExceptions.IaslToolNotFound):
-			message.addError("Could not obtain DMAR information; IOMMU device "
-							   "information not found.", False)
-		else:
+		#Create parsed copy of DMAR table
+		if self.genDMAR(paths.DMAR, self.OUTPUTPATH):
+			#Create iommu devices
 			self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
 															  self.DMAR_NAME) )
 			#Instantiate IommuNamer to set names for iommu devices
@@ -759,17 +752,20 @@ class IommuDevicesCreator():
 
 	def genDMAR(self, dmar, outputfolder):
 		"Creates Parsed DMAR file in temp folder"
-		
+		success = False
 		#Make temp folder
 		self._genDMAR_maketempfolder(outputfolder)
 		
 		#Copy DMAR file to temp folder
 		dest = os.path.join(outputfolder,self.DMAR_TEMPNAME)
-		self._genDMAR_copyDMAR(dmar, dest)
+		if self._genDMAR_copyDMAR(dmar, dest):
+	
+			#Parse temp file
+			if self._genDMAR_parseDMAR("iasl -d", dest):
+				print "Parsing of DMAR file with iasl successful."
+				success = True
 		
-		#Parse temp file
-		self._genDMAR_parseDMAR("iasl -d", dest)
-		print "Parsing of DMAR file with iasl successful."
+		return success
 			
 	def _genDMAR_maketempfolder(self, loc):
 		"""Makes a temp folder if does not exist"""
@@ -777,21 +773,31 @@ class IommuDevicesCreator():
 			os.makedirs(loc)
 			
 	def _genDMAR_copyDMAR(self, src, dest):
+		success = True
 		#Check if DMAR exists
 		try:
 			open(src,"r")
 		except IOError:
-			raise customExceptions.DmarFileNotFound("DMAR file not found at: "
-													"%s" % src)
-		#Copy DMAR to temp folder
-		try:
-			shutil.copyfile(src, dest)
-		except IOError:
-			message.addMessage("DMAR table at: '%s' " % src +\
-							 "could not be copied to location: '%s'" % dest)
-			raise customExceptions.DmarFileNotCopied("DMAR file could not be copied")
+			#DMARFileNotFound
+			message.addMessage("No DMAR file found at: '%s'; " % paths.DMAR +\
+							   "No IOMMU devices found.")
+			success = False
+		else:
+			#Copy DMAR to temp folder
+			try:
+				shutil.copyfile(src, dest)
+			except IOError:
+				message.addMessage("DMAR table at: '%s' " % src +\
+								 "could not be copied to location: '%s'" % dest)
+				#DmarFileNotCopied
+				message.addError("Could not obtain DMAR information; IOMMU device "
+								   "information not found.", False)
+				success = False
+				
+		return success
 
 	def _genDMAR_parseDMAR(self, iaslcmd, dmarloc):
+		success = True
 		iasltokens = iaslcmd.split()
 		cmd = []
 		for token in iasltokens:
@@ -800,10 +806,17 @@ class IommuDevicesCreator():
 		try:
 			subprocess.call(cmd, stdout=subprocess.PIPE)
 		except OSError as e:
-			if e.errno == os.errno.ENOENT: #iasl does not exist
+			if e.errno == os.errno.ENOENT:
+				#IaslToolNotFound
 				message.addMessage("iasl tool not found in the system. "+
 						"Try 'apt-get install iasl' to install.")
-			raise customExceptions.IaslToolNotFound()
+				message.addError("Could not obtain DMAR information; IOMMU device "
+								"information not found.", False)
+				success = False
+			else:
+				raise
+				
+		return success
 
 	def getIommuAddrs(self, dmarfile):
 		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
