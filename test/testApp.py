@@ -312,12 +312,15 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		testloc = os.path.join(self.testdir,"devices_testirq")
 		dev0 = os.path.join(testloc,"dev0")
 		dev1 = os.path.join(testloc,"dev1")
+		dev_invalid = "test_getirq_invalid"
 		
 		dev0_irq = self.pcicreator.getIrq(dev0)
 		dev1_irq = self.pcicreator.getIrq(dev1)
+		dev_invalid_irq = self.pcicreator.getIrq(dev_invalid)
 		
 		self.assertEqual(dev1_irq["number"], "15", "getIrq function not working")
 		self.assertEqual(dev0_irq, None, "getIrqfunction not working")
+		self.assertEqual(dev_invalid_irq, None, "getIrqfunction not working")
 		
 	def test_getDeviceMemoryBlocks(self):
 		print "PciDevicesCreatorTestCase:test_getDeviceMemoryBlocks - begin"
@@ -329,6 +332,7 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		dev0_loc = os.path.join(testloc, "dev0")
 		dev2_loc = os.path.join(testloc, "dev2")
 		dev_emptyresource = os.path.join(testloc, "dev_emptyresource")
+		dev_invalidresource = os.path.join(testloc, "dev_invalidresource")
 		
 		dev0_testmemblock_nofilter = [Memblock(name="mem0", start="16#fb22_5000#", size="16#0800#")]
 		dev2_testmemblock_nofilter = [
@@ -372,9 +376,12 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		self.assertEqual(dev0_memblocktuplelist_filter, dev0_testmemblock_filter, "getDeviceMemoryBlocks not working")
 		
 		#Test empty resource
-		dev_testemptyresource = []
 		dev_emptyresource_list = self.pcicreator.getDeviceMemoryBlocks(dev_emptyresource)
-		self.assertEqual(dev_emptyresource_list, dev_testemptyresource, "getDeviceMemoryBlocks not working")
+		self.assertEqual(dev_emptyresource_list, [], "getDeviceMemoryBlocks not working")
+		
+		#Test invalid resource
+		dev_invalidresourcelist = self.pcicreator.getDeviceMemoryBlocks(dev_invalidresource)
+		self.assertEqual(dev_invalidresourcelist, [], "getDeviceMemoryBlocks not working")
 
 	def test_getIoports(self):
 		print "PciDevicesCreatorTestCase:test_getIoports - begin"
@@ -408,7 +415,7 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		self.assertEqual(dev0_ioport_tuplelist, dev0_testioports, "getIoports function not working")
 		self.assertEqual(dev1_ioports,dev1_testioports, "getIoports function not working")
 		self.assertEqual(dev_emptyresource_ioports,dev_emptyresource_testioports, "getIoports function not working")
-		self.assertRaises(IOError,self.pcicreator.getIoports, dev_noresource)
+		self.assertEqual(self.pcicreator.getIoports(dev_noresource), [] , "getIoports function not working")
 
 
 class SerialDevicesCreatorTestCase(unittest.TestCase):

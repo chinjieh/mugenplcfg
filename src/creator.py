@@ -480,56 +480,72 @@ class PciDevicesCreator():
 		return classname
 	
 	def getIrq(self, devicepath):
-		irqNo = extractor.extractData(os.path.join(devicepath,"irq"))
-		if irqNo is not "0":
-			irq = Element("irq", "irqType")
-			irq["name", "number"] = "irq", irqNo
-			return irq
+		irq = None
+		try:
+			irqNo = extractor.extractData(os.path.join(devicepath,"irq"))
+		except IOError:
+			message.addError("Could not obtain irq number for device: %s" %
+							 os.path.basename(devicepath), False)
 		else:
-			return None
+			if irqNo is not "0":
+				irq = Element("irq", "irqType")
+				irq["name", "number"] = "irq", irqNo
+		return irq
 	
 	def getDeviceMemoryBlocks(self, devicepath, minsize=PAGE_MIN_SIZE):
 		devmemblocks = []
-		resourceData = extractor.extractData(os.path.join(devicepath,"resource"))
-		memcount = 0
-		for line in resourceData.splitlines():
-			tokens = line.split(' ')
-			if tokens[2][-3] == '2': #if line represents a memory block
-
-				memory = Element("memory", "deviceMemoryType")
-				memory["name"] = "mem%d" % memcount
-				memory["physicalAddress"] = util.toWord64(tokens[0])
-				#Rounds memsize up to minsize
-				memsize = util.sizeOf(tokens[1],tokens[0])
-				if int(memsize,16) < int(minsize,16):
-					memrounded = util.hexFloor(memsize,minsize)
-					print ("Mem size %s for device %s rounded to: %s" %
-						   (memsize, os.path.basename(devicepath), memrounded) )
-					memsize = memrounded
-						
-				memory["size"] = util.toWord64(memsize)
-				memory["caching"] = "UC" #TODO
-				devmemblocks.append(memory)
-				memcount += 1
+		try:
+			resourceData = extractor.extractData(os.path.join(devicepath,"resource"))
+		except IOError:
+			message.addError("Could not obtain memory information for device: "
+							 "%s" % os.path.basename(devicepath),
+							 False)
+		else:
+			memcount = 0
+			for line in resourceData.splitlines():
+				tokens = line.split(' ')
+				if tokens[2][-3] == '2': #if line represents a memory block
+	
+					memory = Element("memory", "deviceMemoryType")
+					memory["name"] = "mem%d" % memcount
+					memory["physicalAddress"] = util.toWord64(tokens[0])
+					#Rounds memsize up to minsize
+					memsize = util.sizeOf(tokens[1],tokens[0])
+					if int(memsize,16) < int(minsize,16):
+						memrounded = util.hexFloor(memsize,minsize)
+						print ("Mem size %s for device %s rounded to: %s" %
+							   (memsize, os.path.basename(devicepath), memrounded) )
+						memsize = memrounded
+							
+					memory["size"] = util.toWord64(memsize)
+					memory["caching"] = "UC" #TODO
+					devmemblocks.append(memory)
+					memcount += 1
 				
 		return devmemblocks
 	
 	def getIoports(self, devicepath):
-		resourceData = extractor.extractData(os.path.join(devicepath,"resource"))
-		ioportcount = 0
 		ioports = []
-		for line in resourceData.splitlines():
-			tokens = line.split(' ')
-			if tokens[2][-3] == '1': #if line represents ioport information
-
-				ioPort = Element("ioPort", "ioPortType")
-				ioPort["name"] = "ioport%d" % ioportcount
-				ioPort["start"] = util.toWord64(tokens[0])
-				ioPort["end"] = util.toWord64(tokens[1])
-				ioportcount += 1
-				
-				ioports.append(ioPort)
-
+		
+		try:
+			resourceData = extractor.extractData(os.path.join(devicepath,"resource"))
+		except IOError:
+			message.addError("Could not obtain ioport information for device: "
+							 "%s" % os.path.basename(devicepath),
+							 False)
+		else:
+			ioportcount = 0
+			for line in resourceData.splitlines():
+				tokens = line.split(' ')
+				if tokens[2][-3] == '1': #if line represents ioport information
+	
+					ioPort = Element("ioPort", "ioPortType")
+					ioPort["name"] = "ioport%d" % ioportcount
+					ioPort["start"] = util.toWord64(tokens[0])
+					ioPort["end"] = util.toWord64(tokens[1])
+					ioportcount += 1
+					
+					ioports.append(ioPort)
 		return ioports
 
 	def createDeviceFromPath(self, devicepath):
@@ -557,28 +573,17 @@ class PciDevicesCreator():
 		device.appendChild(pci)
 
 		#irq
-		try:
-				device.appendChild(self.getIrq(devicepath))
-		except IOError:
-			message.addError("Could not obtain irq number for device: %s" % pcistr,
-							 False)
+		device.appendChild(self.getIrq(devicepath))
+		
 
 		#memory, includes expansion roms
-		try:
-			for devmemblock in self.getDeviceMemoryBlocks(devicepath):
-				device.appendChild(devmemblock)
-		except IOError:
-			message.addError("Could not obtain memory information for device: "
-							 "%s" % pcistr,
-							 False)
+		for devmemblock in self.getDeviceMemoryBlocks(devicepath):
+			device.appendChild(devmemblock)
+
 		#ioports
-		try:
-			for ioport in self.getIoports(devicepath):
-				device.appendChild(ioport)
-		except IOError:
-			message.addError("Could not obtain ioport information for device: "
-							 "%s" % pcistr,
-							 False)
+		for ioport in self.getIoports(devicepath):
+			device.appendChild(ioport)
+
 
 		#capabilities
 		
