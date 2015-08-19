@@ -15,7 +15,7 @@ from collections import namedtuple, OrderedDict, deque
 from schemadata import Element
 
 Address = namedtuple("Address", "start end")
-PAGE_SIZE = "0x1000"
+PAGE_SIZE = "0x1000" #4KB
 PAGE_MIN_SIZE = PAGE_SIZE
 MEM_ALLOCATABLE_MINSIZE = "0x100000" #1 MB
 PROCESSOR_SPEED_KEYWORDS = ["GHz", "MHz"]
@@ -269,7 +269,8 @@ class PciDevicesCreator():
 		#Get device absolute paths from symbolic links in paths.DEVICES
 		self.devicepaths = util.getLinks(paths.DEVICES, self.isDeviceName)
 		print "Checking Dependencies..."
-		self.getDependencies()
+		self.devicecapmgr = self.init_DevicecapManager(self.devicepaths)
+		self.deviceShortNames = self.getDeviceShortNames(self.devicepaths,paths.PCIIDS)
 		print "Examining PCI devices..."
 		filteredpaths = self.filterDevicePaths(self.devicepaths, self.devicecapmgr)
 		print ("Extracting device information from %d PCI devices " % len(filteredpaths) +
@@ -279,27 +280,19 @@ class PciDevicesCreator():
 
 		return pcidevicelist
 
-	def getDependencies(self):
-		"Checks whether dependencies are fulfilled and fills up the class attributes"
-
-		self.devicecapmgr = devicecap.DevicecapManager()
+	def init_DevicecapManager(self, devicepaths):
+		"Initialises the DeviceCapManager"
+		
 		print "Getting device capabilities..."
+		devicecapmgr = devicecap.DevicecapManager()
 		try:
-			self.devicecapmgr.extractCapabilities(self.devicepaths)
-			#self.devicenames = self.getDeviceNames(self.devicepaths)
-			self.deviceShortNames = self.getDeviceShortNames(self.devicepaths, paths.PCIIDS)
-		except customExceptions.PciIdsFileNotFound:
-			message.addError("pci.ids file could not be located in tool "
-							 "directory: %s. " % paths.CURRENTDIR + "Device "
-							 "names could not be obtained. Please ensure that "
-							 "the file is in the directory.",
-							 False)
-			
+			devicecapmgr.extractCapabilities(devicepaths)
 		except customExceptions.DeviceCapabilitiesNotRead:
 			message.addError("Not enough permissions to access capabilities "
 				 "of devices. It is advised to run the tool again "
 				 "with the proper permissions.", False)
-
+		return devicecapmgr
+			
 	def filterDevicePaths(self, devicePaths, devicecapmgr):
 		"Returns filtered list of paths of devices"
 		bridgePaths = []
@@ -437,20 +430,28 @@ class PciDevicesCreator():
 	def getDeviceShortNames(self, devicepaths, pciids):
 		shortnames = OrderedDict()
 		namecount = {}
+		try:
 		#Initialise PciIdsParser, throws customExceptions.PciIdsFileNotFound if fail
-		pciIdsParser = parseutil.PciIdsParser(pciids)
+			pciIdsParser = parseutil.PciIdsParser(pciids)
+		except customExceptions.PciIdsFileNotFound:
+			message.addError("pci.ids file could not be located in tool "
+							"directory: %s. " % paths.CURRENTDIR + "Device "
+							 "names could not be obtained. Please ensure that "
+							 "the file is in the directory.",
+							 False)
+		else:
 
-		for devicepath in devicepaths:
-			#Add entry to dictionary shortnames
-			shortnames[devicepath] = self.getClassName(devicepath, pciIdsParser)
-
-		namelist = []
-		for value in shortnames.itervalues():
-			namelist.append(value)
-
-		listnumberer = util.ListNumberer(namelist)
-		for devicepath in shortnames.iterkeys():
-			shortnames[devicepath] = listnumberer.getName(shortnames[devicepath])
+			for devicepath in devicepaths:
+				#Add entry to dictionary shortnames
+				shortnames[devicepath] = self.getClassName(devicepath, pciIdsParser)
+	
+			namelist = []
+			for value in shortnames.itervalues():
+				namelist.append(value)
+	
+			listnumberer = util.ListNumberer(namelist)
+			for devicepath in shortnames.iterkeys():
+				shortnames[devicepath] = listnumberer.getName(shortnames[devicepath])
 
 		return shortnames
 	
@@ -574,7 +575,6 @@ class PciDevicesCreator():
 
 		#irq
 		device.appendChild(self.getIrq(devicepath))
-		
 
 		#memory, includes expansion roms
 		for devmemblock in self.getDeviceMemoryBlocks(devicepath):

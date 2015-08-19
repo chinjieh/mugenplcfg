@@ -227,14 +227,28 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		print "<> PciDevicesCreatorTestCase:setUp - begin"
 		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
 		self.devloc = os.path.join(self.testdir, "devices")
+		self.devtree = os.path.join(self.testdir, "devices_test")
 		self.pcicreator = creator.PciDevicesCreator()
 
 	def tearDown(self):
 		print "<> PciDevicesCreatorTestCase:tearDown - begin"
 		
+		
+	def test_init_DevicecapManager(self):
+		print "PciDevicesCreatorTestCase:test_init_DevicecapManager - begin"
+		testloc = self.devtree
+		devices = os.listdir(testloc)
+		devicepaths = []
+		for devicename in devices:
+			devicepaths.append(os.path.join(testloc,devicename))
+
+		self.pcicreator.init_DevicecapManager(devicepaths)
+		devicecapmgr_invalid = self.pcicreator.init_DevicecapManager("invaliddevicepaths")
+		self.assertEqual(len(devicecapmgr_invalid.getCapabilities()), 0 , "init_DevicecapManager not working")
+		
 	def test_filterDevicePaths(self):
 		print "PciDevicesCreatorTestCase:test_filterDevicePaths - begin"
-		testloc = os.path.join(self.testdir, "devices_test")
+		testloc = self.devtree
 		devices = os.listdir(testloc)
 		devicepaths = []
 		for devicename in devices:
@@ -250,7 +264,6 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 			len(self.pcicreator.filterDevicePaths(devicepaths,devicecapmgr)),
 			12,
 			"filterDevicePaths not working")
-		
 
 	def test_isDeviceName(self):
 		print "PciDevicesCreatorTestCase:test_isDeviceName - begin"
@@ -310,9 +323,9 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		
 		result = self.pcicreator.getDeviceShortNames(devpaths,testpciids)
 		self.assertEqual(result, testresult, "getDeviceShortNames not working")
-		self.assertRaises(customExceptions.PciIdsFileNotFound,
-						  self.pcicreator.getDeviceShortNames,
-						  devpaths,"invalidpciidsloc" )
+		self.assertEqual(len(self.pcicreator.getDeviceShortNames(devpaths,"invalidpciidsloc")),
+						 0,
+						 "getDeviceShortNames not working")
 		
 	def test_getClassName(self):
 		print "PciDevicesCreatorTestCase:test_getClassName - begin"

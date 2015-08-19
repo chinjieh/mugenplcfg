@@ -91,32 +91,9 @@ class DevicecapManager():
 		for devicepath in devicepaths:
 			try:
 				self._extractCapability(devicepath, "config")
-			except customExceptions.NoAccessToFile:
+			except (customExceptions.NoAccessToFile, IOError):
 				raise customExceptions.DeviceCapabilitiesNotRead(
 					"Could not read capability: %s" % devicepath)
-
-	def _extractCapability(self, devicepath, configfilename):
-		"Gets capability for device"
-		CAPABILITY_START = 0x34
-		STATUS_REG_LOCATION = 0x6
-		CAPABILITY_BIT_POS = 4
-		NEXT_OFFSET = 1
-		CAP_SIZE = 1
-		STOP_ID = 0x00
-		CAPABILITY_NUM = 48
-		CONFIG_PATH = os.path.join(devicepath, configfilename)
-	
-		#Checks config file whether capability bit is activated
-		capbyte = extractor.extractBinaryData(CONFIG_PATH, STATUS_REG_LOCATION, 1)
-		capint = int(capbyte, 16)
-		if util.getBit(capint, CAPABILITY_BIT_POS):
-			#Checks config file, starting at CAPABILITY_START and moving through linked list
-			self.capabilities[devicepath] = self._readCapFile(CONFIG_PATH,
-															  CAPABILITY_START,
-															  CAP_SIZE,
-															  NEXT_OFFSET,
-															  STOP_ID,
-															  CAPABILITY_NUM)
 
 	def getCapList(self, devicepath, simple=True):
 		"Returns list of capabilities, only codes if simple=True"
@@ -141,6 +118,32 @@ class DevicecapManager():
 					return cap.value
 		return result
 	
+	def getCapabilities(self):
+		return self.capabilities
+	
+	def _extractCapability(self, devicepath, configfilename):
+		"Gets capability for device"
+		CAPABILITY_START = 0x34
+		STATUS_REG_LOCATION = 0x6
+		CAPABILITY_BIT_POS = 4
+		NEXT_OFFSET = 1
+		CAP_SIZE = 1
+		STOP_ID = 0x00
+		CAPABILITY_NUM = 48
+		CONFIG_PATH = os.path.join(devicepath, configfilename)
+	
+		#Checks config file whether capability bit is activated
+		capbyte = extractor.extractBinaryData(CONFIG_PATH, STATUS_REG_LOCATION, 1)
+		capint = int(capbyte, 16)
+		if util.getBit(capint, CAPABILITY_BIT_POS):
+			#Checks config file, starting at CAPABILITY_START and moving through linked list
+			self.capabilities[devicepath] = self._readCapFile(CONFIG_PATH,
+															  CAPABILITY_START,
+															  CAP_SIZE,
+															  NEXT_OFFSET,
+															  STOP_ID,
+															  CAPABILITY_NUM)
+
 	def _readCapFile(self, file, startpos, capsize, nextoffset=1, stopid=0x00, numJumps=-1):
 		"Extracts data from the config file that is in linked list format i.e "
 		"reads address from startpos, reads data in address, reads address from "

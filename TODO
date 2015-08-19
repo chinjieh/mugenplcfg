@@ -18,6 +18,7 @@ Running the tests creates an unclean git working copy
 Add Makefile to conveniently run the tests
 
 Remove generated testfiles from git tracking
+Propagate customExceptions in test suites
 
 [Low Priority]
 Only update pci.ids if oldver < newvern
