@@ -60,30 +60,28 @@ class ExtractorTestCase(unittest.TestCase):
 		self.assertRaises(customExceptions.NoAccessToFile, extractor.extractBinaryData, loc, 3, 2)
 		self.assertRaises(ValueError, extractor.extractBinaryData, loc, 0, 4, "MIDDLE_ENDIAN", chunks=True)
 
-# == Class that tests creator.py ==
+# == creator.py tests ==
+# Tests creator.py file
 import src.creator as creator
-class CreatorTestCase(unittest.TestCase):
-	"Tests the creator.py file"
+class ProcessorCreatorTestCase(unittest.TestCase):
+	"Tests the ProcessorCreator class"
 
 	def setUp(self):
-		print "<> CreatorTestCase:setUp - begin"
-		self.testdir = testpaths.PATH_TEST_CREATOR
+		print "<> ProcessorCreatorTestCase:setUp - begin"
+		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "processorcreator")
 
 	def tearDown(self):
-		print "<> CreatorTestCase:tearDown - begin"
-
-	## -- ProcessorCreator testcases
-	def test_ProcessorCreator(self):
-		"Tests the ProcessorCreator class"
-		print "CreatorTestCase:test_ProcessorCreator - begin"
-		
-		#Test getLogicalCpus function
-		cpuinfoloc = os.path.join(self.testdir, "processorcreator/cpuinfo")
+		print "<> ProcessorCreatorTestCase:tearDown - begin"
+	
+	def test_getLogicalCpus(self):
+		print "ProcessorCreatorTestCase:test_getLogicalCpus - begin"
+		cpuinfoloc = os.path.join(self.testdir, "cpuinfo")
 		self.assertEqual(
 			creator.ProcessorCreator.getLogicalCpus(cpuinfoloc), 8,
 			"getLogicalCpus function not working")
 		
-		#Test getSpeed function
+	def test_getSpeed(self):
+		print "ProcessorCreatorTestCase:test_getSpeed - begin"
 		speedkeywords = ["GHz","MHz"]
 		lines = {
 			"speed1" : """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz""",
@@ -95,7 +93,7 @@ class CreatorTestCase(unittest.TestCase):
 		}
 		files = {}
 		for line in lines.iterkeys():
-			filepath = os.path.join(self.testdir,"processorcreator/%s" % line)
+			filepath = os.path.join(self.testdir,"%s" % line)
 			with open(filepath,"w") as f:
 				f.write(lines[line])
 			files[line] = filepath
@@ -108,7 +106,8 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed5"], speedkeywords)
 		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed_nokey"],speedkeywords)
 
-		#Test getVmxTimerRate function
+	def test_getVmxTimerRate(self):
+		print "ProcessorCreatorTestCase:test_getVmxTimerRate - begin"
 		msrpath1 = os.path.join(self.testdir, "testmsr_path1")
 		msrpath_invalid = "invalidpath"
 		msrpathlist = [msrpath_invalid]
@@ -126,7 +125,8 @@ class CreatorTestCase(unittest.TestCase):
 						 1,
 						 "getVmxTimerRate function not working")
 
-		#Test getVmxFromMSR function
+	def test_getVmxFromMSR(self):
+		print "ProcessorCreatorTestCase:test_getVmxFromMSR - begin"
 		msrpath = os.path.join(self.testdir, "testmsr")
 		with open(msrpath, "wb") as f:
 			f.write(b"\x01\x02\x03\x04")
@@ -142,15 +142,23 @@ class CreatorTestCase(unittest.TestCase):
 		msrinvalidpath = os.path.join(self.testdir, "testmsr_invalid")
 		self.assertRaises(IOError, creator.ProcessorCreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
 
+class MemoryCreatorTestCase(unittest.TestCase):
+	"Tests the MemoryCreator class"
 
-	## -- MemoryCreator testcases
-	def test_MemoryCreator(self):
-		"Tests the MemoryCreator class"
-		print "ExtractorTestCase:test_MemoryCreator - begin"
+	def setUp(self):
+		print "<> MemoryCreatorTestCase:setUp - begin"
+		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "memorycreator")
 
-		loc = self.testdir + "memorycreator/memmap/"
-		invalidloc = self.testdir + "memorycreator_invalid/"
-		incompleteloc = os.path.join(self.testdir, "memorycreator/memmap_incomplete")
+	def tearDown(self):
+		print "<> MemoryCreatorTestCase:tearDown - begin"
+		
+	def test_memmapextraction(self):
+		"Tests various functions related to memmap extraction"
+		print "MemoryCreatorTestCase:test_memmapextraction - begin"
+
+		loc = os.path.join(self.testdir,"memmap")
+		invalidloc = os.path.join(self.testdir,"memmap_invalid")
+		incompleteloc = os.path.join(self.testdir, "memmap_incomplete")
 
 		#Test isAllocatable function
 		memblock_1 = Element("memoryBlock", "memoryBlockType")
@@ -180,10 +188,10 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(memoryBlock1.name,"1_type", "getMemoryBlocks function not working")
 
 		#Test generateMemoryBlock
-		startfile = loc + "0/start"
-		startfile_invalid = loc + "0/start_invalid"
-		endfile = loc + "0/end"
-		typefile = loc + "0/type"
+		startfile = os.path.join(loc,"0/start")
+		startfile_invalid = os.path.join(loc,"0/start_invalid")
+		endfile = os.path.join(loc,"0/end")
+		typefile = os.path.join(loc,"0/type")
 
 		memoryBlock = creator.MemoryCreator.generateMemoryBlock(endfile, typefile, startfile)
 		memoryBlock_pyxb = memoryBlock.compileToPyxb()
@@ -193,66 +201,84 @@ class CreatorTestCase(unittest.TestCase):
 						  creator.MemoryCreator.generateMemoryBlock,
 						  endfile, typefile, startfile_invalid )
 
+class DevicesCreatorTestCase(unittest.TestCase):
+	"Tests the DevicesCreator class"
 
-	## -- DevicesCreator testcases
-	def test_DevicesCreator(self):
-		"Tests the DevicesCreator class"
-		print "CreatorTestCase:test_DevicesCreator - begin"
+	def setUp(self):
+		print "<> DevicesCreatorTestCase:setUp - begin"
+		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
 
-		#Test getPciConfigAddress function
-		testiomem = os.path.join(self.testdir,"devicescreator/test_iomem")
-		testinvalidloc = os.path.join(self.testdir,"devicescreator")
-		testnokey = os.path.join(self.testdir,"devicescreator/test_iomem_nopciconfig")
+	def tearDown(self):
+		print "<> DevicesCreatorTestCase:tearDown - begin"
+
+	def test_getPciConfigAddress(self):
+		print "DevicesCreatorTestCase:test_getPciConfigAddress - begin"
+		testiomem = os.path.join(self.testdir,"test_iomem")
+		testinvalidloc = os.path.join(self.testdir, "testgetpciconfig_invalidloc")
+		testnokey = os.path.join(self.testdir,"test_iomem_nopciconfig")
 		self.assertEqual(creator.DevicesCreator.getPciConfigAddress(testiomem), "e0000000", "getPciConfigAddress function not working")
 		creator.DevicesCreator.getPciConfigAddress(testinvalidloc)
 		creator.DevicesCreator.getPciConfigAddress(testnokey)
-
-	## -- PciDevicesCreator testcases
-	def test_PciDevicesCreator(self):
-		"Tests the PciDevicesCreator class"
-		pcicreator = creator.PciDevicesCreator()
-		devloc = os.path.join(self.testdir, "devicescreator/devices")
-
-		#Test isDeviceName function
-		self.assertEqual(pcicreator.isDeviceName("0000:01:00.0"), True, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("0000:00:01.2"), True, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("0001:17:02.5"), True, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("010:10:01.2"), False, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("0000:10:01"), False, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("000:10:01.1"), False, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("000:10:010.1"), False, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("000:10:01.11"), False, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("000:10:01:00.1"), False, "isDeviceName function not working")
-		self.assertEqual(pcicreator.isDeviceName("0003:0E0F:0003.0001"), False, "isDeviceName function not working")
 		
-		#Test isBridge function
-		self.assertEqual(pcicreator.isBridge(os.path.join(devloc, "pcibridge0")), True, "isBridge function not working")
-		self.assertEqual(pcicreator.isBridge(os.path.join(devloc, "dev0")), False, "isBridge function not working")
+
+class PciDevicesCreatorTestCase(unittest.TestCase):
+	"Tests the PciDevicesCreator class"
+	def setUp(self):
+		print "<> PciDevicesCreatorTestCase:setUp - begin"
+		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
+		self.devloc = os.path.join(self.testdir, "devices")
+		self.pcicreator = creator.PciDevicesCreator()
+
+	def tearDown(self):
+		print "<> PciDevicesCreatorTestCase:tearDown - begin"
+
+	def test_isDeviceName(self):
+		print "PciDevicesCreatorTestCase:test_isDeviceName - begin"
+		self.assertEqual(self.pcicreator.isDeviceName("0000:01:00.0"), True, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("0000:00:01.2"), True, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("0001:17:02.5"), True, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("010:10:01.2"), False, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("0000:10:01"), False, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("000:10:01.1"), False, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("000:10:010.1"), False, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("000:10:01.11"), False, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("000:10:01:00.1"), False, "isDeviceName function not working")
+		self.assertEqual(self.pcicreator.isDeviceName("0003:0E0F:0003.0001"), False, "isDeviceName function not working")
 		
-		#Test isPciExpress function
-		dev0 = os.path.join(self.testdir, "devicescreator/devices_testcap/dev0")
-		dev1 = os.path.join(self.testdir, "devicescreator/devices_testcap/dev1")
+	def test_isBridge(self):
+		print "PciDevicesCreatorTestCase:test_isBridge - begin"
+		self.assertEqual(self.pcicreator.isBridge(os.path.join(self.devloc, "pcibridge0")), True, "isBridge function not working")
+		self.assertEqual(self.pcicreator.isBridge(os.path.join(self.devloc, "dev0")), False, "isBridge function not working")
+		
+	def test_isPciExpress(self):
+		print "PciDevicesCreatorTestCase:test_isPciExpress - begin"
+		dev0 = os.path.join(self.testdir, "devices_testcap/dev0")
+		dev1 = os.path.join(self.testdir, "devices_testcap/dev1")
 		devicecapmgr = devicecap.DevicecapManager()
 		devicecapmgr.extractCapabilities([dev0,dev1])
-		self.assertEqual(pcicreator.isPciExpress(dev0,devicecapmgr),
+		self.assertEqual(self.pcicreator.isPciExpress(dev0,devicecapmgr),
 						 True,
 						 "isPciExpress function not working")
-		self.assertEqual(pcicreator.isPciExpress(dev1,devicecapmgr),
+		self.assertEqual(self.pcicreator.isPciExpress(dev1,devicecapmgr),
 						 False,
 						 "isPciExpress function not working")
 
-		#Test getDeviceBus function
-		self.assertEqual(pcicreator.getDeviceBus("0011:01:02.3"), "01", "getDeviceBus function not working")
+	def test_getDeviceBus(self):
+		print "PciDevicesCreatorTestCase:test_getDeviceBus - begin"
+		self.assertEqual(self.pcicreator.getDeviceBus("0011:01:02.3"), "01", "getDeviceBus function not working")
 
-		#Test getDeviceNo function
-		self.assertEqual(pcicreator.getDeviceNo("0000:01:02.3"), "02", "getDeviceNo function not working")
+	def test_getDeviceNo(self):
+		print "PciDevicesCreatorTestCase:test_getDeviceNo - begin"
+		self.assertEqual(self.pcicreator.getDeviceNo("0000:01:02.3"), "02", "getDeviceNo function not working")
 
-		#Test getDeviceFunction function
-		self.assertEqual(pcicreator.getDeviceFunction("0000:01:02.3"), "3", "getDeviceFunction function not working")
+	def test_getDeviceFunction(self):
+		print "PciDevicesCreatorTestCase:test_getDeviceFunction - begin"
+		self.assertEqual(self.pcicreator.getDeviceFunction("0000:01:02.3"), "3", "getDeviceFunction function not working")
 		
-		#Test getDeviceShortNames function
-		testpciids = os.path.join(self.testdir,"devicescreator/testpciids_class")
-		devdir = os.path.join(self.testdir,"devicescreator/devices_testshortnames")
+	def test_getDeviceShortNames(self):
+		print "PciDevicesCreatorTestCase:test_getDeviceShortNames - begin"
+		testpciids = os.path.join(self.testdir,"testpciids_class")
+		devdir = os.path.join(self.testdir,"devices_testshortnames")
 		devpaths = []
 		for dir in sorted(os.listdir(devdir)):
 			devpaths.append(os.path.join(devdir,dir))
@@ -262,29 +288,34 @@ class CreatorTestCase(unittest.TestCase):
 			os.path.join(devdir,"dev2") : "pci_bridge"
 		}
 		
-		result = pcicreator.getDeviceShortNames(devpaths,testpciids)
+		result = self.pcicreator.getDeviceShortNames(devpaths,testpciids)
 		self.assertEqual(result, testresult, "getDeviceShortNames not working")
 		self.assertRaises(customExceptions.PciIdsFileNotFound,
-						  pcicreator.getDeviceShortNames,
+						  self.pcicreator.getDeviceShortNames,
 						  devpaths,"invalidpciidsloc" )
 		
-		#Test getClassName function
-		testpciids = os.path.join(self.testdir,"devicescreator/testpciids_class")
+	def test_getClassName(self):
+		print "PciDevicesCreatorTestCase:test_getClassName - begin"
+		testpciids = os.path.join(self.testdir,"testpciids_class")
 		pciidsparser = parseutil.PciIdsParser(testpciids)
-		devpath = os.path.join(self.testdir,"devicescreator/devices/dev0")
-		devpath_invalidclass = os.path.join(self.testdir,"devicescreator/devices/dev_invalidclass")
-		self.assertEqual(pcicreator.getClassName(devpath, pciidsparser),
+		devpath = os.path.join(self.testdir,"devices/dev0")
+		devpath_invalidclass = os.path.join(self.testdir,"devices/dev_invalidclass")
+		self.assertEqual(self.pcicreator.getClassName(devpath, pciidsparser),
 						 "host_bridge",
 						 "getClassName function not working")
-		self.assertEqual(pcicreator.getClassName(devpath_invalidclass, pciidsparser),
+		self.assertEqual(self.pcicreator.getClassName(devpath_invalidclass, pciidsparser),
 						 "0x06ff00",
 						 "getClassName function not working")
 		
-		#Test getDeviceMemoryBlocks function
-		testloc = os.path.join(self.testdir, "devicescreator/devices_testresource")
+	def test_getDeviceMemoryBlocks(self):
+		print "PciDevicesCreatorTestCase:test_getDeviceMemoryBlocks - begin"
+		testloc = os.path.join(self.testdir, "devices_testresource")
+		#TODO
+		#TODO
 		
-		#Test getIoports function
-		testloc = os.path.join(self.testdir, "devicescreator/devices_testresource")
+	def test_getIoports(self):
+		print "PciDevicesCreatorTestCase:test_getIoports - begin"
+		testloc = os.path.join(self.testdir, "devices_testresource")
 		dev0_loc = os.path.join(testloc,"dev0")
 		dev1_loc = os.path.join(testloc,"dev1")
 		dev_noresource = os.path.join(testloc,"dev_noresource")
@@ -300,9 +331,9 @@ class CreatorTestCase(unittest.TestCase):
 		dev1_testioports = []
 		dev_emptyresource_testioports = []
 		
-		dev0_ioports = pcicreator.getIoports(dev0_loc)
-		dev1_ioports = pcicreator.getIoports(dev1_loc)
-		dev_emptyresource_ioports = pcicreator.getIoports(dev_emptyresource)
+		dev0_ioports = self.pcicreator.getIoports(dev0_loc)
+		dev1_ioports = self.pcicreator.getIoports(dev1_loc)
+		dev_emptyresource_ioports = self.pcicreator.getIoports(dev_emptyresource)
 		
 		dev0_ioport_tuplelist = []
 		for ioport in dev0_ioports:
@@ -314,28 +345,36 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(dev0_ioport_tuplelist, dev0_testioports, "getIoports function not working")
 		self.assertEqual(dev1_ioports,dev1_testioports, "getIoports function not working")
 		self.assertEqual(dev_emptyresource_ioports,dev_emptyresource_testioports, "getIoports function not working")
-		self.assertRaises(IOError,pcicreator.getIoports, dev_noresource)
+		self.assertRaises(IOError,self.pcicreator.getIoports, dev_noresource)
+
+
+class SerialDevicesCreatorTestCase(unittest.TestCase):
+	"Tests the SerialDevicesCreator class"
+	def setUp(self):
+		print "<> SerialDevicesCreatorTestCase:setUp - begin"
+		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
+		self.serialcreator = creator.SerialDevicesCreator()
+
+	def tearDown(self):
+		print "<> SerialDevicesCreatorTestCase:tearDown - begin"
 
 	## -- SerialDevicesCreator testcases
-	def test_SerialDevicesCreator(self):
-		"Tests the SerialDevicesCreator class"
-		serialcreator = creator.SerialDevicesCreator()
-		
-		#Test getSerialAddresses function
-		ioportloc = os.path.join(self.testdir, "devicescreator/test_ioports")
-		ioportloc_nokey = os.path.join(self.testdir, "devicescreator/test_ioports_nokey")
-		print serialcreator.getSerialAddresses(ioportloc)
-		self.assertEqual(serialcreator.getSerialAddresses(ioportloc),
+	def test_getSerialAddresses(self):
+		print "SerialDevicesCreator:test_getSerialAddresses - begin"
+		ioportloc = os.path.join(self.testdir, "test_ioports")
+		ioportloc_nokey = os.path.join(self.testdir, "test_ioports_nokey")
+		self.assertEqual(self.serialcreator.getSerialAddresses(ioportloc),
 						 [("03f8", "03ff"),("0ff0", "0ff8"),("0ff9","0fff")],
 						 "getSerialAddresses function not working")
-		self.assertEqual(serialcreator.getSerialAddresses("test_ioport_invalid_location"),
+		self.assertEqual(self.serialcreator.getSerialAddresses("test_ioport_invalid_location"),
 						 [],
 						 "getSerialAddresses function not working")
-		self.assertEqual(serialcreator.getSerialAddresses(ioportloc_nokey),
+		self.assertEqual(self.serialcreator.getSerialAddresses(ioportloc_nokey),
 						 [],
 						 "getSerialAddresses function not working")
 		
-		#Test createComDevices
+	def test_createComDevices(self):
+		print "SerialDevicesCreator:test_createComDevices - begin"
 		Address = namedtuple("Address", ["start", "end"])
 		comAddresses = {
 			Address("03f8", "03ff") : "com_1",
@@ -352,14 +391,15 @@ class CreatorTestCase(unittest.TestCase):
 			]
 		
 		testresult = ["com_1", "com_2", "com_3", "com_4"]
-		comdev = serialcreator.createComDevices(serialAddresses,comAddresses)
+		comdev = self.serialcreator.createComDevices(serialAddresses,comAddresses)
 		names = []
 		for dev in comdev:
 			names.append(dev["name"])
 		
 		self.assertEqual(set(names), set(testresult), "createComDevices not working")
 		
-		#Test createSerialDevices
+	def test_createSerialDevices(self):
+		print "SerialDevicesCreator:test_createSerialDevices - begin"
 		Address = namedtuple("Address", ["start", "end"])
 		serialAddresses = [
 			Address("03e8", "03ef"),
@@ -367,70 +407,84 @@ class CreatorTestCase(unittest.TestCase):
 			Address("02f8", "02ff"),
 			]
 		testresult = ["serial_0", "serial_1", "serial_2"]
-		serialdev = serialcreator.createSerialDevices(serialAddresses)
+		serialdev = self.serialcreator.createSerialDevices(serialAddresses)
 		names = []
 		for dev in serialdev:
 			names.append(dev["name"])
 		self.assertEqual(set(names), set(testresult), "createSerialDevices not working")
 
-		#Test getAddressFromLine function
-		self.assertEqual(serialcreator.getAddressFromLine("  3e0f-3e50 : serial"), ("3e0f", "3e50"), "getAddressFromLine function not working")
-		self.assertEqual(serialcreator.getAddressFromLine("    3e05-3e10 : serial"), ("3e05", "3e10"), "getAddressFromLine function not working")
+	def test_getAddressFromLine(self):
+		print "SerialDevicesCreator:test_getAddressFromLine - begin"
+		self.assertEqual(self.serialcreator.getAddressFromLine("  3e0f-3e50 : serial"), ("3e0f", "3e50"), "getAddressFromLine function not working")
+		self.assertEqual(self.serialcreator.getAddressFromLine("    3e05-3e10 : serial"), ("3e05", "3e10"), "getAddressFromLine function not working")
+
+
+class IommuDevicesCreatorTestCase(unittest.TestCase):
+	"Tests the IommuDevicesCreator class"
+	def setUp(self):
+		print "<> IommuDevicesCreatorTestCase:setUp - begin"
+		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
+		self.iommucreator = creator.IommuDevicesCreator()
+
+	def tearDown(self):
+		print "<> IommuDevicesCreatorTestCase:tearDown - begin"
 
 	## -- IommuDevicesCreator testcases
-	def test_IommuDevicesCreator(self):
-		"Tests the IommuDevicesCreator class"
-		iommucreator = creator.IommuDevicesCreator()
-		
-		#Test _genDMAR_maketempfolder function
+	def test_genDMAR_maketempfolder(self):
+		print "IommuDevicesCreatorTestCase:test_genDMAR_maketempfolder - begin"
+
 		tempfolder = os.path.join(self.testdir,"genDMARtempfolder")
 		if os.path.isdir(tempfolder):
 			os.rmdir(tempfolder)
-		iommucreator._genDMAR_maketempfolder(tempfolder)
+		self.iommucreator._genDMAR_maketempfolder(tempfolder)
 		self.assertEqual(os.path.isdir(tempfolder), True, "_genDMAR_maketempfolder failed")
 		os.rmdir(tempfolder)
 		os.mkdir(tempfolder)
-		iommucreator._genDMAR_maketempfolder(tempfolder) #see if fails when exists
+		self.iommucreator._genDMAR_maketempfolder(tempfolder) #see if fails when exists
 		os.rmdir(tempfolder)
-		
-		#Test _genDMAR_copyDMAR function
-		dmarloc = os.path.join(self.testdir,"devicescreator/testdmar.dat")
-		dmarloc_invalid = "testdmar_invalidloc.dat"
-		dest = os.path.join(self.testdir,"devicescreator/testdmar_copy.dat")
+
+	def test_genDMAR_copyDMAR(self):
+		print "IommuDevicesCreatorTestCase:test_genDMAR_copyDMAR - begin"
+		dmarloc = os.path.join(self.testdir,"testdmar.dat")
+		dmarloc_invalid = os.path.join(self.testdir,"testdmar_invalidloc.dat")
+		dest = os.path.join(self.testdir,"testdmar_copy.dat")
 		dest_invalid = ""
 		
 		self.assertRaises(customExceptions.DmarFileNotFound,
-						  iommucreator._genDMAR_copyDMAR,
+						  self.iommucreator._genDMAR_copyDMAR,
 						  dmarloc_invalid, dest)
 		
 		self.assertRaises(customExceptions.DmarFileNotCopied,
-						  iommucreator._genDMAR_copyDMAR,
+						  self.iommucreator._genDMAR_copyDMAR,
 						  dmarloc, dest_invalid)
 
-		#Test _genDMAR_parseDMAR function
+	def test_genDMAR_parseDMAR(self):
+		print "IommuDevicesCreatorTestCase:test_genDMAR_parseDMAR - begin"
 		dmarloc = os.path.join(self.testdir,"testdmar.dat")
 		invalidcmd = "ia -d"
 		self.assertRaises(customExceptions.IaslToolNotFound,
-						  iommucreator._genDMAR_parseDMAR,
+						  self.iommucreator._genDMAR_parseDMAR,
 						  invalidcmd, dmarloc)
 		
-		#Test getIommuAddrs function
-		loc = os.path.join(self.testdir, "devicescreator/testdmar.dsl")
-		emptyloc = os.path.join(self.testdir, "devicescreator/testdmar_empty.dsl")
+	def test_getIommuAddrs(self):
+		print "IommuDevicesCreatorTestCase:test_getIommuAddrs - begin"
+		loc = os.path.join(self.testdir, "testdmar.dsl")
+		emptyloc = os.path.join(self.testdir, "testdmar_empty.dsl")
 		invalidloc = "get_IommuAddrs_invalidloc"
 		
-		self.assertEqual(iommucreator.getIommuAddrs(loc),
+		self.assertEqual(self.iommucreator.getIommuAddrs(loc),
 				["0xfed91000", "0xfed91100"],
 				"getIommuAddrs function not working")
-		self.assertEqual(iommucreator.getIommuAddrs(emptyloc),
+		self.assertEqual(self.iommucreator.getIommuAddrs(emptyloc),
 				[],
 				"getIommuAddrs function not working")
-		self.assertEqual(iommucreator.getIommuAddrs(invalidloc),
+		self.assertEqual(self.iommucreator.getIommuAddrs(invalidloc),
 						 [],
 						 "getIommuAddrs function not working")
 		
-		#Test getIommuAGAW function
-		testdevmem = os.path.join(self.testdir, "devicescreator/testdevmem")
+	def test_getIommuAGAW(self):
+		print "IommuDevicesCreatorTestCase:test_getIommuAGAW - begin"
+		testdevmem = os.path.join(self.testdir, "testdevmem")
 		testdevmem_invalid = "test_devmem_invalid"
 		IOMMUADDR = "0x0"
 		CAP_OFFSET = "0x0"
@@ -439,7 +493,7 @@ class CreatorTestCase(unittest.TestCase):
 		
 		with open(testdevmem, "wb") as f:
 			f.write(b"\x02\x02\x03\x04")
-		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+		self.assertEqual(self.iommucreator.getIommuAGAW(IOMMUADDR,
 												   testdevmem,
 												   CAP_OFFSET,
 												   CAP_REG_BYTE_SIZE,
@@ -449,7 +503,7 @@ class CreatorTestCase(unittest.TestCase):
 		
 		with open(testdevmem, "wb") as f:
 			f.write(b"\x04\x02\x03\x04")
-		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+		self.assertEqual(self.iommucreator.getIommuAGAW(IOMMUADDR,
 												   testdevmem,
 												   CAP_OFFSET,
 												   CAP_REG_BYTE_SIZE,
@@ -458,7 +512,7 @@ class CreatorTestCase(unittest.TestCase):
 						 "getIommuAGAW function not working")
 		with open(testdevmem, "wb") as f:
 			f.write(b"\x01\x02\x03\x04")
-		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+		self.assertEqual(self.iommucreator.getIommuAGAW(IOMMUADDR,
 												   testdevmem,
 												   CAP_OFFSET,
 												   CAP_REG_BYTE_SIZE,
@@ -466,7 +520,7 @@ class CreatorTestCase(unittest.TestCase):
 						 "agaw",
 						 "getIommuAGAW function not working")
 		
-		self.assertEqual(iommucreator.getIommuAGAW(IOMMUADDR,
+		self.assertEqual(self.iommucreator.getIommuAGAW(IOMMUADDR,
 												   testdevmem_invalid,
 												   CAP_OFFSET,
 												   CAP_REG_BYTE_SIZE,
@@ -474,7 +528,9 @@ class CreatorTestCase(unittest.TestCase):
 						 "agaw",
 						 "getIommuAGAW function not working" )
 		
-		#Test IommuNamer class
+	def test_IommuNamer(self):
+		print "IommuDevicesCreatorTestCase:test_IommuNamer - begin"
+		#Tests IommuNamer class in IommuDevicesCreator
 		iommuaddrlist = ["addr1", "addr2", "addr3", "addr4"]
 		iommunamer1 = creator.IommuDevicesCreator.IommuNamer(iommuaddrlist)
 		self.assertEqual(iommunamer1.getName(), "iommu_1", "IommuNamer class not working")

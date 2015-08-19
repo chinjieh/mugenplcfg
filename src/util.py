@@ -208,8 +208,7 @@ def sizeOf(addr1, addr2):
 		diff = abs(int2 - int1) + 1 #Add one for correct size (include start)
 		return hex(diff)
 	else:
-		print "sizeOf has to accept 2 hexadecimal values"
-		raise ValueError
+		raise ValueError("sizeOf has to accept 2 hexadecimal values")
 	
 def hexFloor(hexval, minval):
 	"Sets hexval to minval if hexval < minval"
