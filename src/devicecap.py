@@ -87,7 +87,7 @@ class DevicecapManager():
 
 	def extractCapabilities(self,devicepaths):
 		"Checks if device capabilities can be found and creates capability dict"
-		#Attempt to fill dictionary
+		#Call this function first to attempt to fill dictionary
 		for devicepath in devicepaths:
 			try:
 				self._extractCapability(devicepath, "config")

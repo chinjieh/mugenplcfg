@@ -101,10 +101,10 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 
 		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed1"], speedkeywords), "3200", "getSpeed function not working")
 		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed2"], speedkeywords), "800", "getSpeed function not working")
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed3"], speedkeywords)
+		self.assertRaises(customExceptions.ForceQuit,creator.ProcessorCreator.getSpeed,files["speed3"], speedkeywords)
 		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed4"], speedkeywords), "3200", "getSpeed function not working")
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed5"], speedkeywords)
-		self.assertRaises(customExceptions.ProcessorSpeedNotFound,creator.ProcessorCreator.getSpeed,files["speed_nokey"],speedkeywords)
+		self.assertRaises(customExceptions.ForceQuit,creator.ProcessorCreator.getSpeed,files["speed5"], speedkeywords)
+		self.assertRaises(customExceptions.ForceQuit,creator.ProcessorCreator.getSpeed,files["speed_nokey"],speedkeywords)
 
 	def test_getVmxTimerRate(self):
 		print "ProcessorCreatorTestCase:test_getVmxTimerRate - begin"
@@ -113,7 +113,7 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 		msrpathlist = [msrpath_invalid]
 		OFFSET = 0
 		VMX_BITSIZE = 5
-		self.assertRaises(customExceptions.MSRFileNotFound,
+		self.assertRaises(customExceptions.ForceQuit,
 						  creator.ProcessorCreator.getVmxTimerRate,
 						  msrpathlist, OFFSET, VMX_BITSIZE)
 		
@@ -231,6 +231,26 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 
 	def tearDown(self):
 		print "<> PciDevicesCreatorTestCase:tearDown - begin"
+		
+	def test_filterDevicePaths(self):
+		print "PciDevicesCreatorTestCase:test_filterDevicePaths - begin"
+		testloc = os.path.join(self.testdir, "devices_test")
+		devices = os.listdir(testloc)
+		devicepaths = []
+		for devicename in devices:
+			devicepaths.append(os.path.join(testloc,devicename))
+		devicepaths.append(os.path.join(testloc,"0000:00:01.0/0000:01:00.0"))
+		devicepaths.append(os.path.join(testloc,"0000:00:01.0/0000:01:00.1"))
+		devicepaths.append(os.path.join(testloc,"0000:00:1c.4/0000:03:00.0"))
+						   
+		devicecapmgr = devicecap.DevicecapManager()
+		devicecapmgr.extractCapabilities(devicepaths)
+		
+		self.assertEqual(
+			len(self.pcicreator.filterDevicePaths(devicepaths,devicecapmgr)),
+			12,
+			"filterDevicePaths not working")
+		
 
 	def test_isDeviceName(self):
 		print "PciDevicesCreatorTestCase:test_isDeviceName - begin"
@@ -306,6 +326,39 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		self.assertEqual(self.pcicreator.getClassName(devpath_invalidclass, pciidsparser),
 						 "0x06ff00",
 						 "getClassName function not working")
+		
+	def test_getPci(self):
+		print "PciDevicesCreatorTestCase:test_getPci - begin"
+		testloc = os.path.join(self.testdir,"devices_testcap")
+		devicecapmgr = devicecap.DevicecapManager()
+		dev = os.path.join(testloc, "0000:01:02.3")
+		devicecapmgr.extractCapabilities([dev])
+		
+		dev_pci = self.pcicreator.getPci(dev,devicecapmgr)
+		self.assertEqual(dev_pci["bus"],"16#01#","getPci function not working")
+		self.assertEqual(dev_pci["function"],"3","getPci function not working")
+		self.assertEqual(dev_pci["device"],"16#02#","getPci function not working")
+		
+		
+	def test_getPci_MSI(self):
+		print "PciDevicesCreatorTestCase:test_getPci_MSI - begin"
+		testloc = os.path.join(self.testdir,"devices_testcap")
+		devicecapmgr = devicecap.DevicecapManager()
+		dev0 = os.path.join(testloc,"dev0")
+		dev1 = os.path.join(testloc,"dev1")
+		dev2 = os.path.join(testloc,"dev2")
+		devicelist = [ dev0, dev1, dev2	]
+		devicecapmgr.extractCapabilities(devicelist)
+		
+		self.assertEqual(self.pcicreator.getPci_MSI(dev0, devicecapmgr),
+						 "true",
+						 "_getPci_MSI function not working" )
+		self.assertEqual(self.pcicreator.getPci_MSI(dev1, devicecapmgr),
+						 "true",
+						 "_getPci_MSI function not working")
+		self.assertEqual(self.pcicreator.getPci_MSI(dev2, devicecapmgr),
+						 "false",
+						 "_getPci_MSI function not working")
 		
 	def test_getIrq(self):
 		print "PciDevicesCreatorTestCase:test_getIrq - begin"
@@ -537,6 +590,18 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 						 False,
 						 "_genDMAR_parseDMAR function not working" )
 		
+	def test_genDMAR(self):
+		print "IommuDevicesCreatorTestCase:test_genDMAR - begin"
+		dmarloc = os.path.join(self.testdir, "testdmar.dat")
+		outputfolder = os.path.join(self.testdir, "test_gendmar")
+		destname = "test_gendmar.dat"
+		self.assertEqual(self.iommucreator.genDMAR(dmarloc, outputfolder, destname, "iasl -d"),
+						 True,
+						 "_genDMAR not working")
+						 
+		if os.path.isdir(outputfolder):
+			shutil.rmtree(outputfolder)
+		
 	def test_getIommuAddrs(self):
 		print "IommuDevicesCreatorTestCase:test_getIommuAddrs - begin"
 		loc = os.path.join(self.testdir, "testdmar.dsl")
@@ -705,6 +770,10 @@ class SchemaDataTestCase(unittest.TestCase):
 
 		memoryBlock2 = Element("memoryBlock", "memoryBlockType")
 		memoryBlock2["physicalAddress", "size", "name", "allocatable"] = "16#0101#", "16#0000#", "mem2", "true"
+		
+		memory.appendChild(memoryBlock)
+		self.assertEqual(memoryBlock.getParent(), memory, "appendChild function not working")
+		memory.removeChild(memoryBlock)
 
 		memory.appendChild(memoryBlock)
 		memory_pyxb = memory.compileToPyxb()
@@ -717,6 +786,12 @@ class SchemaDataTestCase(unittest.TestCase):
 		memory.appendChild(memoryBlock, memoryBlock2)
 		memory_pyxb = memory.compileToPyxb()
 		self.assertEqual(memory_pyxb.memoryBlock[1].name, "mem2", "appendChild function failed")
+		
+		memory.appendChild([memoryBlock, memoryBlock2])
+		memory_pyxb = memory.compileToPyxb()
+		self.assertEqual(memory_pyxb.memoryBlock[1].name, "mem2", "appendChild function failed")
+		
+		self.assertEqual(memory.appendChild(None), False, "appendChild function not working")
 
 	def test_Element_ListElements(self):
 		"Tests the capabilities to include list elements"

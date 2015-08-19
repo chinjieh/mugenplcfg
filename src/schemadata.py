@@ -137,14 +137,17 @@ class Element():
 
 	def appendChild(self, *elems):
 		"Add elements in 'elems' as child of this element"
+		success = True
 		if type(elems[0]) is list:
 			elems = tuple(elems[0]) 
 		for elem in elems:
 			if elem is None:
-				pass
+				success = False
 			else:
 				elem.parent = self
 				self.childElements.append(elem)
+				
+		return success
 
 	def removeChild(self,obj):
 		"Removes single Element object from child of this element"

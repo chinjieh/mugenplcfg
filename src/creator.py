@@ -31,33 +31,14 @@ class ProcessorCreator():
 		processor["logicalCpus"] = ProcessorCreator.getLogicalCpus(cpuinfopath)
 		
 		# Speed
-		try:
-			processor["speed"] = ProcessorCreator.getSpeed(cpuinfopath,
-														   PROCESSOR_SPEED_KEYWORDS)
-		except customExceptions.ProcessorSpeedNotFound:
-			processor["speed"] = "0"
-			#TODO: exception not catched if no keys match PROCESSOR_SPEED_KEYWORDS, speed becomes None in util.getSpeedValue
-			message.addError(
-				"Could not find processor speed in: %s\n" % cpuinfopath +
-				"Values do not match speed keywords: %s" % ", ".join(speedkeywords)
-				)
-		
+		processor["speed"] = ProcessorCreator.getSpeed(cpuinfopath, PROCESSOR_SPEED_KEYWORDS)
+
 		# vmxTimerRate
 		VMX_OFFSET = 0x485
 		VMX_BITSIZE = 5
-		try:
-			processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(paths.MSR,
+		processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(paths.MSR,
 																		VMX_OFFSET,
 																		VMX_BITSIZE)
-		except customExceptions.MSRFileNotFound:
-			errormsg = "MSR could not be located at directories:\n"
-			for path in paths.MSR:
-				errormsg += ("%s\n" % path)
-		
-			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
-						 "probe for MSR, then run the tool again.")
-			message.addError(errormsg)
-
 		print "Element created: processor"
 		return processor
 	
@@ -68,11 +49,20 @@ class ProcessorCreator():
 
 	@staticmethod
 	def getSpeed(cpuinfopath, speedkeywords):
+		result = "0"
+		
+		def handleSpeedNotFound():
+			#ProcessorSpeedNotFound
+			message.addError(
+				"Could not find processor speed in: %s\n" % cpuinfopath +
+				"Values do not match speed keywords: %s" % ", ".join(speedkeywords)
+				)
+		
 		try:
 			modelnamedata = parseutil.parseData_Sep(extractor.extractData(cpuinfopath),
 													"model name", ":")
 		except customExceptions.KeyNotFound:
-			raise customExceptions.ProcessorSpeedNotFound()
+			handleSpeedNotFound()
 		tokens = modelnamedata.split()
 		speedtoken = None
 		for token in tokens:
@@ -81,13 +71,15 @@ class ProcessorCreator():
 					speedtoken = token
 					break
 		if speedtoken is None:
-			raise customExceptions.ProcessorSpeedNotFound()
+			handleSpeedNotFound()
 		else:
 			speedvalue = util.getSpeedValue(speedtoken,speedkeywords)
 			if speedvalue is None:
-				raise customExceptions.ProcessorSpeedNotFound()
+				handleSpeedNotFound()
 			else:
-				return speedvalue
+				result = speedvalue
+				
+		return result
 	
 	@staticmethod
 	def getVmxTimerRate(msrpaths, offset, vmxbitsize):
@@ -107,7 +99,14 @@ class ProcessorCreator():
 				MSRfound = True
 				break
 		if not MSRfound:
-			raise customExceptions.MSRFileNotFound()
+			#MSRFileNotFound
+			errormsg = "MSR could not be located at directories:\n"
+			for path in msrpaths:
+				errormsg += ("%s\n" % path)
+		
+			errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
+						 "probe for MSR, then run the tool again.")
+			message.addError(errormsg)
 
 		return vmxTimerRate
 	
@@ -267,16 +266,16 @@ class PciDevicesCreator():
 	def createElems(self):
 		pcidevicelist = []
 		print "Finding PCI devices..."
-		self.devicepaths = self.findDevicePaths(paths.DEVICES)
+		#Get device absolute paths from symbolic links in paths.DEVICES
+		self.devicepaths = util.getLinks(paths.DEVICES, self.isDeviceName)
 		print "Checking Dependencies..."
 		self.getDependencies()
 		print "Examining PCI devices..."
-		filteredpaths = self.filterDevicePaths(self.devicepaths)
+		filteredpaths = self.filterDevicePaths(self.devicepaths, self.devicecapmgr)
 		print ("Extracting device information from %d PCI devices " % len(filteredpaths) +
 			   "(excluding PCI bridges and non PCI-Express devices behind bridges)...")
 		for devicepath in filteredpaths:
-			device = self.createDeviceFromPath(devicepath)
-			pcidevicelist.append(device)
+			pcidevicelist.append( self.createDeviceFromPath(devicepath) )
 
 		return pcidevicelist
 
@@ -301,14 +300,7 @@ class PciDevicesCreator():
 				 "of devices. It is advised to run the tool again "
 				 "with the proper permissions.", False)
 
-	def findDevicePaths(self, path):
-		"Gets paths to all PCI devices in system"
-		devicePaths = []
-		devicePaths = util.getLinks(path, self.isDeviceName)
-		return devicePaths
-	
-
-	def filterDevicePaths(self, devicePaths):
+	def filterDevicePaths(self, devicePaths, devicecapmgr):
 		"Returns filtered list of paths of devices"
 		bridgePaths = []
 		pciExpressPaths = []
@@ -316,7 +308,7 @@ class PciDevicesCreator():
 		nonPciExpressPaths = []
 		resultPaths = []
 		for devicepath in devicePaths:
-			if self.isPciExpress(devicepath, self.devicecapmgr):
+			if self.isPciExpress(devicepath, devicecapmgr):
 				pciExpressPaths.append(devicepath)
 
 			if self.isBridge(devicepath):
@@ -327,10 +319,10 @@ class PciDevicesCreator():
 							bridgedDevicePaths.append(os.path.join(root,subdir))
 
 		for bridgedDevice in bridgedDevicePaths:
-			if self.isPciExpress(bridgedDevice, self.devicecapmgr) is False:
+			if self.isPciExpress(bridgedDevice, devicecapmgr) is False:
 				nonPciExpressPaths.append(bridgedDevice)
 
-		print "PCI Devices found: %d\n------------------" % len(self.devicepaths)
+		print "PCI Devices found: %d\n------------------" % len(devicePaths)
 		print "> PCI Bridges: ", len(bridgePaths)
 		for item in bridgePaths:
 			print "  ", os.path.basename(item)
@@ -479,6 +471,28 @@ class PciDevicesCreator():
 								"(try '-update' or '-u')" ))
 		return classname
 	
+	def getPci(self, devicepath, devicecapmgr):
+		pcistr = os.path.basename(devicepath)
+		pci = Element("pci", "pciType")
+		pci["bus", "device", "function"] = (util.wrap16(self.getDeviceBus(pcistr)),
+											util.wrap16(self.getDeviceNo(pcistr)),
+											self.getDeviceFunction(pcistr))
+
+		pci["msi"] = self.getPci_MSI(devicepath, devicecapmgr)
+		
+		return pci
+	
+	def getPci_MSI(self, devicepath, devicecapmgr):
+		msi = "false"
+		if devicecap.CAP_MSI in devicecapmgr.getCapList(devicepath):
+			if devicecapmgr.getCapValue(devicepath,devicecap.CAP_MSI).enable:
+				msi = "true"
+		if devicecap.CAP_MSIX in devicecapmgr.getCapList(devicepath):
+			if devicecapmgr.getCapValue(devicepath,devicecap.CAP_MSIX).enable:
+				msi = "true"
+
+		return msi
+	
 	def getIrq(self, devicepath):
 		irq = None
 		try:
@@ -549,7 +563,6 @@ class PciDevicesCreator():
 		return ioports
 
 	def createDeviceFromPath(self, devicepath):
-		pcistr = os.path.basename(devicepath)
 		device = Element("device", "deviceType")
 		#Old code that gets device name as Vendor DeviceName
 		#device["name"] = self.devicenames[devicepath]
@@ -557,20 +570,7 @@ class PciDevicesCreator():
 		device["shared"] = "false" #TODO Check for shared status sometime in the future
 
 		#pci
-		pci = Element("pci", "pciType")
-		pci["bus", "device", "function"] = (util.wrap16(self.getDeviceBus(pcistr)),
-											util.wrap16(self.getDeviceNo(pcistr)),
-											self.getDeviceFunction(pcistr))
-
-		pci["msi"] = "false"
-		if devicecap.CAP_MSI in self.devicecapmgr.getCapList(devicepath):
-			if self.devicecapmgr.getCapValue(devicepath,devicecap.CAP_MSI).enable:
-				pci["msi"] = "true"
-		if devicecap.CAP_MSIX in self.devicecapmgr.getCapList(devicepath):
-			if self.devicecapmgr.getCapValue(devicepath,devicecap.CAP_MSIX).enable:
-				pci["msi"] = "true"
-
-		device.appendChild(pci)
+		device.appendChild(self.getPci(devicepath, self.devicecapmgr))
 
 		#irq
 		device.appendChild(self.getIrq(devicepath))
@@ -739,7 +739,11 @@ class IommuDevicesCreator():
 		elemlist = []
 		print "> Parsing DMAR table with iasl tool..."
 		#Create parsed copy of DMAR table
-		if self.genDMAR(paths.DMAR, self.OUTPUTPATH):
+		IASL_COMMAND = "iasl -d"
+		if self.genDMAR(paths.DMAR,
+						self.OUTPUTPATH,
+						self.DMAR_TEMPNAME,
+						IASL_COMMAND):
 			#Create iommu devices
 			self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
 															  self.DMAR_NAME) )
@@ -750,18 +754,18 @@ class IommuDevicesCreator():
 
 		return elemlist
 
-	def genDMAR(self, dmar, outputfolder):
+	def genDMAR(self, dmar, outputfolder, tempname, iaslcmd):
 		"Creates Parsed DMAR file in temp folder"
 		success = False
 		#Make temp folder
 		self._genDMAR_maketempfolder(outputfolder)
 		
 		#Copy DMAR file to temp folder
-		dest = os.path.join(outputfolder,self.DMAR_TEMPNAME)
+		dest = os.path.join(outputfolder,tempname)
 		if self._genDMAR_copyDMAR(dmar, dest):
 	
 			#Parse temp file
-			if self._genDMAR_parseDMAR("iasl -d", dest):
+			if self._genDMAR_parseDMAR(iaslcmd, dest):
 				print "Parsing of DMAR file with iasl successful."
 				success = True
 		

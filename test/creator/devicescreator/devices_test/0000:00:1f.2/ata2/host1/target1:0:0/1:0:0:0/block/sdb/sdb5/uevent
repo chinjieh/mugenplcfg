@@ -1,0 +1,4 @@
+MAJOR=8
+MINOR=21
+DEVNAME=sdb5
+DEVTYPE=partition
