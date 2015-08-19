@@ -148,8 +148,9 @@ class CreatorTestCase(unittest.TestCase):
 		"Tests the MemoryCreator class"
 		print "ExtractorTestCase:test_MemoryCreator - begin"
 
-		loc = self.testdir + "memorycreator/"
+		loc = self.testdir + "memorycreator/memmap/"
 		invalidloc = self.testdir + "memorycreator_invalid/"
+		incompleteloc = os.path.join(self.testdir, "memorycreator/memmap_incomplete")
 
 		#Test isAllocatable function
 		memblock_1 = Element("memoryBlock", "memoryBlockType")
@@ -170,6 +171,7 @@ class CreatorTestCase(unittest.TestCase):
 
 		#Test getMemoryBlocks
 		memoryBlockList_invalid = creator.MemoryCreator.getMemoryBlocks(invalidloc)
+		memoryBlockList_incomplete = creator.MemoryCreator.getMemoryBlocks(incompleteloc)
 		memoryBlockList = creator.MemoryCreator.getMemoryBlocks(loc)
 		memoryBlock0 = memoryBlockList[0].compileToPyxb()
 		memoryBlock1 = memoryBlockList[1].compileToPyxb()
@@ -277,6 +279,42 @@ class CreatorTestCase(unittest.TestCase):
 		self.assertEqual(pcicreator.getClassName(devpath_invalidclass, pciidsparser),
 						 "0x06ff00",
 						 "getClassName function not working")
+		
+		#Test getDeviceMemoryBlocks function
+		testloc = os.path.join(self.testdir, "devicescreator/devices_testresource")
+		
+		#Test getIoports function
+		testloc = os.path.join(self.testdir, "devicescreator/devices_testresource")
+		dev0_loc = os.path.join(testloc,"dev0")
+		dev1_loc = os.path.join(testloc,"dev1")
+		dev_noresource = os.path.join(testloc,"dev_noresource")
+		dev_emptyresource = os.path.join(testloc,"dev_emptyresource")
+		Ioport = namedtuple("Ioport", ["name", "start", "end"])
+		dev0_testioports = [
+			Ioport("ioport0", "16#f090#", "16#f097#"),
+			Ioport("ioport1", "16#f080#", "16#f083#"),
+			Ioport("ioport2", "16#f070#", "16#f077#"),
+			Ioport("ioport3", "16#f060#", "16#f063#"),
+			Ioport("ioport4", "16#f020#", "16#f03f#")
+			]
+		dev1_testioports = []
+		dev_emptyresource_testioports = []
+		
+		dev0_ioports = pcicreator.getIoports(dev0_loc)
+		dev1_ioports = pcicreator.getIoports(dev1_loc)
+		dev_emptyresource_ioports = pcicreator.getIoports(dev_emptyresource)
+		
+		dev0_ioport_tuplelist = []
+		for ioport in dev0_ioports:
+			iotuple = Ioport(name=ioport["name"],
+						   start=ioport["start"],
+						   end=ioport["end"] )
+			dev0_ioport_tuplelist.append(iotuple)
+		
+		self.assertEqual(dev0_ioport_tuplelist, dev0_testioports, "getIoports function not working")
+		self.assertEqual(dev1_ioports,dev1_testioports, "getIoports function not working")
+		self.assertEqual(dev_emptyresource_ioports,dev_emptyresource_testioports, "getIoports function not working")
+		self.assertRaises(IOError,pcicreator.getIoports, dev_noresource)
 
 	## -- SerialDevicesCreator testcases
 	def test_SerialDevicesCreator(self):

@@ -163,8 +163,9 @@ class MemoryCreator():
 			except IOError:
 				message.addError("Could not retrieve complete memory data",
 								 False)
-			#Adds newly created memoryBlock element to memoryBlockList
-			memoryBlockList.append(memoryBlock)
+			else:
+				#Adds newly created memoryBlock element to memoryBlockList
+				memoryBlockList.append(memoryBlock)
 			
 		#Filter out memoryBlocks that do not meet requirements
 		memoryBlockList = MemoryCreator.filterMemoryBlocks(memoryBlockList)
@@ -477,6 +478,51 @@ class PciDevicesCreator():
 								"be a good idea to update pci.ids "+
 								"(try '-update' or '-u')" ))
 		return classname
+	
+	def getDeviceMemoryBlocks(self, devicepath, minsize=PAGE_MIN_SIZE):
+		devmemblocks = []
+		resourceData = extractor.extractData(os.path.join(devicepath,
+														  "resource") )
+		memcount = 0
+		for line in resourceData.splitlines():
+			tokens = line.split(' ')
+			if tokens[2][-3] == '2': #if line represents a memory block
+
+				memory = Element("memory", "deviceMemoryType")
+				memory["name"] = "mem%d" % memcount
+				memory["physicalAddress"] = util.toWord64(tokens[0])
+				#Rounds memsize up to minsize
+				memsize = util.sizeOf(tokens[1],tokens[0])
+				if int(memsize,16) < int(minsize,16):
+					memrounded = util.hexFloor(memsize,minsize)
+					print ("Mem size %s for device %s rounded to: %s" %
+						   (memsize, os.path.basename(devicepath), memrounded) )
+					memsize = memrounded
+						
+				memory["size"] = util.toWord64(memsize)
+				memory["caching"] = "UC" #TODO
+				devmemblocks.append(memory)
+				memcount += 1
+				
+		return devmemblocks
+	
+	def getIoports(self, devicepath):
+		resourceData = extractor.extractData(os.path.join(devicepath,"resource"))
+		ioportcount = 0
+		ioports = []
+		for line in resourceData.splitlines():
+			tokens = line.split(' ')
+			if tokens[2][-3] == '1': #if line represents ioport information
+
+				ioPort = Element("ioPort", "ioPortType")
+				ioPort["name"] = "ioport%d" % ioportcount
+				ioPort["start"] = util.toWord64(tokens[0])
+				ioPort["end"] = util.toWord64(tokens[1])
+				ioportcount += 1
+				
+				ioports.append(ioPort)
+
+		return ioports
 
 	def createDeviceFromPath(self, devicepath):
 		pcistr = os.path.basename(devicepath)
@@ -516,50 +562,16 @@ class PciDevicesCreator():
 
 		#memory, includes expansion roms
 		try:
-			resourceData = extractor.extractData(os.path.join(devicepath,
-															  "resource") )
-			memcount = 0
-			for line in resourceData.splitlines():
-				tokens = line.split(' ')
-				if tokens[2][-3] == '2': #if line represents a memory block
-
-					memory = Element("memory", "deviceMemoryType")
-					memory["name"] = "mem%d" % memcount
-					memory["physicalAddress"] = util.toWord64(tokens[0])
-					#Rounds memsize up to PAGE_MIN_SIZE
-					memsize = util.sizeOf(tokens[1],tokens[0])
-					if int(memsize,16) < int(PAGE_MIN_SIZE,16):
-						memrounded = util.hexFloor(memsize,PAGE_MIN_SIZE)
-						print "Mem size %s for device %s rounded to: %s" % (
-						memsize, os.path.basename(devicepath), memrounded )
-						memsize = memrounded
-						
-					memory["size"] = util.toWord64(memsize)
-					memory["caching"] = "UC" #TODO
-					device.appendChild(memory)
-					memcount += 1
-
+				for devmemblock in self.getDeviceMemoryBlocks(devicepath):
+					device.appendChild(devmemblock)
 		except IOError:
 			message.addError("Could not obtain memory information for device: "
 							 "%s" % pcistr,
 							 False)
-
 		#ioports
 		try:
-			resourceData = extractor.extractData(os.path.join(devicepath,
-															  "resource") )
-			ioportcount = 0
-			for line in resourceData.splitlines():
-				tokens = line.split(' ')
-				if tokens[2][-3] == '1': #if line represents ioport information
-
-					ioPort = Element("ioPort", "ioPortType")
-					ioPort["name"] = "ioport%d" % ioportcount
-					ioPort["start"] = util.toWord64(tokens[0])
-					ioPort["end"] = util.toWord64(tokens[1])
-					ioportcount += 1
-					device.appendChild(ioPort)
-
+			for ioport in self.getIoports(devicepath):
+				device.appendChild(ioport)
 		except IOError:
 			message.addError("Could not obtain ioport information for device: "
 							 "%s" % pcistr,
