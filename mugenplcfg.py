@@ -29,7 +29,6 @@ def init():
                          "in location: %s.\nPlease ensure that the file is there "
                          "and try again." % (paths.SCHEMACONFIG))
 
-
 def cleanup():
     "Call this function at the end of the program to remove temp files"
     print "Cleaning up..."
@@ -46,7 +45,6 @@ def checkPermissions():
     if not os.access("/sys", os.W_OK):
         raise customExceptions.InsufficientPermissions()
 
-
 def formatXML(xmlstr):
     "Uses lxml to format xml string"
     print "Formatting XML document..."
@@ -62,24 +60,20 @@ def formatXML(xmlstr):
 
     return result
 
-
 def generateXML(elemtree):
     xmlstr = elemtree.toXML("utf-8")
     formattedxml = formatXML(xmlstr)
     return formattedxml
 
-
-def output(xml, outputdest):
+def output(xml):
     OUTPUT_NAME = "output.xml"
-    print "> XML file '%s' generated to location: \n %s" % (OUTPUT_NAME,
-                                                            outputdest)
 
-    # xml = xml.replace('><','>\n<')
-    with open(os.path.join(outputdest, OUTPUT_NAME), "w") as f:
-        indents = 0
+    print "> XML file '%s' generated to location: \n %s" % (
+       OUTPUT_NAME, os.path.join(paths.OUTPUT,OUTPUT_NAME) )
+
+    with open(os.path.join(paths.OUTPUT, OUTPUT_NAME), "w") as f:
         for line in xml.splitlines(True):
             f.write(line)
-
 
 def hasErrors():
     hasErrors = False
@@ -94,9 +88,7 @@ def handleArgs():
     descriptiontext = ("mugenplcfg is a tool which extracts system information and "
                        "produces an .xml file to be used in the Muen kernel.")
     parser = argparse.ArgumentParser(description=descriptiontext)
-    parser.add_argument("dest",
-                        default=paths.OUTPUT,
-                        nargs='?')
+    
     parser.add_argument("-u", "--update",
                         help="Updates files used by the tool",
                         action="store_true")
@@ -126,11 +118,11 @@ def handleArgs():
         runMain = False
 
     if runMain:
-        main(args.dest, args.force)
+        main(args.force)
 
 
-def main(outputdest, forcecreate=False):
-    print "=== ConfigTool Start ==="
+def main(forcecreate=False):
+    print "=== Mugenplcfg Start ==="
 
     try:
         checkPermissions()
@@ -143,7 +135,7 @@ def main(outputdest, forcecreate=False):
         xml = generateXML(elemtree)
 
     except customExceptions.InsufficientPermissions:
-        print ("ConfigTool must be run with root permissions. "
+        print ("mugenplcfg must be run with root permissions. "
                "Try running with 'sudo'.")
 
     except customExceptions.ForceQuit:
@@ -156,9 +148,9 @@ def main(outputdest, forcecreate=False):
         message.printMessages()
         cleanup()
         if len(message.messagequeue) is 0:
-            print "=== ConfigTool completed successfully ==="
+            print "=== Mugenplcfg completed successfully ==="
         else:
-            print "ConfigTool finished with: "
+            print "mugenplcfg finished with: "
             for key in message.messagecount:
                 print "%d %s" % (message.messagecount[key],
                                  key.shortname)
@@ -166,11 +158,11 @@ def main(outputdest, forcecreate=False):
 
         if hasErrors():
             if forcecreate:
-                output(xml, outputdest)
+                output(xml)
             else:
                 print "> XML File could not be generated."
         else:
-            output(xml, outputdest)
+            output(xml)
 
 
 if __name__ == "__main__":

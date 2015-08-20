@@ -51,7 +51,7 @@ class ExtractorTestCase(unittest.TestCase):
 	def test_extractBinaryData(self):
 		"Tests the extractBinaryData function"
 		print "ExtractorTestCase:test_extractBinaryData - begin"
-		loc = self.testdir + "testExtractBinaryData"
+		loc = testpaths.PATH_TEST_GEN + "testExtractBinaryData"
 		with open(loc, "wb") as f:
 			f.write(b"\x01\x02\x03\x04")
 		self.assertEqual(extractor.extractBinaryData(loc, 0, 4), "0x04030201", "extractBinaryData function not working")
@@ -94,7 +94,7 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 		}
 		files = {}
 		for line in lines.iterkeys():
-			filepath = os.path.join(self.testdir,"%s" % line)
+			filepath = os.path.join(testpaths.PATH_TEST_GEN,"%s" % line)
 			with open(filepath,"w") as f:
 				f.write(lines[line])
 			files[line] = filepath
@@ -109,7 +109,7 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 
 	def test_getVmxTimerRate(self):
 		print "ProcessorCreatorTestCase:test_getVmxTimerRate - begin"
-		msrpath1 = os.path.join(self.testdir, "testmsr_path1")
+		msrpath1 = os.path.join(testpaths.PATH_TEST_GEN, "testmsr_path1")
 		msrpath_invalid = "invalidpath"
 		msrpathlist = [msrpath_invalid]
 		OFFSET = 0
@@ -128,7 +128,7 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 
 	def test_getVmxFromMSR(self):
 		print "ProcessorCreatorTestCase:test_getVmxFromMSR - begin"
-		msrpath = os.path.join(self.testdir, "testmsr")
+		msrpath = os.path.join(testpaths.PATH_TEST_GEN, "testmsr")
 		with open(msrpath, "wb") as f:
 			f.write(b"\x01\x02\x03\x04")
 		OFFSET = 0
@@ -634,7 +634,7 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 		
 	def test_getIommuAGAW(self):
 		print "IommuDevicesCreatorTestCase:test_getIommuAGAW - begin"
-		testdevmem = os.path.join(self.testdir, "testdevmem")
+		testdevmem = os.path.join(testpaths.PATH_TEST_GEN, "testdevmem")
 		testdevmem_invalid = "test_devmem_invalid"
 		IOMMUADDR = "0x0"
 		CAP_OFFSET = "0x0"
@@ -891,22 +891,22 @@ class SchemaDataTestCase(unittest.TestCase):
 	def test_createBindings(self):
 		testschema = os.path.join(self.testdir, "testschema.xsd")
 		testschema_invalid = os.path.join(self.testdir, "testschema_invalid.file")
-
+		outpath = testpaths.PATH_TEST_GEN
 		#Normal function
 		with open(testschema, "r") as f:
-			schemadata.createBindings(f, self.testdir, "testschemaoutput", paths.PYXB_GEN)
+			schemadata.createBindings(f, outpath, "testschemaoutput", paths.PYXB_GEN)
 			
 		#Invalid schema file chosen
 		with open(testschema_invalid, "r") as f:
 			self.assertRaises(customExceptions.PyxbgenInvalidSchema,
 							  schemadata.createBindings,
-							  f, self.testdir, "testschemaoutput", paths.PYXB_GEN)
+							  f, outpath, "testschemaoutput", paths.PYXB_GEN)
 
 		#No pyxb detected
 		with open(testschema, "r") as f:
 			self.assertRaises(OSError,
 							  schemadata.createBindings,
-							  f, self.testdir, "testschemaoutput", "invalidcommand")
+							  f, outpath, "testschemaoutput", "invalidcommand")
 			
 	def test_moveGeneratedFile(self):
 		testschema = os.path.join(self.testdir, "testmoveschema.xsd")
@@ -973,7 +973,7 @@ class DevicecapTestCase(unittest.TestCase):
 						  [devpath_noaccess])
 		
 		# -- readCapFile function
-		loc = os.path.join(self.testdir, "testReadCapFile")
+		loc = os.path.join(testpaths.PATH_TEST_GEN, "testReadCapFile")
 		with open(loc, "wb") as f:
 				   #00  01  02  03  04  05  06  07  08  09  0a  0b  0c  0d  0e  0f
 			f.write(b"\x00\x01\x04\x03\x0a\x0e\x0c\x0a\x0e\x0c\x0d\x08\x0f\x00\x0b\x06")
@@ -1412,6 +1412,7 @@ class ParseUtilTestCase(unittest.TestCase):
 		self.assertEqual(parser.getClassName("0x0600"), "Host bridge", "getClassName function not working")
 		self.assertRaises(customExceptions.PciIdsSubclassNotFound, parser.getClassName, "0x0685")
 		self.assertRaises(customExceptions.PciIdsFailedSearch, parser.getClassName, "0x1400")
+
 
 # == Runs the Unit Test ==
 if __name__ == "__main__":
