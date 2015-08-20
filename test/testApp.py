@@ -1423,4 +1423,7 @@ class ParseUtilTestCase(unittest.TestCase):
 
 # == Runs the Unit Test ==
 if __name__ == "__main__":
+	print "Initialising gen directory..."
+	if not os.path.isdir(testpaths.PATH_TEST_GEN):
+		os.mkdir(testpaths.PATH_TEST_GEN)
 	unittest.main()
