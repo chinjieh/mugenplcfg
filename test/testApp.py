@@ -2,6 +2,7 @@
 import sys; sys.dont_write_bytecode = True
 import unittest
 import os
+#Add parent directory
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import testpaths
 import paths

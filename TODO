@@ -8,8 +8,6 @@ Add Devicemanager
 *Implement -everything arg that does not filter or modify anything
 
 [High Priority]
-Test serial device extraction
-Test coverage*
 
 [Medium Priority]
 Running the tests creates an unclean git working copy
