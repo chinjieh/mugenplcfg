@@ -276,7 +276,9 @@ class PciDevicesCreator():
 		print ("Extracting device information from %d PCI devices " % len(filteredpaths) +
 			   "(excluding PCI bridges and non PCI-Express devices behind bridges)...")
 		for devicepath in filteredpaths:
-			pcidevicelist.append( self.createDeviceFromPath(devicepath) )
+			pcidevicelist.append( self.createDeviceFromPath(devicepath,
+															self.devicecapmgr,
+															self.deviceShortNames) )
 
 		return pcidevicelist
 
@@ -563,15 +565,15 @@ class PciDevicesCreator():
 					ioports.append(ioPort)
 		return ioports
 
-	def createDeviceFromPath(self, devicepath):
+	def createDeviceFromPath(self, devicepath, devicecapmgr, deviceShortNames):
 		device = Element("device", "deviceType")
 		#Old code that gets device name as Vendor DeviceName
 		#device["name"] = self.devicenames[devicepath]
-		device["name"] = self.deviceShortNames[devicepath]
+		device["name"] = deviceShortNames[devicepath]
 		device["shared"] = "false" #TODO Check for shared status sometime in the future
 
 		#pci
-		device.appendChild(self.getPci(devicepath, self.devicecapmgr))
+		device.appendChild(self.getPci(devicepath, devicecapmgr))
 
 		#irq
 		device.appendChild(self.getIrq(devicepath))
@@ -731,12 +733,15 @@ class IommuDevicesCreator():
 		self.DMAR_TEMPNAME = "dmar.dat"
 		self.DMAR_NAME = "dmar.dsl"
 		self.OUTPUTPATH = paths.TEMP
-		self.DEVMEM = paths.DEVMEM
 		self.iommuaddrs = []
-		self.iommunamer = None
 
 	def createElems(self):
 		IASL_CMD_STR = "subprocess.call(['iasl', '-d', '%s'], stdout=subprocess.PIPE)"
+		CAPABILITY_OFFSET = "0x08"
+		CAP_REG_BYTE_SIZE = 7
+		AGAW_BIT_START = 8
+		IOMMU_SIZE = "1000"
+		
 		elemlist = []
 		outputpath = self.OUTPUTPATH
 		tempname = self.DMAR_TEMPNAME
@@ -748,13 +753,23 @@ class IommuDevicesCreator():
 			iaslcmdstr = IASL_CMD_STR % os.path.join(outputpath,tempname)
 			if self._genDMAR_parseDMAR(iaslcmdstr):
 				print "Parsing of DMAR file with iasl successful."
-				#Create iommu devices
+				#Get iommu addresses from DMAR
 				self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
 																  self.DMAR_NAME) )
 				#Instantiate IommuNamer to set names for iommu devices
-				self.iommunamer = self.IommuNamer(self.iommuaddrs)
+				iommunamer = self.IommuNamer(self.iommuaddrs)
+				
+				#Create Iommu devices
 				for addr in self.iommuaddrs:
-					elemlist.append(self.createDeviceFromAddr(addr))
+					elemlist.append(self.createDeviceFromAddr(paths.DEVMEM,
+															  addr,
+															  iommunamer,
+															  IOMMU_SIZE,
+															  CAPABILITY_OFFSET,
+															  CAP_REG_BYTE_SIZE,
+															  AGAW_BIT_START
+															  )
+								   )
 
 		return elemlist
 
@@ -816,29 +831,6 @@ class IommuDevicesCreator():
 				raise
 				
 		return success
-	"""
-	def _genDMAR_parseDMAR(self, iaslcmd, dmarloc):
-		success = True
-		iasltokens = iaslcmd.split()
-		cmd = []
-		for token in iasltokens:
-			cmd.append(token)
-		cmd.append(dmarloc)
-		try:
-			subprocess.call(cmd, stdout=subprocess.PIPE)
-		except OSError as e:
-			if e.errno == os.errno.ENOENT:
-				#IaslToolNotFound
-				message.addMessage("iasl tool not found in the system. "+
-						"Try 'apt-get install iasl' to install.")
-				message.addError("Could not obtain DMAR information; IOMMU device "
-								"information not found.", False)
-				success = False
-			else:
-				raise
-				
-		return success
-	"""
 
 	def getIommuAddrs(self, dmarfile):
 		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
@@ -889,25 +881,28 @@ class IommuDevicesCreator():
 								 "device at: %s" % iommuaddr, False)
 		return name
 	
-	def createDeviceFromAddr(self, iommuaddr):
+	def createDeviceFromAddr(self,
+							 devmem,
+							 iommuaddr,
+							 iommunamer,
+							 iommusize,
+							 capoffset,
+							 capregbytesize,
+							 agaw_bit_start):
 		"Generates a device element from a given iommu address"
-		CAPABILITY_OFFSET = "0x08"
-		CAP_REG_BYTE_SIZE = 7
-		AGAW_BIT_START = 8
-		IOMMU_SIZE = "1000"
 
 		device = Element("device", "deviceType")
 		device["shared"] = "false"
 
 		#name attr
-		device["name"] = self.iommunamer.getName()
+		device["name"] = iommunamer.getName()
 
 		#memory
 		memory = Element("memory", "deviceMemoryType")
 		memory["caching"] = "UC" #TODO
 		memory["name"] = "mmio"
 		memory["physicalAddress"] = util.toWord64(iommuaddr)
-		memory["size"] = util.toWord64(IOMMU_SIZE)
+		memory["size"] = util.toWord64(iommusize)
 		device.appendChild(memory)
 
 		#capabilities
@@ -920,10 +915,10 @@ class IommuDevicesCreator():
 		agawcap = Element("capability", "capabilityType")
 		agawcap["name"] = "agaw"
 		agawcap.content = self.getIommuAGAW(iommuaddr,
-											self.DEVMEM,
-											CAPABILITY_OFFSET,
-											CAP_REG_BYTE_SIZE,
-											AGAW_BIT_START)
+											devmem,
+											capoffset,
+											capregbytesize,
+											agaw_bit_start)
 		capabilities.appendChild(agawcap)
 		device.appendChild(capabilities)
 

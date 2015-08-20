@@ -155,6 +155,23 @@ class Element():
 			obj.parent = None
 			self.childElements.remove(obj)
 			
+	def isEqual(self, elem2):
+		"Compares all attributes and contents of this element including children"
+		"Children have to be added in the similar order for it to equate"
+		if self.attr != elem2.attr or self.content != elem2.content:
+			return False
+		else:
+			if len(self.childElements) != len(elem2.childElements):
+				return False
+			else:
+				for counter in range(len(self.childElements)):
+					if not self.childElements[counter].isEqual(elem2.childElements[counter]):
+						return False
+		
+		return True
+					
+
+			
 			
 def generateBindings(schemafile, outpath, outname):
 	"Creates a .py PyXB binding file from schemafile"

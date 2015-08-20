@@ -483,6 +483,10 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		self.assertEqual(dev1_ioports,dev1_testioports, "getIoports function not working")
 		self.assertEqual(dev_emptyresource_ioports,dev_emptyresource_testioports, "getIoports function not working")
 		self.assertEqual(self.pcicreator.getIoports(dev_noresource), [] , "getIoports function not working")
+		
+	def test_createDeviceFromPath(self):
+		print "PciDevicesCreator:test_createDeviceFromPath - begin"
+		
 
 
 class SerialDevicesCreatorTestCase(unittest.TestCase):
@@ -698,7 +702,57 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 		iommuaddrlist2 = ["addr1"]
 		iommunamer2 = creator.IommuDevicesCreator.IommuNamer(iommuaddrlist2)
 		self.assertEqual(iommunamer2.getName(), "iommu", "IommuNamer class not working")
+		
+	def test_createDeviceFromAddr(self):
+		print "IommuDevicesCreatorTestCase:test_IommuNamer - begin"
+		DEVMEM = paths.DEVMEM
+		CAPABILITY_OFFSET = "0x08"
+		CAP_REG_BYTE_SIZE = 7
+		AGAW_BIT_START = 8
+		IOMMU_SIZE = "1000"
+		
+		iommuaddr = "0xfed91000"
+		testiommuaddr = "0x0"
+		devmemloc = os.path.join(self.testdir, "testdevmem")
+		iommunamer = self.iommucreator.IommuNamer([testiommuaddr])
+		
+		iommudev = self.iommucreator.createDeviceFromAddr(devmemloc,
+											   testiommuaddr,
+											   iommunamer,
+											   IOMMU_SIZE,
+											   CAPABILITY_OFFSET,
+											   CAP_REG_BYTE_SIZE,
+											   AGAW_BIT_START)
+		
+		
+		device = Element("device", "deviceType")
+		device["shared"] = "false"
 
+		#name attr
+		device["name"] = "iommu"
+
+		#memory
+		memory = Element("memory", "deviceMemoryType")
+		memory["caching"] = "UC" #TODO
+		memory["name"] = "mmio"
+		memory["physicalAddress"] = "16#0000#"
+		memory["size"] = "16#1000#"
+		device.appendChild(memory)
+
+		#capabilities
+		capabilities = Element("capabilities", "capabilitiesType")
+		## iommu
+		iommucap = Element("capability", "capabilityType")
+		iommucap["name"] = "iommu"
+		capabilities.appendChild(iommucap)
+		## agaw
+		agawcap = Element("capability", "capabilityType")
+		agawcap["name"] = "agaw"
+		agawcap.content = "39"
+		capabilities.appendChild(agawcap)
+		device.appendChild(capabilities)
+
+		self.assertEqual(iommudev.isEqual(device), True, "createDeviceFromAddr not working")
 
 # == Tests schemadata.py ==
 from src.schemadata import Element
@@ -895,6 +949,113 @@ class SchemaDataTestCase(unittest.TestCase):
 		self.assertEqual(devices_pyxb.device[0].capabilities.capability[0].name, "Device1 Capability1", "Deep nesting of elements failed")
 		self.assertEqual(devices_pyxb.device[1].shared, "false", "Deep nesting of elements failed")
 		
+	def test_Element_Compare(self):
+		print "SchemaDataTestCase:test_Element_Compare - begin"
+		
+		#DEVICE_1		
+		device1 = Element("device", "deviceType")
+		device1["shared"] = "false"
+		#name attr
+		device1["name"] = "dev"
+		#memory
+		memory = Element("memory", "deviceMemoryType")
+		memory["caching"] = "UC" 
+		memory["name"] = "mmio"
+		memory["physicalAddress"] = "addr"
+		memory["size"] = "size"
+		device1.appendChild(memory)
+		#capabilities
+		capabilities = Element("capabilities", "capabilitiesType")
+		## iommu
+		iommucap1 = Element("capability", "capabilityType")
+		iommucap1["name"] = "iommu"
+		capabilities.appendChild(iommucap1)
+		## agaw
+		agawcap = Element("capability", "capabilityType")
+		agawcap["name"] = "agaw"
+		agawcap.content = "39"
+		capabilities.appendChild(agawcap)
+		device1.appendChild(capabilities)
+		
+		#DEVICE_2
+		device2 = Element("device", "deviceType")
+		device2["shared"] = "false"
+		#name attr
+		device2["name"] = "dev"
+		#memory
+		memory = Element("memory", "deviceMemoryType")
+		memory["caching"] = "UC" 
+		memory["name"] = "mmio"
+		memory["physicalAddress"] = "addr"
+		memory["size"] = "size"
+		device2.appendChild(memory)
+		#capabilities
+		capabilities = Element("capabilities", "capabilitiesType")
+		## iommu
+		iommucap2 = Element("capability", "capabilityType")
+		iommucap2["name"] = "iommu"
+		capabilities.appendChild(iommucap2)
+		## agaw
+		agawcap = Element("capability", "capabilityType")
+		agawcap["name"] = "agaw"
+		agawcap.content = "39"
+		capabilities.appendChild(agawcap)
+		device2.appendChild(capabilities)
+		
+		dict1 = {
+			"k1" : "value1",
+			"k2" : "value2"
+		}
+		dict2 = {
+			"k2" : "value2",
+			"k1" : "value1"
+		}
+		self.assertEqual(dict1, dict2, "Dicts don't match")
+		#Test attribute equals on one layer
+		self.assertEqual(iommucap1.isEqual(iommucap2), True, "Element isEqual function not working")
+		
+		#Test attribute equals on two layers
+		mem1 = Element("memory", "physicalMemoryType")
+		mem1_block1 = Element("memoryBlock", "memoryBlockType")
+		mem1_block1["name", "physicalAddress", "size", "allocatable"] = ("name",
+																		 "addr",
+																		 "size",
+																		 "true")
+		mem1_block2= Element("memoryBlock", "memoryBlockType")
+		mem1_block2["name", "physicalAddress", "size", "allocatable"] = ("name",
+																		 "addr",
+																		 "size",
+																		 "true")
+		mem1.appendChild(mem1_block1, mem1_block2)
+		
+		mem2 = Element("memory", "physicalMemoryType")
+		mem2_block1 = Element("memoryBlock", "memoryBlockType")
+		mem2_block1["name", "physicalAddress", "size", "allocatable"] = ("name",
+																		 "addr",
+																		 "size",
+																		 "true")
+		mem2_block2 = Element("memoryBlock", "memoryBlockType")
+		mem2_block2["name", "physicalAddress", "size", "allocatable"] = ("name",
+																		 "addr",
+																		 "size",
+																		 "false")
+		mem2.appendChild(mem2_block1, mem2_block2)
+		
+		self.assertEqual(mem1.isEqual(mem2), False, "Element isEqual function not working")
+		mem2_block2["allocatable"] = "true"
+		self.assertEqual(mem1.isEqual(mem2), True, "Element isEqual function not working")
+		
+		#Test content equals
+		mem1_block2.content = "content"
+		mem2_block2.content = "content2"
+		
+		self.assertEqual(mem1.isEqual(mem2), False, "Element isEqual function not working")
+		mem2_block2.content = "content"
+		self.assertEqual(mem1.isEqual(mem2), True, "Element isEqual function not working")
+
+		self.assertEqual(device1.isEqual(device2),True, "Element isEqual function not working")
+
+
 	def test_createBindings(self):
 		testschema = os.path.join(self.testdir, "testschema.xsd")
 		testschema_invalid = os.path.join(self.testdir, "testschema_invalid.file")
