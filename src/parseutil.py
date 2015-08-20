@@ -164,6 +164,17 @@ class PciIdsParser():
 					"Could not find class: %s" % clshex)
 
 		return result
+	
+class DMARParser():
+	"Handles parsing of DMAR table"
+	
+	def __init__(self, dmarloc):
+		self.dmarloc = dmarloc
+		
+	
+	
+	
+	
 
 def parseLine_Sep(line, key, separatorList=""):
 	"""Reads single line, gets value from key-value pair delimited by separator

@@ -233,7 +233,7 @@ class DevicesCreator():
 
 		#Add Pci Devices
 		print "> Extracting PCI device information..."
-		devices.appendChild(PciDevicesCreator().createElems())
+		devices.appendChild(PciDevicesCreator().createElems(paths.DEVICES))
 
 		print "Element created: devices"
 
@@ -257,27 +257,27 @@ class DevicesCreator():
 class PciDevicesCreator():
 	"Helper class of DevicesCreator"
 	def __init__(self):
-		self.devicepaths = []
-		self.devicecapmgr = None
 		self.devicenames = {} #devicepath = name
-		self.deviceShortNames = {} #devicepath = shortname
 
-	def createElems(self):
+	def createElems(self, devicesdir):
 		pcidevicelist = []
+		devicepaths = []
+		devicecapmgr = None
+		deviceShortNames = {}
 		print "Finding PCI devices..."
 		#Get device absolute paths from symbolic links in paths.DEVICES
-		self.devicepaths = util.getLinks(paths.DEVICES, self.isDeviceName)
+		devicepaths = util.getLinks(devicesdir, self.isDeviceName)
 		print "Checking Dependencies..."
-		self.devicecapmgr = self.init_DevicecapManager(self.devicepaths)
-		self.deviceShortNames = self.getDeviceShortNames(self.devicepaths,paths.PCIIDS)
+		devicecapmgr = self.init_DevicecapManager(devicepaths)
+		deviceShortNames = self.getDeviceShortNames(devicepaths,paths.PCIIDS)
 		print "Examining PCI devices..."
-		filteredpaths = self.filterDevicePaths(self.devicepaths, self.devicecapmgr)
+		filteredpaths = self.filterDevicePaths(devicepaths, devicecapmgr)
 		print ("Extracting device information from %d PCI devices " % len(filteredpaths) +
 			   "(excluding PCI bridges and non PCI-Express devices behind bridges)...")
 		for devicepath in filteredpaths:
 			pcidevicelist.append( self.createDeviceFromPath(devicepath,
-															self.devicecapmgr,
-															self.deviceShortNames) )
+															devicecapmgr,
+															deviceShortNames) )
 
 		return pcidevicelist
 

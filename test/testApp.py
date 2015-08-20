@@ -232,6 +232,7 @@ class DevicesCreatorTestCase(unittest.TestCase):
 	def tearDown(self):
 		print "<> DevicesCreatorTestCase:tearDown - begin"
 
+
 	def test_getPciConfigAddress(self):
 		print "DevicesCreatorTestCase:test_getPciConfigAddress - begin"
 		testiomem = os.path.join(self.testdir,"test_iomem")
@@ -249,10 +250,19 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
 		self.devloc = os.path.join(self.testdir, "devices")
 		self.devtree = os.path.join(self.testdir, "devices_test")
+		self.devicesdir = testpaths.PATH_DEVICELINKS
 		self.pcicreator = creator.PciDevicesCreator()
 
 	def tearDown(self):
 		print "<> PciDevicesCreatorTestCase:tearDown - begin"
+		
+	
+	def test_createElems(self):
+		print "PciDevicesCreatorTestCase:test_createElems - begin"
+		devicesdir = os.path.join(self.testdir,"devices_test_links")
+		self.assertEqual(len(self.pcicreator.createElems(devicesdir)),
+						 12,
+						 "createElems function not working" )
 		
 		
 	def test_init_DevicecapManager(self):
@@ -274,9 +284,11 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		devicepaths = []
 		for devicename in devices:
 			devicepaths.append(os.path.join(testloc,devicename))
+		"""
 		devicepaths.append(os.path.join(testloc,"0000:00:01.0/0000:01:00.0"))
 		devicepaths.append(os.path.join(testloc,"0000:00:01.0/0000:01:00.1"))
 		devicepaths.append(os.path.join(testloc,"0000:00:1c.4/0000:03:00.0"))
+		"""
 						   
 		devicecapmgr = devicecap.DevicecapManager()
 		devicecapmgr.extractCapabilities(devicepaths)
