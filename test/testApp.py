@@ -311,7 +311,7 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		
 	def test_getDeviceShortNames(self):
 		print "PciDevicesCreatorTestCase:test_getDeviceShortNames - begin"
-		testpciids = os.path.join(self.testdir,"testpciids_class")
+		testpciids = testpaths.PATH_PCIIDS
 		devdir = os.path.join(self.testdir,"devices_testshortnames")
 		devpaths = []
 		for dir in sorted(os.listdir(devdir)):
@@ -330,7 +330,7 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		
 	def test_getClassName(self):
 		print "PciDevicesCreatorTestCase:test_getClassName - begin"
-		testpciids = os.path.join(self.testdir,"testpciids_class")
+		testpciids = testpaths.PATH_PCIIDS
 		pciidsparser = parseutil.PciIdsParser(testpciids)
 		devpath = os.path.join(self.testdir,"devices/dev0")
 		devpath_invalidclass = os.path.join(self.testdir,"devices/dev_invalidclass")
@@ -486,8 +486,37 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 		
 	def test_createDeviceFromPath(self):
 		print "PciDevicesCreator:test_createDeviceFromPath - begin"
+		testloc = os.path.join(self.testdir,"devices_test")
+		devpath = os.path.join(testloc,"0000:00:1f.3")
 		
-
+		devcapmgr = devicecap.DevicecapManager()
+		devcapmgr.extractCapabilities([devpath])
+		devshortnames = self.pcicreator.getDeviceShortNames([devpath],testpaths.PATH_PCIIDS)
+		resultdev = self.pcicreator.createDeviceFromPath(devpath,devcapmgr,devshortnames)
+		
+		device = Element("device", "deviceType")
+		device["name"] = "smbus"
+		device["shared"] = "false"
+		#pci
+		pci = Element("pci", "pciType")
+		pci["bus", "device", "function", "msi"] = ("16#00#",
+												   "16#1f#",
+												   "3",
+												   "false")
+		irq = Element("irq", "irqType")
+		irq["name", "number"] = "irq", "3"
+		
+		memory = Element("memory", "deviceMemoryType")
+		memory["caching", "name", "physicalAddress", "size"] = ("UC",
+																"mem0",
+																"16#fb22_4000#",
+																"16#1000#" )
+		ioport = Element("ioPort", "ioPortType")
+		ioport["end", "name", "start"] = "16#f01f#", "ioport0", "16#f000#"
+		
+		device.appendChild(pci,irq,memory,ioport)
+		
+		self.assertEqual(resultdev.isEqual(device), True, "createDeviceFromPath not working")
 
 class SerialDevicesCreatorTestCase(unittest.TestCase):
 	"Tests the SerialDevicesCreator class"
@@ -1511,7 +1540,7 @@ class ParseUtilTestCase(unittest.TestCase):
 	def test_PciIdsParser(self):
 		"Tests the PciIdsParser class"
 		print "ParseUtilTestCase:test_PciIdsParser - begin"
-		pciIdsLoc = testpaths.PATH_TEST_PARSEUTIL + "testpciids"
+		pciIdsLoc = testpaths.PATH_PCIIDS
 		pciIdsLocMultiple = testpaths.PATH_TEST_PARSEUTIL + "testpciids_multiple"
 		pciIdsLocInit = testpaths.PATH_TEST_PARSEUTIL + "testpciids_init"
 		parser = parseutil.PciIdsParser(pciIdsLoc)

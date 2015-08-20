@@ -11,4 +11,6 @@ PATH_TEST_UTIL = CURRENTDIR + "/util/"
 PATH_TEST_UPDATE = CURRENTDIR + "/update/"
 PATH_TEST_DEVICECAP = CURRENTDIR + "/devicecap/"
 
+PATH_PCIIDS = os.path.join(CURRENTDIR, "testpciids")
+
 PATH_TEST_GEN = CURRENTDIR + "/gen/"
