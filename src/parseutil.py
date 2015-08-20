@@ -1,6 +1,10 @@
 #Module containing utilities for parsing data
 import util
 import extractor
+import os
+import shutil
+import subprocess
+import message
 import customExceptions
 
 class PciIdsParser():
@@ -164,17 +168,98 @@ class PciIdsParser():
 					"Could not find class: %s" % clshex)
 
 		return result
-	
+
+
 class DMARParser():
 	"Handles parsing of DMAR table"
 	
-	def __init__(self, dmarloc):
-		self.dmarloc = dmarloc
+	def __init__(self):
+		pass
+	
+	def genDMAR(self, dmar, outputfolder, tempname):
+		"Copies DMAR file to temp folder, call this first"
+		success = False
+
 		
+		#Make temp folder
+		self._genDMAR_maketempfolder(outputfolder)
+		
+		#Copy DMAR file to temp folder
+		dest = os.path.join(outputfolder,tempname)
+		if self._genDMAR_copyDMAR(dmar, dest):
+			success = True
+		return success
+			
+	def _genDMAR_maketempfolder(self, loc):
+		"""Makes a temp folder if does not exist"""
+		if not os.path.isdir(loc):
+			os.makedirs(loc)
+			
+	def _genDMAR_copyDMAR(self, src, dest):
+		success = True
+		#Check if DMAR exists
+		try:
+			open(src,"r")
+		except IOError:
+			#DMARFileNotFound
+			message.addMessage("No DMAR file found at: '%s'; " % src +\
+							   "No IOMMU devices found.")
+			success = False
+		else:
+			#Copy DMAR to temp folder
+			try:
+				shutil.copyfile(src, dest)
+			except IOError:
+				message.addMessage("DMAR table at: '%s' " % src +\
+								 "could not be copied to location: '%s'" % dest)
+				#DmarFileNotCopied
+				message.addError("Could not obtain DMAR information; IOMMU device "
+								   "information not found.", False)
+				success = False
+				
+		return success
 	
-	
-	
-	
+	def parseDMAR(self, iaslcmdstr):
+		"Evaluates iaslcmdstr as a function to parse DMAR information."
+		success = True
+		try:
+			exec(iaslcmdstr)
+		except OSError as e:
+			if e.errno == os.errno.ENOENT:
+				#IaslToolNotFound
+				message.addMessage("iasl tool not found in the system. "+
+						"Try 'apt-get install iasl' to install.")
+				message.addError("Could not obtain DMAR information; IOMMU device "
+								"information not found.", False)
+				success = False
+			else:
+				raise
+				
+		return success
+
+	def getIommuAddrs(self, dmarfile):
+		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
+		iommuaddrs = []
+		KEY = "Register Base Address"
+		try:
+			dmardata = extractor.extractData(dmarfile)
+		except IOError:
+			message.addError("Could not find parsed DMAR file in location: %s." %
+							 dmarfile, False)
+		else:
+			for line in dmardata.splitlines():
+				try:
+					addr = parseLine_Sep(line, KEY, ":")
+					addr = addr.lstrip("0")
+					addr = "0x" + addr
+					addr = addr.lower()
+					iommuaddrs.append(addr)
+
+				except customExceptions.KeyNotFound:
+					pass
+
+		return iommuaddrs
+
 
 def parseLine_Sep(line, key, separatorList=""):
 	"""Reads single line, gets value from key-value pair delimited by separator

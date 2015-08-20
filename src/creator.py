@@ -729,10 +729,7 @@ class IommuDevicesCreator():
 			return self.iommunames.popleft()
 	
 	def __init__(self):
-		self.DMAR_TEMPNAME = "dmar.dat"
-		self.DMAR_NAME = "dmar.dsl"
-		self.OUTPUTPATH = paths.TEMP
-		self.iommuaddrs = []
+		pass
 
 	def createElems(self):
 		IASL_CMD_STR = "subprocess.call(['iasl', '-d', '%s'], stdout=subprocess.PIPE)"
@@ -742,24 +739,27 @@ class IommuDevicesCreator():
 		IOMMU_SIZE = "1000"
 		
 		elemlist = []
-		outputpath = self.OUTPUTPATH
-		tempname = self.DMAR_TEMPNAME
+		outputpath = paths.TEMP
+		tempname = "dmar.dat"
+		parsedname = tempname.split('.')[0] + ".dsl"
+
 		print "> Parsing DMAR table with iasl tool..."
+		dmarparser = parseutil.DMARParser()
 		#Create parsed copy of DMAR table
-		if self.genDMAR(paths.DMAR,
+		if dmarparser.genDMAR(paths.DMAR,
 						outputpath,
 						tempname):
 			iaslcmdstr = IASL_CMD_STR % os.path.join(outputpath,tempname)
-			if self._genDMAR_parseDMAR(iaslcmdstr):
+			if dmarparser.parseDMAR(iaslcmdstr):
 				print "Parsing of DMAR file with iasl successful."
 				#Get iommu addresses from DMAR
-				self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
-																  self.DMAR_NAME) )
+				iommuaddrs = dmarparser.getIommuAddrs(os.path.join(outputpath,
+																  parsedname) )
 				#Instantiate IommuNamer to set names for iommu devices
-				iommunamer = self.IommuNamer(self.iommuaddrs)
+				iommunamer = self.IommuNamer(iommuaddrs)
 				
 				#Create Iommu devices
-				for addr in self.iommuaddrs:
+				for addr in iommuaddrs:
 					elemlist.append(self.createDeviceFromAddr(paths.DEVMEM,
 															  addr,
 															  iommunamer,
@@ -772,87 +772,6 @@ class IommuDevicesCreator():
 
 		return elemlist
 
-	def genDMAR(self, dmar, outputfolder, tempname):
-		"Copies DMAR file to temp folder"
-		success = False
-		#Make temp folder
-		self._genDMAR_maketempfolder(outputfolder)
-		
-		#Copy DMAR file to temp folder
-		dest = os.path.join(outputfolder,tempname)
-		if self._genDMAR_copyDMAR(dmar, dest):
-			success = True
-		return success
-			
-	def _genDMAR_maketempfolder(self, loc):
-		"""Makes a temp folder if does not exist"""
-		if not os.path.isdir(loc):
-			os.makedirs(loc)
-			
-	def _genDMAR_copyDMAR(self, src, dest):
-		success = True
-		#Check if DMAR exists
-		try:
-			open(src,"r")
-		except IOError:
-			#DMARFileNotFound
-			message.addMessage("No DMAR file found at: '%s'; " % paths.DMAR +\
-							   "No IOMMU devices found.")
-			success = False
-		else:
-			#Copy DMAR to temp folder
-			try:
-				shutil.copyfile(src, dest)
-			except IOError:
-				message.addMessage("DMAR table at: '%s' " % src +\
-								 "could not be copied to location: '%s'" % dest)
-				#DmarFileNotCopied
-				message.addError("Could not obtain DMAR information; IOMMU device "
-								   "information not found.", False)
-				success = False
-				
-		return success
-	
-	def _genDMAR_parseDMAR(self, iaslcmdstr):
-		"Evaluates iaslcmdstr as a function to parse DMAR information."
-		success = True
-		try:
-			exec(iaslcmdstr)
-		except OSError as e:
-			if e.errno == os.errno.ENOENT:
-				#IaslToolNotFound
-				message.addMessage("iasl tool not found in the system. "+
-						"Try 'apt-get install iasl' to install.")
-				message.addError("Could not obtain DMAR information; IOMMU device "
-								"information not found.", False)
-				success = False
-			else:
-				raise
-				
-		return success
-
-	def getIommuAddrs(self, dmarfile):
-		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
-		iommuaddrs = []
-		KEY = "Register Base Address"
-		try:
-			dmardata = extractor.extractData(dmarfile)
-		except IOError:
-			message.addError("Could not find '%s' in location: %s." %
-							 (self.DMAR_NAME, self.OUTPUTPATH), False)
-		else:
-			for line in dmardata.splitlines():
-				try:
-					addr = parseutil.parseLine_Sep(line, KEY, ":")
-					addr = addr.lstrip("0")
-					addr = "0x" + addr
-					addr = addr.lower()
-					iommuaddrs.append(addr)
-
-				except customExceptions.KeyNotFound:
-					pass
-
-		return iommuaddrs
 	
 	def getIommuAGAW(self, iommuaddr, devmem, capoffset, capbytesize, agawbitstart):
 		"Gets the AGAW name from a given iommuaddr, at the capability offset"

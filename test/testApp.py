@@ -645,78 +645,6 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 	def tearDown(self):
 		print "<> IommuDevicesCreatorTestCase:tearDown - begin"
 
-	## -- IommuDevicesCreator testcases
-	def test_genDMAR_maketempfolder(self):
-		print "IommuDevicesCreatorTestCase:test_genDMAR_maketempfolder - begin"
-
-		tempfolder = os.path.join(self.testdir,"genDMARtempfolder")
-		if os.path.isdir(tempfolder):
-			os.rmdir(tempfolder)
-		self.iommucreator._genDMAR_maketempfolder(tempfolder)
-		self.assertEqual(os.path.isdir(tempfolder), True, "_genDMAR_maketempfolder failed")
-		os.rmdir(tempfolder)
-		os.mkdir(tempfolder)
-		self.iommucreator._genDMAR_maketempfolder(tempfolder) #see if fails when exists
-		os.rmdir(tempfolder)
-
-	def test_genDMAR_copyDMAR(self):
-		print "IommuDevicesCreatorTestCase:test_genDMAR_copyDMAR - begin"
-		dmarloc = os.path.join(self.testdir,"testdmar.dat")
-		dmarloc_invalid = os.path.join(self.testdir,"testdmar_invalidloc.dat")
-		dest = os.path.join(self.testdir,"testdmar_copy.dat")
-		dest_invalid = ""
-
-		self.assertEqual(self.iommucreator._genDMAR_copyDMAR(dmarloc_invalid, dest),
-						 False,
-						 "_genDMAR_copyDMAR function not working")
-		
-		self.assertEqual(self.iommucreator._genDMAR_copyDMAR(dmarloc, dest_invalid),
-						 False,
-						 "_genDMAR_copyDMAR function not working")
-
-	def test_genDMAR_parseDMAR(self):
-		print "IommuDevicesCreatorTestCase:test_genDMAR_parseDMAR - begin"
-		validcmdstr = "pass"
-		invalidloc = "invalidloc"
-		invalidcmdstr_cannotcall = "subprocess.call('test_genDMAR_parseDMAR_invalid')"
-		invalidcmdstr_OSError = "open('%s','r')" % invalidloc
-
-		self.assertEqual(self.iommucreator._genDMAR_parseDMAR(validcmdstr),
-						 True,
-						 "_genDMAR_parseDMAR function not working" )
-		self.assertEqual(self.iommucreator._genDMAR_parseDMAR(invalidcmdstr_cannotcall),
-						 False,
-						"_genDMAR_parseDMAR function not working" )
-		self.assertRaises(IOError, self.iommucreator._genDMAR_parseDMAR,
-						  invalidcmdstr_OSError)
-
-	def test_genDMAR(self):
-		print "IommuDevicesCreatorTestCase:test_genDMAR - begin"
-		dmarloc = os.path.join(self.testdir, "testdmar.dat")
-		outputfolder = os.path.join(self.testdir, "test_gendmar")
-		destname = "test_gendmar.dat"
-
-		self.iommucreator.genDMAR(dmarloc,outputfolder,destname)
-						 
-		if os.path.isdir(outputfolder):
-			shutil.rmtree(outputfolder)
-
-
-	def test_getIommuAddrs(self):
-		print "IommuDevicesCreatorTestCase:test_getIommuAddrs - begin"
-		loc = os.path.join(self.testdir, "testdmar.dsl")
-		emptyloc = os.path.join(self.testdir, "testdmar_empty.dsl")
-		invalidloc = "get_IommuAddrs_invalidloc"
-		
-		self.assertEqual(self.iommucreator.getIommuAddrs(loc),
-				["0xfed91000", "0xfed91100"],
-				"getIommuAddrs function not working")
-		self.assertEqual(self.iommucreator.getIommuAddrs(emptyloc),
-				[],
-				"getIommuAddrs function not working")
-		self.assertEqual(self.iommucreator.getIommuAddrs(invalidloc),
-						 [],
-						 "getIommuAddrs function not working")
 		
 	def test_getIommuAGAW(self):
 		print "IommuDevicesCreatorTestCase:test_getIommuAGAW - begin"
@@ -1655,6 +1583,91 @@ class ParseUtilTestCase(unittest.TestCase):
 		self.assertEqual(parser.getClassName("0x0600"), "Host bridge", "getClassName function not working")
 		self.assertRaises(customExceptions.PciIdsSubclassNotFound, parser.getClassName, "0x0685")
 		self.assertRaises(customExceptions.PciIdsFailedSearch, parser.getClassName, "0x1400")
+
+class DMARParserTestCase(unittest.TestCase):
+	"Tests the DMARParser Class in parseutil"
+	def setUp(self):
+		"Setup code"
+		print "<> DMARParserTestCase:setUp - begin"
+		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
+		self.dmarparser = parseutil.DMARParser()
+		#TO MOVE TO PARSEUTIL FOLDER
+
+	def tearDown(self):
+		"Cleanup code"
+		print "DMARParserTestCase:tearDown - begin" 
+		
+	def test_genDMAR_maketempfolder(self):
+		print "DMARParserTestCase:test_genDMAR_maketempfolder - begin"
+
+		tempfolder = os.path.join(self.testdir,"genDMARtempfolder")
+		if os.path.isdir(tempfolder):
+			os.rmdir(tempfolder)
+		self.dmarparser._genDMAR_maketempfolder(tempfolder)
+		self.assertEqual(os.path.isdir(tempfolder), True, "_genDMAR_maketempfolder failed")
+		os.rmdir(tempfolder)
+		os.mkdir(tempfolder)
+		self.dmarparser._genDMAR_maketempfolder(tempfolder) #see if fails when exists
+		os.rmdir(tempfolder)
+
+	def test_genDMAR_copyDMAR(self):
+		print "DMARParserTestCase:test_genDMAR_copyDMAR - begin"
+		dmarloc = os.path.join(self.testdir,"testdmar.dat")
+		dmarloc_invalid = os.path.join(self.testdir,"testdmar_invalidloc.dat")
+		dest = os.path.join(self.testdir,"testdmar_copy.dat")
+		dest_invalid = ""
+
+		self.assertEqual(self.dmarparser._genDMAR_copyDMAR(dmarloc_invalid, dest),
+						 False,
+						 "_genDMAR_copyDMAR function not working")
+		
+		self.assertEqual(self.dmarparser._genDMAR_copyDMAR(dmarloc, dest_invalid),
+						 False,
+						 "_genDMAR_copyDMAR function not working")
+
+	def testparseDMAR(self):
+		print "DMARParserTestCase:test_parseDMAR - begin"
+		validcmdstr = "pass"
+		invalidloc = "invalidloc"
+		invalidcmdstr_cannotcall = "subprocess.call('test_parseDMAR_invalid')"
+		invalidcmdstr_OSError = "open('%s','r')" % invalidloc
+
+		self.assertEqual(self.dmarparser.parseDMAR(validcmdstr),
+						 True,
+						 "parseDMAR function not working" )
+		self.assertEqual(self.dmarparser.parseDMAR(invalidcmdstr_cannotcall),
+						 False,
+						"parseDMAR function not working" )
+		self.assertRaises(IOError, self.dmarparser.parseDMAR,
+						  invalidcmdstr_OSError)
+
+	def test_genDMAR(self):
+		print "DMARParserTestCase:test_genDMAR - begin"
+		dmarloc = os.path.join(self.testdir, "testdmar.dat")
+		outputfolder = os.path.join(self.testdir, "test_gendmar")
+		destname = "test_gendmar.dat"
+
+		self.dmarparser.genDMAR(dmarloc,outputfolder,destname)
+						 
+		if os.path.isdir(outputfolder):
+			shutil.rmtree(outputfolder)
+
+
+	def test_getIommuAddrs(self):
+		print "DMARParserTestCase:test_getIommuAddrs - begin"
+		loc = os.path.join(self.testdir, "testdmar.dsl")
+		emptyloc = os.path.join(self.testdir, "testdmar_empty.dsl")
+		invalidloc = "get_IommuAddrs_invalidloc"
+		
+		self.assertEqual(self.dmarparser.getIommuAddrs(loc),
+				["0xfed91000", "0xfed91100"],
+				"getIommuAddrs function not working")
+		self.assertEqual(self.dmarparser.getIommuAddrs(emptyloc),
+				[],
+				"getIommuAddrs function not working")
+		self.assertEqual(self.dmarparser.getIommuAddrs(invalidloc),
+						 [],
+						 "getIommuAddrs function not working")
 
 
 # == Runs the Unit Test ==
