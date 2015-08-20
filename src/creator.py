@@ -637,7 +637,7 @@ class SerialDevicesCreator():
 		for serialdevice in self.createSerialDevices(filteredlist):
 			serialdevicelist.append(serialdevice)
 		"""
-		#TODO TEST this omission
+
 		return serialdevicelist
 
 	def getSerialAddresses(self, ioportspath):
@@ -736,26 +736,30 @@ class IommuDevicesCreator():
 		self.iommunamer = None
 
 	def createElems(self):
+		IASL_CMD_STR = "subprocess.call(['iasl', '-d', '%s'], stdout=subprocess.PIPE)"
 		elemlist = []
+		outputpath = self.OUTPUTPATH
+		tempname = self.DMAR_TEMPNAME
 		print "> Parsing DMAR table with iasl tool..."
 		#Create parsed copy of DMAR table
-		IASL_COMMAND = "iasl -d"
 		if self.genDMAR(paths.DMAR,
-						self.OUTPUTPATH,
-						self.DMAR_TEMPNAME,
-						IASL_COMMAND):
-			#Create iommu devices
-			self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
-															  self.DMAR_NAME) )
-			#Instantiate IommuNamer to set names for iommu devices
-			self.iommunamer = self.IommuNamer(self.iommuaddrs)
-			for addr in self.iommuaddrs:
-				elemlist.append(self.createDeviceFromAddr(addr))
+						outputpath,
+						tempname):
+			iaslcmdstr = IASL_CMD_STR % os.path.join(outputpath,tempname)
+			if self._genDMAR_parseDMAR(iaslcmdstr):
+				print "Parsing of DMAR file with iasl successful."
+				#Create iommu devices
+				self.iommuaddrs = self.getIommuAddrs(os.path.join(self.OUTPUTPATH,
+																  self.DMAR_NAME) )
+				#Instantiate IommuNamer to set names for iommu devices
+				self.iommunamer = self.IommuNamer(self.iommuaddrs)
+				for addr in self.iommuaddrs:
+					elemlist.append(self.createDeviceFromAddr(addr))
 
 		return elemlist
 
-	def genDMAR(self, dmar, outputfolder, tempname, iaslcmd):
-		"Creates Parsed DMAR file in temp folder"
+	def genDMAR(self, dmar, outputfolder, tempname):
+		"Copies DMAR file to temp folder"
 		success = False
 		#Make temp folder
 		self._genDMAR_maketempfolder(outputfolder)
@@ -763,12 +767,7 @@ class IommuDevicesCreator():
 		#Copy DMAR file to temp folder
 		dest = os.path.join(outputfolder,tempname)
 		if self._genDMAR_copyDMAR(dmar, dest):
-	
-			#Parse temp file
-			if self._genDMAR_parseDMAR(iaslcmd, dest):
-				print "Parsing of DMAR file with iasl successful."
-				success = True
-		
+			success = True
 		return success
 			
 	def _genDMAR_maketempfolder(self, loc):
@@ -799,7 +798,25 @@ class IommuDevicesCreator():
 				success = False
 				
 		return success
-
+	
+	def _genDMAR_parseDMAR(self, iaslcmdstr):
+		"Evaluates iaslcmdstr as a function to parse DMAR information."
+		success = True
+		try:
+			exec(iaslcmdstr)
+		except OSError as e:
+			if e.errno == os.errno.ENOENT:
+				#IaslToolNotFound
+				message.addMessage("iasl tool not found in the system. "+
+						"Try 'apt-get install iasl' to install.")
+				message.addError("Could not obtain DMAR information; IOMMU device "
+								"information not found.", False)
+				success = False
+			else:
+				raise
+				
+		return success
+	"""
 	def _genDMAR_parseDMAR(self, iaslcmd, dmarloc):
 		success = True
 		iasltokens = iaslcmd.split()
@@ -821,6 +838,7 @@ class IommuDevicesCreator():
 				raise
 				
 		return success
+	"""
 
 	def getIommuAddrs(self, dmarfile):
 		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"

@@ -597,25 +597,32 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 
 	def test_genDMAR_parseDMAR(self):
 		print "IommuDevicesCreatorTestCase:test_genDMAR_parseDMAR - begin"
-		dmarloc = os.path.join(self.testdir,"testdmar.dat")
-		invalidcmd = "ia -d"
-		
-		self.assertEqual(self.iommucreator._genDMAR_parseDMAR(invalidcmd, dmarloc),
-						 False,
+		validcmdstr = "pass"
+		invalidloc = "invalidloc"
+		invalidcmdstr_cannotcall = "subprocess.call('test_genDMAR_parseDMAR_invalid')"
+		invalidcmdstr_OSError = "open('%s','r')" % invalidloc
+
+		self.assertEqual(self.iommucreator._genDMAR_parseDMAR(validcmdstr),
+						 True,
 						 "_genDMAR_parseDMAR function not working" )
-		
+		self.assertEqual(self.iommucreator._genDMAR_parseDMAR(invalidcmdstr_cannotcall),
+						 False,
+						"_genDMAR_parseDMAR function not working" )
+		self.assertRaises(IOError, self.iommucreator._genDMAR_parseDMAR,
+						  invalidcmdstr_OSError)
+
 	def test_genDMAR(self):
 		print "IommuDevicesCreatorTestCase:test_genDMAR - begin"
 		dmarloc = os.path.join(self.testdir, "testdmar.dat")
 		outputfolder = os.path.join(self.testdir, "test_gendmar")
 		destname = "test_gendmar.dat"
-		self.assertEqual(self.iommucreator.genDMAR(dmarloc, outputfolder, destname, "iasl -d"),
-						 True,
-						 "_genDMAR not working")
+
+		self.iommucreator.genDMAR(dmarloc,outputfolder,destname)
 						 
 		if os.path.isdir(outputfolder):
 			shutil.rmtree(outputfolder)
-		
+
+
 	def test_getIommuAddrs(self):
 		print "IommuDevicesCreatorTestCase:test_getIommuAddrs - begin"
 		loc = os.path.join(self.testdir, "testdmar.dsl")

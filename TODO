@@ -1,22 +1,18 @@
 Maybe have command switch to include bridges?
 Refactor creator code to make it more extensible  (split into files??)
-Make more code testable: Add arguments in functions
 Double check info obtained
 Test Protocols
 Edit README.txt
-Add Devicemanager
 *Implement -everything arg that does not filter or modify anything
 
 [High Priority]
+iasl usage in testApp
 
 [Medium Priority]
 Running the tests creates an unclean git working copy
 (test/schemadata/testschemaoutput.py)
 
 Add Makefile to conveniently run the tests
-
-Remove generated testfiles from git tracking
-Propagate customExceptions in test suites
 
 [Low Priority]
 Only update pci.ids if oldver < newvern
