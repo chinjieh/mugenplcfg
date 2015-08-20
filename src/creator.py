@@ -23,10 +23,9 @@ PROCESSOR_SPEED_KEYWORDS = ["GHz", "MHz"]
 class ProcessorCreator():
 
 	@staticmethod
-	def createElem():
+	def createElem(cpuinfopath, msrpaths):
 		print "> Creating element: processor"
 		processor = Element("processor", "processorType")
-		cpuinfopath = paths.CPUINFO
 		# Logical Cpus
 		processor["logicalCpus"] = ProcessorCreator.getLogicalCpus(cpuinfopath)
 		
@@ -36,9 +35,9 @@ class ProcessorCreator():
 		# vmxTimerRate
 		VMX_OFFSET = 0x485
 		VMX_BITSIZE = 5
-		processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(paths.MSR,
-																		VMX_OFFSET,
-																		VMX_BITSIZE)
+		processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(msrpaths,
+																	VMX_OFFSET,
+																	VMX_BITSIZE)
 		print "Element created: processor"
 		return processor
 	
@@ -230,7 +229,7 @@ class DevicesCreator():
 
 		#Add Serial Devices
 		print "> Extracting Serial device information..."
-		devices.appendChild(SerialDevicesCreator().createElems())
+		devices.appendChild(SerialDevicesCreator().createElems(paths.IOPORTS))
 
 		#Add Pci Devices
 		print "> Extracting PCI device information..."
@@ -624,9 +623,9 @@ class SerialDevicesCreator():
 					Address("02e8", "02ef") : "com_4"
 							}
 
-	def createElems(self):
+	def createElems(self, ioportspath):
 		serialdevicelist = []
-		self.addresses = self.getSerialAddresses(paths.IOPORTS)
+		self.addresses = self.getSerialAddresses(ioportspath)
 		#Get COM Device addresses
 		for comdevice in self.createComDevices(self.addresses,self.COMADDRESSES):
 			serialdevicelist.append(comdevice)
@@ -928,7 +927,7 @@ class IommuDevicesCreator():
 def createElements():
 	"Creates the element tree and returns top element"
 	platform = Element("platform", "platformType")
-	platform.appendChild(ProcessorCreator.createElem())
+	platform.appendChild(ProcessorCreator.createElem(paths.CPUINFO, paths.MSR))
 	platform.appendChild(MemoryCreator.createElem())
 	platform.appendChild(DevicesCreator.createElem())
 

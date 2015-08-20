@@ -73,6 +73,26 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 
 	def tearDown(self):
 		print "<> ProcessorCreatorTestCase:tearDown - begin"
+		
+	def test_createElem(self):
+		print "ProcessorCreatorTestCase:test_createElem - begin"
+		cpuinfo = os.path.join(self.testdir,"cpuinfo")
+		msr = os.path.join(testpaths.PATH_TEST_GEN,"msr")
+		
+		processor = Element("processor", "processorType")
+		processor["logicalCpus", "speed", "vmxTimerRate"] = 8, "3200", 5
+		
+		VMX_OFFSET = 0x485
+		VMX_BITSIZE = 5
+		with open(msr, "wb") as f:
+			f.seek(VMX_OFFSET)
+			f.write(b"\x05\x0e")
+		
+		result = creator.ProcessorCreator.createElem(cpuinfo, [msr])
+		print result["logicalCpus"]
+		print result["speed"]
+		print result["vmxTimerRate"]
+		self.assertEqual(result.isEqual(processor), True, "createElems not working")
 	
 	def test_getLogicalCpus(self):
 		print "ProcessorCreatorTestCase:test_getLogicalCpus - begin"
@@ -527,6 +547,20 @@ class SerialDevicesCreatorTestCase(unittest.TestCase):
 
 	def tearDown(self):
 		print "<> SerialDevicesCreatorTestCase:tearDown - begin"
+		
+	def test_createElems(self):
+		print "SerialDevicesCreator:test_createElems - begin"
+		ioportloc = testpaths.PATH_IOPORTS
+		result = self.serialcreator.createElems(ioportloc)
+		
+		device = Element("device", "deviceType")
+		device["name", "shared"] = "com_1", "true"
+		
+		ioport = Element("ioPort", "ioPortType")
+		ioport["end", "name", "start"] = "16#03ff#", "ioport", "16#03f8#"
+		device.appendChild(ioport)
+		
+		self.assertEqual(result[0].isEqual(device), True, "createElems not working")
 
 	## -- SerialDevicesCreator testcases
 	def test_getSerialAddresses(self):
