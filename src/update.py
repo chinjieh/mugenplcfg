@@ -10,10 +10,15 @@ import extractor
 PCI_IDS = "https://pci-ids.ucw.cz/v2.2/pci.ids"
 
 def update():
+	success = True
 	print "Updating tool..."
-	updatePciIds(PCI_IDS, paths.PCIIDS)
+	if not updatePciIds(PCI_IDS, paths.PCIIDS):
+		success = False
+		
+	return success
 
 def updatePciIds(url, location):
+	success = True
 	localfile = False
 	print "Attempting to update file: %s" % location
 	try:
@@ -23,6 +28,7 @@ def updatePciIds(url, location):
 		print "Failed to update file: %s" % location
 		print "> pci.ids file could not be updated from url: %s" % url
 		print "> The file can be obtained manually from the repository."
+		success = False
 		raise customExceptions.PciIdsInvalidLink()
 	except ValueError: 
 		#Might not be url, might be local file

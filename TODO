@@ -6,12 +6,8 @@ Edit README.txt
 *Implement -everything arg that does not filter or modify anything
 
 [High Priority]
-iasl usage in testApp
 
 [Medium Priority]
-Running the tests creates an unclean git working copy
-(test/schemadata/testschemaoutput.py)
-
 Add Makefile to conveniently run the tests
 
 [Low Priority]

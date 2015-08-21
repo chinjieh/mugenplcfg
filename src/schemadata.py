@@ -176,6 +176,7 @@ class Element():
 def generateBindings(schemafile, outpath, outname):
 	"Creates a .py PyXB binding file from schemafile"
 	print "Generating binding file with PyXB submodule..."
+	success = False
 	if createBindings(schemafile,outpath,outname,paths.PYXB_GEN):
 		acceptedvalues = ["Y","y","N","n",""]
 		ans = getChoice(acceptedvalues)
@@ -185,6 +186,10 @@ def generateBindings(schemafile, outpath, outname):
 			moveGeneratedFile( os.path.join(paths.CURRENTDIR,outname+".py"),
 							   paths.SCHEMACONFIG+".py" )
 			print "DONE"
+			
+		success = True
+		
+	return success
 			
 def createBindings(schemafile,outpath,outname,pyxbgenpath):
 	"Produces binding file from schema"

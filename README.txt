@@ -14,7 +14,7 @@
 ##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
 
-== [ Installing the Tool ] ==
+== [ Installing mugenplcfg ] ==
 
 mugenplcfg can be obtained from the repository via command:
 
@@ -23,7 +23,7 @@ mugenplcfg can be obtained from the repository via command:
 This clones all submodules required by the tool as well as the source files.
 
 
-== [ Running the Tool ] ==
+== [ Running mugenplcfg ] ==
 
 After installation, mugenplcfg can be run via the command:
 
@@ -37,6 +37,19 @@ Root user permissions are necessary to allow mugenplcfg to examine system data.
 -u / --update			Update files used by the tool
 -f / --force			Attempt to generate the output file despite errors
 -g SCHEMA /--gen SCHEMA		Generates a .py binding file from a .xsd schema file
+
+
+== [ Running Tests ] ==
+
+The test application for mugenplcfg requires the Python Package 'mock'
+(website: https://mock.readthedocs.org/en/latest/ )
+Install it via the command:
+
+	$ sudo pip install mock
+
+After installing the required dependencies, the tests can be run with:
+
+	$ python mugenplcfg/test/testApp.py
 
 
 == [ Additional information on generated platform file ] ==

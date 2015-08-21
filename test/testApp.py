@@ -1018,11 +1018,20 @@ class SchemaDataTestCase(unittest.TestCase):
 			"k2" : "value2",
 			"k1" : "value1"
 		}
+		
+		cap_1 = Element("capabilities", "capabilitiesType")
+		cap_2 = Element("capabilities", "capabilitiesType")
+		
+		cap_1.appendChild(iommucap1)
+		cap_1.appendChild(iommucap2)
+		cap_2.appendChild(iommucap2)
+
 		self.assertEqual(dict1, dict2, "Dicts don't match")
 		#Test attribute equals on one layer
 		self.assertEqual(iommucap1.isEqual(iommucap2), True, "Element isEqual function not working")
 		
 		#Test attribute equals on two layers
+		self.assertEqual(cap_1.isEqual(cap_2), False, "Element isEqual function not working")
 		mem1 = Element("memory", "physicalMemoryType")
 		mem1_block1 = Element("memoryBlock", "memoryBlockType")
 		mem1_block1["name", "physicalAddress", "size", "allocatable"] = ("name",
@@ -1063,6 +1072,35 @@ class SchemaDataTestCase(unittest.TestCase):
 
 		self.assertEqual(device1.isEqual(device2),True, "Element isEqual function not working")
 
+
+	def createBindings_patch(x,y,z,a):
+		return True
+
+	@mock.patch.object(schemadata, "createBindings", createBindings_patch)
+	def test_generateBindings(self):
+		print "SchemadataTestCase:test_generateBindings - begin"
+
+		def moveGeneratedFile_patch(x,y):
+			print "File moved"
+		
+		def getChoice_yes(x):
+			return "Y"
+		
+		def getChoice_no(x):
+			return "n"
+		
+		@mock.patch.object(schemadata, "moveGeneratedFile", moveGeneratedFile_patch)
+		@mock.patch.object(schemadata, "getChoice", getChoice_yes)
+		def runtest_yes():
+			return schemadata.generateBindings("arg1", "arg2", "arg3")
+		
+		@mock.patch.object(schemadata, "moveGeneratedFile", moveGeneratedFile_patch)
+		@mock.patch.object(schemadata, "getChoice", getChoice_no)
+		def runtest_no():
+			return schemadata.generateBindings("arg1", "arg2", "arg3")
+		
+		self.assertEqual(runtest_yes(), True, "generateBindings failed")
+		self.assertEqual(runtest_no(), True, "generateBindings failed")
 
 	def test_createBindings(self):
 		testschema = os.path.join(self.testdir, "testschema.xsd")
@@ -1337,10 +1375,32 @@ class UpdateTestCase(unittest.TestCase):
 	def tearDown(self):
 		"Cleanup code"
 		print "UpdateTestCase:tearDown - begin"
+		
+	
+	def test_update(self):
+		print "UpdateTestCase:test_update - begin"
+		
+		def updatePciIds_patch(url, location):
+			return True
+		
+		def updatePciIds_patchfail(url, location):
+			return False
+		
+		
+		@mock.patch.object(update, "updatePciIds", updatePciIds_patch)
+		def runtest():
+			return update.update()
+			
+		@mock.patch.object(update, "updatePciIds", updatePciIds_patchfail)
+		def runtest_fail():
+			return update.update()
+			
+		self.assertEqual(runtest(), True, "update function not working")
+		
+		self.assertEqual(runtest_fail(), False, "update function not working")
 
-	# -- updatePciIds tests
 	def test_updatePciIds(self):
-		"Tests updatePciIds function"
+		print "UpdateTestCase:test_updatePciIds - begin"
 		INVALID_ADDR = "http://test"
 		testfile = os.path.join(self.testdir,"test_pciids.ids")
 		self.assertRaises(customExceptions.PciIdsInvalidLink,

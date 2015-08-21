@@ -1,7 +1,7 @@
 # /home/cj/Programming/ConfigTool/schemaconfig.py
 # -*- coding: utf-8 -*-
 # PyXB bindings for NM:e92452c8d3e28a9e27abfc9994d2007779e7f4c9
-# Generated 2015-08-18 10:03:37.737516 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
+# Generated 2015-08-21 16:09:11.165290 by PyXB version 1.2.5-DEV using Python 2.7.6.final.0
 # Namespace AbsentNamespace0
 
 from __future__ import unicode_literals
@@ -14,7 +14,7 @@ import pyxb.utils.domutils
 import sys
 import pyxb.utils.six as _six
 # Unique identifier for bindings created at the same time
-_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:a175f79a-457f-11e5-b9f9-001999a78414')
+_GenerationUID = pyxb.utils.utility.UniqueIdentifier('urn:uuid:320ad8ee-480e-11e5-973a-001999a78414')
 
 # Version of PyXB used to generate the bindings
 _PyXBVersion = '1.2.5-DEV'
@@ -127,10 +127,10 @@ class nameType (pyxb.binding.datatypes.string):
     _ExpandedName = pyxb.namespace.ExpandedName(Namespace, 'nameType')
     _XSDLocation = pyxb.utils.utility.Location('/home/cj/Programming/muen/tools/libmuxml/generated/platform_config.xsd', 29, 2)
     _Documentation = None
-nameType._CF_minLength = pyxb.binding.facets.CF_minLength(value=pyxb.binding.datatypes.nonNegativeInteger(1))
 nameType._CF_maxLength = pyxb.binding.facets.CF_maxLength(value=pyxb.binding.datatypes.nonNegativeInteger(63))
-nameType._InitializeFacetMap(nameType._CF_minLength,
-   nameType._CF_maxLength)
+nameType._CF_minLength = pyxb.binding.facets.CF_minLength(value=pyxb.binding.datatypes.nonNegativeInteger(1))
+nameType._InitializeFacetMap(nameType._CF_maxLength,
+   nameType._CF_minLength)
 Namespace.addCategoryObject('typeBinding', 'nameType', nameType)
 _module_typeBindings.nameType = nameType
 
@@ -333,11 +333,11 @@ class optionalOffsetType (pyxb.binding.basis.STD_union):
     _Documentation = None
 
     _MemberTypes = ( word64Type, noneType, )
-optionalOffsetType._CF_pattern = pyxb.binding.facets.CF_pattern()
 optionalOffsetType._CF_enumeration = pyxb.binding.facets.CF_enumeration(value_datatype=optionalOffsetType)
+optionalOffsetType._CF_pattern = pyxb.binding.facets.CF_pattern()
 optionalOffsetType.none = 'none'                  # originally noneType.none
-optionalOffsetType._InitializeFacetMap(optionalOffsetType._CF_pattern,
-   optionalOffsetType._CF_enumeration)
+optionalOffsetType._InitializeFacetMap(optionalOffsetType._CF_enumeration,
+   optionalOffsetType._CF_pattern)
 Namespace.addCategoryObject('typeBinding', 'optionalOffsetType', optionalOffsetType)
 _module_typeBindings.optionalOffsetType = optionalOffsetType
 

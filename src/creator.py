@@ -126,12 +126,12 @@ class ProcessorCreator():
 class MemoryCreator():
 
 	@staticmethod
-	def createElem():
+	def createElem(memmappath):
 		print "> Creating element: memory"
 
 		memory = Element("memory", "physicalMemoryType")
 		#Get list of memoryBlocks available
-		memoryBlockList = MemoryCreator.getMemoryBlocks(paths.MEMMAP)
+		memoryBlockList = MemoryCreator.getMemoryBlocks(memmappath)
 		for memoryBlock in memoryBlockList:
 			memory.appendChild(memoryBlock)
 		print "Element created: memory"
@@ -888,7 +888,7 @@ def createElements():
 	"Creates the element tree and returns top element"
 	platform = Element("platform", "platformType")
 	platform.appendChild(ProcessorCreator.createElem(paths.CPUINFO, paths.MSR))
-	platform.appendChild(MemoryCreator.createElem())
+	platform.appendChild(MemoryCreator.createElem(paths.MEMMAP))
 	platform.appendChild(DevicesCreator.createElem())
 
 	return platform
