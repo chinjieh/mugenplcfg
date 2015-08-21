@@ -3,7 +3,7 @@
  * AML Disassembler version 20140214-64 [Mar 29 2014]
  * Copyright (c) 2000 - 2014 Intel Corporation
  * 
- * Disassembly of /home/cj/Programming/ConfigTool/tmp/dmar.dat, Tue Aug  4 10:54:52 2015
+ * Disassembly of /home/cj/Programming/ConfigTool/test/parseutil/testdmar_parseDMAR.dat, Fri Aug 21 10:55:14 2015
  *
  * ACPI Data Table [DMAR]
  *
@@ -103,10 +103,6 @@
 
 [07Eh 0126   2]                     PCI Path : 0F,06
 
-[034h 0052   1]                        Flags : 01
-[035h 0053   1]                     Reserved : 00
-[036h 0054   2]           PCI Segment Number : 0000
-[038h 0056   8]        Register Base Address : 00000000FED91100
 
 [080h 0128   1]      Device Scope Entry Type : 04
 [081h 0129   1]                 Entry Length : 08

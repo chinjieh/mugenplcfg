@@ -174,20 +174,21 @@ class DMARParser():
 	"Handles parsing of DMAR table"
 	
 	def __init__(self):
-		pass
+		self.copiedDMAR = None
+		self.parsedDMAR = None
 	
-	def genDMAR(self, dmar, outputfolder, tempname):
+	def genDMAR(self, dmar, outputloc):
 		"Copies DMAR file to temp folder, call this first"
 		success = False
 
-		
+		outputfolder = os.path.dirname(outputloc)
 		#Make temp folder
 		self._genDMAR_maketempfolder(outputfolder)
 		
 		#Copy DMAR file to temp folder
-		dest = os.path.join(outputfolder,tempname)
-		if self._genDMAR_copyDMAR(dmar, dest):
+		if self._genDMAR_copyDMAR(dmar, outputloc):
 			success = True
+			self.copiedDMAR = outputloc
 		return success
 			
 	def _genDMAR_maketempfolder(self, loc):
@@ -217,8 +218,42 @@ class DMARParser():
 								   "information not found.", False)
 				success = False
 				
+		if success:
+			self.copiedDMAR = dest
+				
 		return success
 	
+	def getParsedDmarPath(self):
+		return self.parsedDMAR
+	
+	def getCopiedDmarPath(self):
+		return self.copiedDMAR
+	
+	def parseDMAR(self, dmarfilepath=None):
+		"Parses dmarfile with iasl"
+		success = True
+		if dmarfilepath is None:
+			dmarfilepath = self.getCopiedDmarPath()
+		dmarfilepath_noext, ext = os.path.splitext(dmarfilepath)
+		outfile = dmarfilepath_noext + ".dsl"
+		try:
+			self._runIasl(dmarfilepath)
+		except OSError:
+				#IaslToolNotFound
+				message.addMessage("iasl tool not found in the system. "+
+						"Try 'apt-get install iasl' to install.")
+				message.addError("Could not obtain DMAR information; IOMMU device "
+								"information not found.", False)
+				success = False
+		else:
+			self.parsedDMAR = outfile
+				
+		return success
+	
+	def _runIasl(self,dmarfilepath):
+		subprocess.check_call(["iasl", "-d", dmarfilepath])
+	
+	"""
 	def parseDMAR(self, iaslcmdstr):
 		"Evaluates iaslcmdstr as a function to parse DMAR information."
 		success = True
@@ -236,16 +271,19 @@ class DMARParser():
 				raise
 				
 		return success
+	"""
 
-	def getIommuAddrs(self, dmarfile):
+	def getIommuAddrs(self, parsedDMAR=None):
 		"Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
 		iommuaddrs = []
 		KEY = "Register Base Address"
+		if parsedDMAR is None:
+			parsedDMAR = self.getParsedDmarPath()
 		try:
-			dmardata = extractor.extractData(dmarfile)
+			dmardata = extractor.extractData(parsedDMAR)
 		except IOError:
 			message.addError("Could not find parsed DMAR file in location: %s." %
-							 dmarfile, False)
+							 parsedDMAR, False)
 		else:
 			for line in dmardata.splitlines():
 				try:

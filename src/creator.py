@@ -730,8 +730,48 @@ class IommuDevicesCreator():
 	
 	def __init__(self):
 		pass
-
+	
 	def createElems(self):
+		#IASL_CMD_STR = "subprocess.call(['iasl', '-d', '%s'], stdout=subprocess.PIPE)"
+		CAPABILITY_OFFSET = "0x08"
+		CAP_REG_BYTE_SIZE = 7
+		AGAW_BIT_START = 8
+		IOMMU_SIZE = "1000"
+		
+		elemlist = []
+		#outputpath = paths.TEMP
+		#tempname = "dmar.dat"
+		#parsedname = tempname.split('.')[0] + ".dsl"
+
+		print "> Parsing DMAR table with iasl tool..."
+		dmarparser = parseutil.DMARParser()
+		#Create parsed copy of DMAR table
+		if dmarparser.genDMAR(paths.DMAR,
+						os.path.join(paths.TEMP, "dmar.dat")):
+			#iaslcmdstr = IASL_CMD_STR % os.path.join(outputpath,tempname)
+			if dmarparser.parseDMAR():
+				print "Parsing of DMAR file with iasl successful."
+				#Get iommu addresses from DMAR
+				iommuaddrs = dmarparser.getIommuAddrs()
+				#Instantiate IommuNamer to set names for iommu devices
+				iommunamer = self.IommuNamer(iommuaddrs)
+				
+				#Create Iommu devices
+				for addr in iommuaddrs:
+					elemlist.append(self.createDeviceFromAddr(paths.DEVMEM,
+															  addr,
+															  iommunamer,
+															  IOMMU_SIZE,
+															  CAPABILITY_OFFSET,
+															  CAP_REG_BYTE_SIZE,
+															  AGAW_BIT_START
+															  )
+								   )
+
+		return elemlist
+
+	
+	"""def createElems(self):
 		IASL_CMD_STR = "subprocess.call(['iasl', '-d', '%s'], stdout=subprocess.PIPE)"
 		CAPABILITY_OFFSET = "0x08"
 		CAP_REG_BYTE_SIZE = 7
@@ -771,6 +811,7 @@ class IommuDevicesCreator():
 								   )
 
 		return elemlist
+	"""
 
 	
 	def getIommuAGAW(self, iommuaddr, devmem, capoffset, capbytesize, agawbitstart):

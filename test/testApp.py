@@ -6,7 +6,9 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import testpaths
 import paths
+import mock
 import shutil
+import subprocess
 from src import schemadata, customExceptions
 from collections import namedtuple
 # == Class that tests extractor.py ==
@@ -89,9 +91,6 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 			f.write(b"\x05\x0e")
 		
 		result = creator.ProcessorCreator.createElem(cpuinfo, [msr])
-		print result["logicalCpus"]
-		print result["speed"]
-		print result["vmxTimerRate"]
 		self.assertEqual(result.isEqual(processor), True, "createElems not working")
 	
 	def test_getLogicalCpus(self):
@@ -172,6 +171,11 @@ class MemoryCreatorTestCase(unittest.TestCase):
 
 	def tearDown(self):
 		print "<> MemoryCreatorTestCase:tearDown - begin"
+		result = creator.MemoryCreator.createElem(os.path.join(self.testdir,"memmap"))
+		
+	def test_createElem(self):
+		print "MemoryCreatorTestCase:test_createElem - begin"
+		
 		
 	def test_memmapextraction(self):
 		"Tests various functions related to memmap extraction"
@@ -231,7 +235,6 @@ class DevicesCreatorTestCase(unittest.TestCase):
 
 	def tearDown(self):
 		print "<> DevicesCreatorTestCase:tearDown - begin"
-
 
 	def test_getPciConfigAddress(self):
 		print "DevicesCreatorTestCase:test_getPciConfigAddress - begin"
@@ -645,7 +648,9 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 	def tearDown(self):
 		print "<> IommuDevicesCreatorTestCase:tearDown - begin"
 
-		
+	def test_createElems(self):
+		print "IommuDevicesCreatorTestCase:createElems - begin"
+	
 	def test_getIommuAGAW(self):
 		print "IommuDevicesCreatorTestCase:test_getIommuAGAW - begin"
 		testdevmem = os.path.join(testpaths.PATH_TEST_GEN, "testdevmem")
@@ -952,7 +957,7 @@ class SchemaDataTestCase(unittest.TestCase):
 		self.assertEqual(devices_pyxb.device[0].capabilities.capability[0].name, "Device1 Capability1", "Deep nesting of elements failed")
 		self.assertEqual(devices_pyxb.device[1].shared, "false", "Deep nesting of elements failed")
 		
-	def test_Element_Compare(self):
+	def test_Element_isEqual(self):
 		print "SchemaDataTestCase:test_Element_Compare - begin"
 		
 		#DEVICE_1		
@@ -1589,7 +1594,7 @@ class DMARParserTestCase(unittest.TestCase):
 	def setUp(self):
 		"Setup code"
 		print "<> DMARParserTestCase:setUp - begin"
-		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
+		self.testdir = os.path.join(testpaths.PATH_TEST_PARSEUTIL)
 		self.dmarparser = parseutil.DMARParser()
 		#TO MOVE TO PARSEUTIL FOLDER
 
@@ -1624,30 +1629,72 @@ class DMARParserTestCase(unittest.TestCase):
 		self.assertEqual(self.dmarparser._genDMAR_copyDMAR(dmarloc, dest_invalid),
 						 False,
 						 "_genDMAR_copyDMAR function not working")
-
-	def testparseDMAR(self):
-		print "DMARParserTestCase:test_parseDMAR - begin"
-		validcmdstr = "pass"
-		invalidloc = "invalidloc"
-		invalidcmdstr_cannotcall = "subprocess.call('test_parseDMAR_invalid')"
-		invalidcmdstr_OSError = "open('%s','r')" % invalidloc
-
-		self.assertEqual(self.dmarparser.parseDMAR(validcmdstr),
+		
+		self.assertEqual(self.dmarparser._genDMAR_copyDMAR(dmarloc, dest),
 						 True,
-						 "parseDMAR function not working" )
-		self.assertEqual(self.dmarparser.parseDMAR(invalidcmdstr_cannotcall),
-						 False,
-						"parseDMAR function not working" )
-		self.assertRaises(IOError, self.dmarparser.parseDMAR,
-						  invalidcmdstr_OSError)
+						 "_genDMAR_copyDMAR function not working")
+		
+		self.assertEqual(self.dmarparser.getCopiedDmarPath(),
+						 dest,
+						 "_genDMAR_copyDMAR function not working")
 
+	def test_parseDMAR(self):
+		print "DMARParserTestCase:test_parseDMAR - begin"
+		dmarloc = os.path.join(self.testdir,"testdmar_parseDMAR.dat")
+		output = os.path.join(self.testdir, "testdmar_parseDMAR.dsl")
+
+		#Mock success iasl
+		def _runIasl_success(self, dmarloc):
+			return True
+		
+		def _getCopiedDmarPath(self):
+			return dmarloc
+		
+		def _runIasl_nocmd(self, dmarloc):
+			subprocess.check_call("parseDMAR_nosuchcommand")
+			
+		def _runIasl_noinput(self, dmarloc):
+			raise subprocess.CalledProcessError(255,"cmd",None)
+			
+
+		#Define functions with patched objects
+		@mock.patch.object(parseutil.DMARParser, "_runIasl", _runIasl_success)
+		@mock.patch.object(parseutil.DMARParser, "getCopiedDmarPath", _getCopiedDmarPath)
+		def test_success(dmarloc):
+			dmarparser = parseutil.DMARParser()
+			return (dmarparser.parseDMAR(), dmarparser.getParsedDmarPath())
+
+		@mock.patch.object(parseutil.DMARParser, "_runIasl", _runIasl_nocmd)
+		def test_noiasl(dmarloc):
+			dmarparser = parseutil.DMARParser()
+			return dmarparser.parseDMAR(dmarloc)
+		
+		@mock.patch.object(parseutil.DMARParser, "_runIasl", _runIasl_noinput)
+		def test_noinput(dmarloc):
+			dmarparser = parseutil.DMARParser()
+			return dmarparser.parseDMAR(dmarloc)
+			
+		self.assertEqual(test_success(dmarloc)[0],
+						True,
+						"parseDMAR function not working" )
+		self.assertEqual(test_success(dmarloc)[1],
+						output,
+						"parseDMAR function not working" )
+		self.assertEqual(test_noiasl(dmarloc),
+						False,
+						"parseDMAR function not working" )
+		self.assertRaises(subprocess.CalledProcessError,
+						  test_noinput,
+						  dmarloc )
+						  
 	def test_genDMAR(self):
 		print "DMARParserTestCase:test_genDMAR - begin"
 		dmarloc = os.path.join(self.testdir, "testdmar.dat")
 		outputfolder = os.path.join(self.testdir, "test_gendmar")
 		destname = "test_gendmar.dat"
+		outputloc = os.path.join(outputfolder,destname)
 
-		self.dmarparser.genDMAR(dmarloc,outputfolder,destname)
+		self.dmarparser.genDMAR(dmarloc,outputloc)
 						 
 		if os.path.isdir(outputfolder):
 			shutil.rmtree(outputfolder)
@@ -1659,7 +1706,10 @@ class DMARParserTestCase(unittest.TestCase):
 		emptyloc = os.path.join(self.testdir, "testdmar_empty.dsl")
 		invalidloc = "get_IommuAddrs_invalidloc"
 		
-		self.assertEqual(self.dmarparser.getIommuAddrs(loc),
+		correctdmarparser = parseutil.DMARParser()
+		correctdmarparser.parsedDMAR = loc
+		
+		self.assertEqual(correctdmarparser.getIommuAddrs(),
 				["0xfed91000", "0xfed91100"],
 				"getIommuAddrs function not working")
 		self.assertEqual(self.dmarparser.getIommuAddrs(emptyloc),
