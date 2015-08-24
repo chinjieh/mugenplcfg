@@ -23,7 +23,6 @@ PROCESSOR_SPEED_KEYWORDS = ["GHz", "MHz"]
 
 class ProcessorCreator():
 
-
     def createElem(self, cpuinfopath, msrpaths):
         print "> Creating element: processor"
         processor = Element("processor", "processorType")
@@ -38,16 +37,14 @@ class ProcessorCreator():
         VMX_OFFSET = 0x485
         VMX_BITSIZE = 5
         processor["vmxTimerRate"] = self.getVmxTimerRate(msrpaths,
-                                                                     VMX_OFFSET,
-                                                                     VMX_BITSIZE)
+                                                         VMX_OFFSET,
+                                                         VMX_BITSIZE)
         print "Element created: processor"
         return processor
-
 
     def getLogicalCpus(self, cpuinfopath):
         cpuinfo = extractor.extractData(cpuinfopath)
         return parseutil.count(cpuinfo, "processor")
-
 
     def getSpeed(self, cpuinfopath, speedkeywords):
         result = "0"
@@ -84,7 +81,6 @@ class ProcessorCreator():
 
         return result
 
-
     def getVmxTimerRate(self, msrpaths, offset, vmxbitsize):
         # check for MSR
         vmxTimerRate = 0
@@ -111,7 +107,6 @@ class ProcessorCreator():
 
         return vmxTimerRate
 
-
     def getVmxFromMSR(self, msrpath, offset, vmxbitsize):
         "Gets VmxTimerRate value from a given msr path"
         # Try to find MSR file
@@ -127,7 +122,6 @@ class ProcessorCreator():
 
 class MemoryCreator():
 
-
     def createElem(self, memmappath):
         print "> Creating element: memory"
 
@@ -138,7 +132,6 @@ class MemoryCreator():
             memory.appendChild(memoryBlock)
         print "Element created: memory"
         return memory
-
 
     def getMemoryBlocks(self, path):
         memoryBlockList = []
@@ -160,8 +153,8 @@ class MemoryCreator():
             startfile = root + "/" + "start"
             try:
                 memoryBlock = self.generateMemoryBlock(endfile,
-                                                                typefile,
-                                                                startfile)
+                                                       typefile,
+                                                       startfile)
             except IOError:
                 message.addError("Could not retrieve complete memory data",
                                  False)
@@ -174,7 +167,6 @@ class MemoryCreator():
 
         return memoryBlockList
 
-
     def filterMemoryBlocks(self, memoryBlockList):
         "Removes reserved memory blocks and returns result"
         RESERVE_NAME = "reserved"
@@ -184,7 +176,6 @@ class MemoryCreator():
                       if memblock["name"] == "reserved"]
         result = util.removeListsFromList(memoryBlockList, filterlist)
         return result
-
 
     def generateMemoryBlock(self, endfile, typefile, startfile):
         memoryBlock = Element("memoryBlock", "memoryBlockType")
@@ -209,7 +200,6 @@ class MemoryCreator():
 
         return memoryBlock
 
-
     def isAllocatable(self, memoryBlock):
         addr = int(util.unwrapWord64(memoryBlock["physicalAddress"]), 16)
         if (memoryBlock["name"] == "System RAM" and
@@ -220,7 +210,6 @@ class MemoryCreator():
 
 
 class DevicesCreator():
-
 
     def createElem(self):
         print "> Creating element: devices"
@@ -244,7 +233,6 @@ class DevicesCreator():
         print "Element created: devices"
 
         return devices
-
 
     def getPciConfigAddress(self, path):
         pciconfigaddr = ""
@@ -913,7 +901,8 @@ class IommuDevicesCreator():
 def createElements():
     "Creates the element tree and returns top element"
     platform = Element("platform", "platformType")
-    platform.appendChild(ProcessorCreator().createElem(paths.CPUINFO, paths.MSR))
+    platform.appendChild(
+        ProcessorCreator().createElem(paths.CPUINFO, paths.MSR))
     platform.appendChild(MemoryCreator().createElem(paths.MEMMAP))
     platform.appendChild(DevicesCreator().createElem())
 
