@@ -1,9 +1,5 @@
 Maybe have command switch to include bridges?
-Refactor creator code to make it more extensible  (split into files??)
-Double check info obtained
 Test Protocols
-Edit README.txt
-*Implement -everything arg that does not filter or modify anything
 
 [High Priority]
 
@@ -16,10 +12,4 @@ Only update pci.ids if oldver < newvern
 Maybe use pep8/autopep8 tools to make coding style comply with PEP 0008
 (https://www.python.org/dev/peps/pep-0008/)?
 -> autopep8 -i srcfile fixes most problems automatically
-
-Dependencies:
---------
-Pyxb
-Pci.ids (licensing)
-iasl (DMAR parsing in IOMMUs)
 

@@ -1,8 +1,8 @@
 ## README FILE ##
 
 
-# mugenplcfg is developed to support the Muen Project. It produces a system
-# policy file to be used by the Muen kernel.
+# mugenplcfg is a tool developed to support the Muen Project. It produces a
+# system policy file to be used by the Muen kernel.
 #
 # mugenplcfg utilises a binding configuration file generated using the library 
 # PyXB, as a representation of the XSD schema. This file is to be named 
@@ -14,9 +14,17 @@
 ##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
 
+== [ Requirements ] ==
+
+mugenplcfg requires iasl (part of the acpia-tools package) to be installed.
+You can get it by from its website or through Ubuntu's Advanced Packaging Tool:
+	
+	$ sudo apt-get install iasl
+
+
 == [ Installing mugenplcfg ] ==
 
-mugenplcfg can be obtained from the repository via command:
+mugenplcfg can be obtained from the repository with the command:
 
 	$ git clone --recursive git@git.codelabs.ch:/muen/mugenplcfg
 
@@ -25,7 +33,7 @@ This clones all submodules required by the tool as well as the source files.
 
 == [ Running mugenplcfg ] ==
 
-After installation, mugenplcfg can be run via the command:
+After installation, mugenplcfg can be run with the command:
 
 	$ sudo python mugenplcfg/mugenplcfg.py
 
@@ -43,7 +51,7 @@ Root user permissions are necessary to allow mugenplcfg to examine system data.
 
 The test application for mugenplcfg requires the Python Package 'mock'
 (website: https://mock.readthedocs.org/en/latest/ )
-Install it via the command:
+Install it with the command:
 
 	$ sudo pip install mock
 
