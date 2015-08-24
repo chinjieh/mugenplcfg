@@ -23,33 +23,33 @@ PROCESSOR_SPEED_KEYWORDS = ["GHz", "MHz"]
 
 class ProcessorCreator():
 
-    @staticmethod
-    def createElem(cpuinfopath, msrpaths):
+
+    def createElem(self, cpuinfopath, msrpaths):
         print "> Creating element: processor"
         processor = Element("processor", "processorType")
         # Logical Cpus
-        processor["logicalCpus"] = ProcessorCreator.getLogicalCpus(cpuinfopath)
+        processor["logicalCpus"] = self.getLogicalCpus(cpuinfopath)
 
         # Speed
-        processor["speed"] = ProcessorCreator.getSpeed(
+        processor["speed"] = self.getSpeed(
             cpuinfopath, PROCESSOR_SPEED_KEYWORDS)
 
         # vmxTimerRate
         VMX_OFFSET = 0x485
         VMX_BITSIZE = 5
-        processor["vmxTimerRate"] = ProcessorCreator.getVmxTimerRate(msrpaths,
+        processor["vmxTimerRate"] = self.getVmxTimerRate(msrpaths,
                                                                      VMX_OFFSET,
                                                                      VMX_BITSIZE)
         print "Element created: processor"
         return processor
 
-    @staticmethod
-    def getLogicalCpus(cpuinfopath):
+
+    def getLogicalCpus(self, cpuinfopath):
         cpuinfo = extractor.extractData(cpuinfopath)
         return parseutil.count(cpuinfo, "processor")
 
-    @staticmethod
-    def getSpeed(cpuinfopath, speedkeywords):
+
+    def getSpeed(self, cpuinfopath, speedkeywords):
         result = "0"
 
         def handleSpeedNotFound():
@@ -84,8 +84,8 @@ class ProcessorCreator():
 
         return result
 
-    @staticmethod
-    def getVmxTimerRate(msrpaths, offset, vmxbitsize):
+
+    def getVmxTimerRate(self, msrpaths, offset, vmxbitsize):
         # check for MSR
         vmxTimerRate = 0
 
@@ -93,9 +93,7 @@ class ProcessorCreator():
         for path in msrpaths:
             try:
                 # Try to find MSR file
-                vmxTimerRate = ProcessorCreator.getVmxFromMSR(path,
-                                                              offset,
-                                                              vmxbitsize)
+                vmxTimerRate = self.getVmxFromMSR(path, offset, vmxbitsize)
             except IOError:
                 pass
             else:
@@ -113,8 +111,8 @@ class ProcessorCreator():
 
         return vmxTimerRate
 
-    @staticmethod
-    def getVmxFromMSR(msrpath, offset, vmxbitsize):
+
+    def getVmxFromMSR(self, msrpath, offset, vmxbitsize):
         "Gets VmxTimerRate value from a given msr path"
         # Try to find MSR file
         byte = extractor.extractBinaryData(msrpath, offset, 1)
@@ -129,20 +127,20 @@ class ProcessorCreator():
 
 class MemoryCreator():
 
-    @staticmethod
-    def createElem(memmappath):
+
+    def createElem(self, memmappath):
         print "> Creating element: memory"
 
         memory = Element("memory", "physicalMemoryType")
         # Get list of memoryBlocks available
-        memoryBlockList = MemoryCreator.getMemoryBlocks(memmappath)
+        memoryBlockList = self.getMemoryBlocks(memmappath)
         for memoryBlock in memoryBlockList:
             memory.appendChild(memoryBlock)
         print "Element created: memory"
         return memory
 
-    @staticmethod
-    def getMemoryBlocks(path):
+
+    def getMemoryBlocks(self, path):
         memoryBlockList = []
 
         def walkError(excep):
@@ -161,7 +159,7 @@ class MemoryCreator():
             typefile = root + "/" + "type"
             startfile = root + "/" + "start"
             try:
-                memoryBlock = MemoryCreator.generateMemoryBlock(endfile,
+                memoryBlock = self.generateMemoryBlock(endfile,
                                                                 typefile,
                                                                 startfile)
             except IOError:
@@ -172,12 +170,12 @@ class MemoryCreator():
                 memoryBlockList.append(memoryBlock)
 
         # Filter out memoryBlocks that do not meet requirements
-        memoryBlockList = MemoryCreator.filterMemoryBlocks(memoryBlockList)
+        memoryBlockList = self.filterMemoryBlocks(memoryBlockList)
 
         return memoryBlockList
 
-    @staticmethod
-    def filterMemoryBlocks(memoryBlockList):
+
+    def filterMemoryBlocks(self, memoryBlockList):
         "Removes reserved memory blocks and returns result"
         RESERVE_NAME = "reserved"
         result = []
@@ -187,8 +185,8 @@ class MemoryCreator():
         result = util.removeListsFromList(memoryBlockList, filterlist)
         return result
 
-    @staticmethod
-    def generateMemoryBlock(endfile, typefile, startfile):
+
+    def generateMemoryBlock(self, endfile, typefile, startfile):
         memoryBlock = Element("memoryBlock", "memoryBlockType")
         memoryBlock["name"] = extractor.extractData(typefile)
         memaddr = extractor.extractData(startfile)
@@ -204,15 +202,15 @@ class MemoryCreator():
             memsize = memrounded
         memoryBlock["size"] = util.toWord64(memsize)
 
-        if MemoryCreator.isAllocatable(memoryBlock):
+        if self.isAllocatable(memoryBlock):
             memoryBlock["allocatable"] = "true"
         else:
             memoryBlock["allocatable"] = "false"
 
         return memoryBlock
 
-    @staticmethod
-    def isAllocatable(memoryBlock):
+
+    def isAllocatable(self, memoryBlock):
         addr = int(util.unwrapWord64(memoryBlock["physicalAddress"]), 16)
         if (memoryBlock["name"] == "System RAM" and
                 addr >= int(MEM_ALLOCATABLE_MINSIZE, 16)):
@@ -223,12 +221,12 @@ class MemoryCreator():
 
 class DevicesCreator():
 
-    @staticmethod
-    def createElem():
+
+    def createElem(self):
         print "> Creating element: devices"
         devices = Element("devices", "devicesType")
         devices["pciConfigAddress"] = util.toWord64(
-            DevicesCreator.getPciConfigAddress(paths.IOMEM)
+            self.getPciConfigAddress(paths.IOMEM)
         )
 
         # Add IOMMUs
@@ -247,8 +245,8 @@ class DevicesCreator():
 
         return devices
 
-    @staticmethod
-    def getPciConfigAddress(path):
+
+    def getPciConfigAddress(self, path):
         pciconfigaddr = ""
         key = "PCI MMCONFIG"
         try:
@@ -915,8 +913,8 @@ class IommuDevicesCreator():
 def createElements():
     "Creates the element tree and returns top element"
     platform = Element("platform", "platformType")
-    platform.appendChild(ProcessorCreator.createElem(paths.CPUINFO, paths.MSR))
-    platform.appendChild(MemoryCreator.createElem(paths.MEMMAP))
-    platform.appendChild(DevicesCreator.createElem())
+    platform.appendChild(ProcessorCreator().createElem(paths.CPUINFO, paths.MSR))
+    platform.appendChild(MemoryCreator().createElem(paths.MEMMAP))
+    platform.appendChild(DevicesCreator().createElem())
 
     return platform

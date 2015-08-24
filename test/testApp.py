@@ -72,6 +72,7 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 	def setUp(self):
 		print "<> ProcessorCreatorTestCase:setUp - begin"
 		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "processorcreator")
+		self.procreator = creator.ProcessorCreator()
 
 	def tearDown(self):
 		print "<> ProcessorCreatorTestCase:tearDown - begin"
@@ -90,14 +91,14 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 			f.seek(VMX_OFFSET)
 			f.write(b"\x05\x0e")
 		
-		result = creator.ProcessorCreator.createElem(cpuinfo, [msr])
+		result = self.procreator.createElem(cpuinfo, [msr])
 		self.assertEqual(result.isEqual(processor), True, "createElems not working")
 	
 	def test_getLogicalCpus(self):
 		print "ProcessorCreatorTestCase:test_getLogicalCpus - begin"
 		cpuinfoloc = os.path.join(self.testdir, "cpuinfo")
 		self.assertEqual(
-			creator.ProcessorCreator.getLogicalCpus(cpuinfoloc), 8,
+			self.procreator.getLogicalCpus(cpuinfoloc), 8,
 			"getLogicalCpus function not working")
 		
 	def test_getSpeed(self):
@@ -119,12 +120,12 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 			files[line] = filepath
 
 
-		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed1"], speedkeywords), "3200", "getSpeed function not working")
-		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed2"], speedkeywords), "800", "getSpeed function not working")
-		self.assertRaises(customExceptions.ForceQuit,creator.ProcessorCreator.getSpeed,files["speed3"], speedkeywords)
-		self.assertEqual(creator.ProcessorCreator.getSpeed(files["speed4"], speedkeywords), "3200", "getSpeed function not working")
-		self.assertRaises(customExceptions.ForceQuit,creator.ProcessorCreator.getSpeed,files["speed5"], speedkeywords)
-		self.assertRaises(customExceptions.ForceQuit,creator.ProcessorCreator.getSpeed,files["speed_nokey"],speedkeywords)
+		self.assertEqual(self.procreator.getSpeed(files["speed1"], speedkeywords), "3200", "getSpeed function not working")
+		self.assertEqual(self.procreator.getSpeed(files["speed2"], speedkeywords), "800", "getSpeed function not working")
+		self.assertRaises(customExceptions.ForceQuit,self.procreator.getSpeed,files["speed3"], speedkeywords)
+		self.assertEqual(self.procreator.getSpeed(files["speed4"], speedkeywords), "3200", "getSpeed function not working")
+		self.assertRaises(customExceptions.ForceQuit,self.procreator.getSpeed,files["speed5"], speedkeywords)
+		self.assertRaises(customExceptions.ForceQuit,self.procreator.getSpeed,files["speed_nokey"],speedkeywords)
 
 	def test_getVmxTimerRate(self):
 		print "ProcessorCreatorTestCase:test_getVmxTimerRate - begin"
@@ -134,14 +135,14 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 		OFFSET = 0
 		VMX_BITSIZE = 5
 		self.assertRaises(customExceptions.ForceQuit,
-						  creator.ProcessorCreator.getVmxTimerRate,
+						  self.procreator.getVmxTimerRate,
 						  msrpathlist, OFFSET, VMX_BITSIZE)
 		
 		with open(msrpath1, "wb") as f:
 			f.write(b"\x01\x02\x03\x04")
 		msrpathlist.append(msrpath1)
 		
-		self.assertEqual(creator.ProcessorCreator.getVmxTimerRate(msrpathlist,OFFSET,VMX_BITSIZE),
+		self.assertEqual(self.procreator.getVmxTimerRate(msrpathlist,OFFSET,VMX_BITSIZE),
 						 1,
 						 "getVmxTimerRate function not working")
 
@@ -152,15 +153,15 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 			f.write(b"\x01\x02\x03\x04")
 		OFFSET = 0
 		VMX_BITSIZE = 5
-		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 1, "getVmxFromMSR function not working")
+		self.assertEqual(self.procreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 1, "getVmxFromMSR function not working")
 		with open(msrpath, "wb") as f:
 			f.write(b"\x05\x02\x03\x04")
-		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 5, "getVmxFromMSR function not working")
+		self.assertEqual(self.procreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 5, "getVmxFromMSR function not working")
 		with open(msrpath, "wb") as f:
 			f.write(b"\x11\x02\x03\x04")
-		self.assertEqual(creator.ProcessorCreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 17, "getVmxFromMSR function not working")
+		self.assertEqual(self.procreator.getVmxFromMSR(msrpath, OFFSET, VMX_BITSIZE), 17, "getVmxFromMSR function not working")
 		msrinvalidpath = os.path.join(self.testdir, "testmsr_invalid")
-		self.assertRaises(IOError, creator.ProcessorCreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
+		self.assertRaises(IOError, self.procreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
 
 class MemoryCreatorTestCase(unittest.TestCase):
 	"Tests the MemoryCreator class"
@@ -168,10 +169,11 @@ class MemoryCreatorTestCase(unittest.TestCase):
 	def setUp(self):
 		print "<> MemoryCreatorTestCase:setUp - begin"
 		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "memorycreator")
+		self.memcreator = creator.MemoryCreator()
 
 	def tearDown(self):
 		print "<> MemoryCreatorTestCase:tearDown - begin"
-		result = creator.MemoryCreator.createElem(os.path.join(self.testdir,"memmap"))
+		result = self.memcreator.createElem(os.path.join(self.testdir,"memmap"))
 		
 	def test_createElem(self):
 		print "MemoryCreatorTestCase:test_createElem - begin"
@@ -197,15 +199,15 @@ class MemoryCreatorTestCase(unittest.TestCase):
 		
 		memblock_4 = Element("memoryBlock", "memoryBlockType")
 		memblock_4["name", "physicalAddress"] = "System RAM2", "0x1000"
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_1),True, "isAllocatable function is not working")
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_2), False, "isAllocatable function is not working")
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_3),False,"isAllocatable function is not working")
-		self.assertEqual(creator.MemoryCreator.isAllocatable(memblock_4), False, "isAllocatable function is not working")
+		self.assertEqual(self.memcreator.isAllocatable(memblock_1),True, "isAllocatable function is not working")
+		self.assertEqual(self.memcreator.isAllocatable(memblock_2), False, "isAllocatable function is not working")
+		self.assertEqual(self.memcreator.isAllocatable(memblock_3),False,"isAllocatable function is not working")
+		self.assertEqual(self.memcreator.isAllocatable(memblock_4), False, "isAllocatable function is not working")
 
 		#Test getMemoryBlocks
-		memoryBlockList_invalid = creator.MemoryCreator.getMemoryBlocks(invalidloc)
-		memoryBlockList_incomplete = creator.MemoryCreator.getMemoryBlocks(incompleteloc)
-		memoryBlockList = creator.MemoryCreator.getMemoryBlocks(loc)
+		memoryBlockList_invalid = self.memcreator.getMemoryBlocks(invalidloc)
+		memoryBlockList_incomplete = self.memcreator.getMemoryBlocks(incompleteloc)
+		memoryBlockList = self.memcreator.getMemoryBlocks(loc)
 		memoryBlock0 = memoryBlockList[0].compileToPyxb()
 		memoryBlock1 = memoryBlockList[1].compileToPyxb()
 		self.assertEqual(memoryBlock0.physicalAddress,"16#000a#", "getMemoryBlocks function not working")
@@ -218,12 +220,12 @@ class MemoryCreatorTestCase(unittest.TestCase):
 		endfile = os.path.join(loc,"0/end")
 		typefile = os.path.join(loc,"0/type")
 
-		memoryBlock = creator.MemoryCreator.generateMemoryBlock(endfile, typefile, startfile)
+		memoryBlock = self.memcreator.generateMemoryBlock(endfile, typefile, startfile)
 		memoryBlock_pyxb = memoryBlock.compileToPyxb()
 		self.assertEqual(memoryBlock_pyxb.name, "0_type", "generateMemoryBlock not working")
 		self.assertEqual(memoryBlock_pyxb.physicalAddress, "16#000a#", "generateMemoryBlock not working")
 		self.assertRaises(IOError,
-						  creator.MemoryCreator.generateMemoryBlock,
+						  self.memcreator.generateMemoryBlock,
 						  endfile, typefile, startfile_invalid )
 
 class DevicesCreatorTestCase(unittest.TestCase):
@@ -232,6 +234,7 @@ class DevicesCreatorTestCase(unittest.TestCase):
 	def setUp(self):
 		print "<> DevicesCreatorTestCase:setUp - begin"
 		self.testdir = os.path.join(testpaths.PATH_TEST_CREATOR, "devicescreator")
+		self.devcreator = creator.DevicesCreator()
 
 	def tearDown(self):
 		print "<> DevicesCreatorTestCase:tearDown - begin"
@@ -241,9 +244,9 @@ class DevicesCreatorTestCase(unittest.TestCase):
 		testiomem = os.path.join(self.testdir,"test_iomem")
 		testinvalidloc = os.path.join(self.testdir, "testgetpciconfig_invalidloc")
 		testnokey = os.path.join(self.testdir,"test_iomem_nopciconfig")
-		self.assertEqual(creator.DevicesCreator.getPciConfigAddress(testiomem), "e0000000", "getPciConfigAddress function not working")
-		creator.DevicesCreator.getPciConfigAddress(testinvalidloc)
-		creator.DevicesCreator.getPciConfigAddress(testnokey)
+		self.assertEqual(self.devcreator.getPciConfigAddress(testiomem), "e0000000", "getPciConfigAddress function not working")
+		self.devcreator.getPciConfigAddress(testinvalidloc)
+		self.devcreator.getPciConfigAddress(testnokey)
 		
 
 class PciDevicesCreatorTestCase(unittest.TestCase):
