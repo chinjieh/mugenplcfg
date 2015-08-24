@@ -1,17 +1,10 @@
 ## README FILE ##
 
+== [ Overview ] ==
 
-# mugenplcfg is a tool developed to support the Muen Project. It produces a
-# system policy file to be used by the Muen kernel.
-#
-# mugenplcfg utilises a binding configuration file generated using the library 
-# PyXB, as a representation of the XSD schema. This file is to be named 
-# 'schemaconfig.py'.
-#
-# It also utilises pci.ids, a repository of PCI identification numbers obtained 
-# from https://pci-ids.ucw.cz/
-#
-##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+mugenplcfg is a tool developed to support the Muen Project (http://muen.sk/).
+It retrieves information required by the Muen kernel and produces a platform
+configuration XML file.
 
 
 == [ Requirements ] ==
@@ -33,11 +26,30 @@ This clones all submodules required by the tool as well as the source files.
 
 == [ Running mugenplcfg ] ==
 
-After installation, mugenplcfg can be run with the command:
+After installation, mugenplcfg can be run with the following commands:
 
+	$ sudo modprobe msr
 	$ sudo python mugenplcfg/mugenplcfg.py
 
 Root user permissions are necessary to allow mugenplcfg to examine system data.
+
+
+== [ Output ] ==
+
+After running the tool, the output XML file will be produced in the tool
+directory and will be named 'output.xml'.
+
+Any errors encountered by the tool will (by default) prevent the output file
+from being generated. The tool can attempt to generate an output file anyway
+(for manual editing) using the '-f / --force' argument.
+
+
+== [ Updating ] ==
+
+As the tool relies on external files (such as the pci.ids repository), some
+of these files might need to be updated for to retrieve accurate information.
+You can utilise the '-u / --update' argument to download and update these files
+automatically. 
 
 
 == [ Optional Arguments ] ==
@@ -47,13 +59,41 @@ Root user permissions are necessary to allow mugenplcfg to examine system data.
 -g SCHEMA /--gen SCHEMA		Generates a .py binding file from a .xsd schema file
 
 
+== [ More about mugenplcfg ] ==
+
+- How it works -
+
+mugenplcfg scans system files (/sys, /proc, /dev) for processor, memory and
+device information needed by the Muen kernel. It then fills up PyXB Python
+objects with the information and creates an XML file.
+
+
+- Use of PyXB Library -
+
+mugenplcfg utilises the PyXB package (http://pyxb.sourceforge.net/) to generate
+a Python binding file from a platform configuration schema file. This binding
+file is then used to create and fill objects that are later converted to XML in
+the output. This pre-generated file is located at /schemaconfig/schemaconfig.py.
+
+The PyXB package is provided as a submodule in the mugenplcfg repository at:
+/contrib/pyxb
+
+
+- Use of pci.ids -
+
+To decode device names, mugenplcfg parses the pci.ids file in /data/pci.ids.
+pci.ids is a repository of PCI identification numbers maintained by the good
+people at https://pci-ids.ucw.cz/.
+
+
 == [ Running Tests ] ==
 
 The test application for mugenplcfg requires the Python Package 'mock'
 (website: https://mock.readthedocs.org/en/latest/ )
 Install it with the command:
 
-	$ sudo pip install mock
+	$ sudo apt-get install python-mock		OR
+	$ sudo pip install mock	
 
 After installing the required dependencies, the tests can be run with:
 
@@ -77,3 +117,14 @@ Devices (PCI):
 
 Devices (Serial):
 	- Omits serial devices on ports other than COM ports
+
+
+== [ Contact ] ==
+
+You can drop an email to the Muen development team's mailing list at
+
+	muen-dev@googlegroups.com
+
+or contact the author (Chen Chin Jieh) directly at
+
+	cchen@hsr.ch

@@ -8,18 +8,11 @@ from src import customExceptions, creator, message, update, schemadata
 
 # Author: Chen Chin Jieh
 # Email: cchen@hsr.ch
-# 
-# mugenplcfg is a tool developed to support the Muen Project. It produces a
-# system policy file to be used by the Muen kernel.
 #
-# mugenplcfg utilises a binding configuration file generated using the library
-# PyXB, as a representation of the XSD schema. This file is to be named
-# 'schemaconfig.py'.
+# mugenplcfg is a tool developed to support the Muen Project (http://muen.sk/).
+# It produces a platform configuration file to be used by the Muen kernel.
 #
-# It also utilises pci.ids, a repository of PCI identification numbers obtained
-# from https://pci-ids.ucw.cz/
-#
-##= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
 def init():

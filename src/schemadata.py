@@ -158,8 +158,9 @@ class Element():
             self.childElements.remove(obj)
 
     def isEqual(self, elem2):
-        "Compares all attributes and contents of this element including children"
-        "Children have to be added in the similar order for it to equate"
+        """
+        Compares all attributes and contents of this element including children.
+        Children have to be added in the similar order for it to equate. """
         if self.attr != elem2.attr or self.content != elem2.content:
             return False
         else:
@@ -230,8 +231,9 @@ def createBindings(schemafile, outpath, outname, pyxbgenpath):
 
 
 def copyEnvWithPythonPath():
-    "Returns copy of current environment to use in subprocess, so that pyxbgen"
-    "subprocess will inherit PYTHONPATH"
+    """
+    Returns copy of current environment to use in subprocess, so that pyxbgen
+    subprocess will inherit PYTHONPATH"""
     myenv = os.environ.copy()
     pathstr = ""
     for dir in sys.path:

@@ -150,11 +150,12 @@ class DevicecapManager():
                                                               CAPABILITY_NUM)
 
     def _readCapFile(self, file, startpos, capsize, nextoffset=1, stopid=0x00, numJumps=-1):
-        "Extracts data from the config file that is in linked list format i.e "
-        "reads address from startpos, reads data in address, reads address from "
-        "ptroffset..."
+        """
+        Extracts data from the config file that is in linked list format i.e
+        reads address from startpos, reads data in address, reads address from
+        ptroffset..."""
         result = []
-        print "Reading data for: ", file
+        print "Reading device data : ", file
 
         def readdata(f, size):
             data = f.read(size)
@@ -180,8 +181,8 @@ class DevicecapManager():
         return result
 
     def _getCapValue(self, capcode, fileobj):
-        "Gets the extra information for capabilities in form of tuple"
-        "Returns None if no Value found"
+        """Gets the extra information for capabilities in form of tuple.
+        Returns None if no Value found."""
         result = lambda x: None
         try:
             result = capswitcher[capcode]

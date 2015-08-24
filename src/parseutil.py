@@ -17,7 +17,7 @@ class PciIdsParser():
     SUBCLASS_LENGTH = 2
 
     def __init__(self, pciIdsLoc):
-        # initialise personal dictionary to decode vendor and device codes
+        # initialise dictionary to decode vendor and device codes
         self.vendorData = {}  # vencode = venname
         self.deviceData = {}  # (vencode, devcode) = devname
         self.classData = {}  # classcode = classname
@@ -104,7 +104,8 @@ class PciIdsParser():
                         self.vendorData[vendorcode] = tokens[2].strip()
                         lastVendor = vendorcode
                         raise customExceptions.PciIdsMultipleEntries(
-                            "Multiple instances of vendor with the same id detected")
+                            "Multiple instances of vendor with the same id "
+                            "detected")
 
                 # if find Device, refer to last Vendor
                 if self.isDevice(line):
@@ -113,13 +114,6 @@ class PciIdsParser():
                     if (lastVendor, devicecode) not in self.deviceData:
                         self.deviceData[
                             (lastVendor, devicecode)] = tokens[2].strip()
-                    # Will not fail as isVendor will detect the duplicate first,
-                    # leaving this here in case
-                    # else:
-                        # self.deviceData[(lastVendor, devicecode)] = tokens[2].strip()
-                        # raise customExceptions.PciIdsMultipleEntries(
-                        #	"Multiple instances of device with the same id and "
-                        #	"vendor detected")
 
                 # find Class
                 if self.isClass(line):
@@ -261,26 +255,6 @@ class DMARParser():
     def _runIasl(self, dmarfilepath):
         subprocess.check_call(["iasl", "-d", dmarfilepath])
 
-    """
-	def parseDMAR(self, iaslcmdstr):
-		"Evaluates iaslcmdstr as a function to parse DMAR information."
-		success = True
-		try:
-			exec(iaslcmdstr)
-		except OSError as e:
-			if e.errno == os.errno.ENOENT:
-				#IaslToolNotFound
-				message.addMessage("iasl tool not found in the system. "+
-						"Try 'apt-get install iasl' to install.")
-				message.addError("Could not obtain DMAR information; IOMMU device "
-								"information not found.", False)
-				success = False
-			else:
-				raise
-
-		return success
-	"""
-
     def getIommuAddrs(self, parsedDMAR=None):
         "Retrieves Register Base Addresses of IOMMUs from parsed DMAR"
         iommuaddrs = []
@@ -308,9 +282,10 @@ class DMARParser():
 
 
 def parseLine_Sep(line, key, separatorList=""):
-    """Reads single line, gets value from key-value pair delimited by separator
-       Separators are read in order of listing, first one which gives a valid
-       value is chosen"""
+    """
+    Reads single line, gets value from key-value pair delimited by separator.
+    Separators are read in order of listing, first one which gives a valid
+    value is chosen"""
 
     value = "NO_VALUE"
     separatorList = util.toList(separatorList)
@@ -340,8 +315,9 @@ def parseLine_Sep(line, key, separatorList=""):
 
 
 def parseData_Sep(data, key, separatorList=""):
-    "Searches entire block of extracted data, gets value from key-value pair"
-    "delimited by separator"
+    """
+    Searches entire block of extracted data, gets value from key-value pair
+    delimited by separator"""
     found = False
     value = "NO_VALUE"
     for line in data.splitlines():

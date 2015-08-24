@@ -78,7 +78,6 @@ class ExtractorTestCase(unittest.TestCase):
             ValueError, extractor.extractBinaryData, loc, 0, 4, "MIDDLE_ENDIAN", chunks=True)
 
 # == creator.py tests ==
-# Tests creator.py file
 import src.creator as creator
 
 

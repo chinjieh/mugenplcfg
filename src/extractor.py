@@ -20,8 +20,8 @@ import struct
 
 
 def extractBinaryData(file, start, bytes, endian="BIG_ENDIAN", chunks=False):
-    "Reads binary file at start position and returns bytes read, or as list of"
-    "bytes if chunks=True"
+    """Reads binary file at start position and returns bytes read, or as list of
+    bytes if chunks=True"""
     with open(file, "rb") as f:
         BYTE_SIZE = 1
         bytelist = []

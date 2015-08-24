@@ -388,47 +388,6 @@ class PciDevicesCreator():
     def getDeviceFunction(self, devicestr):
         return (devicestr.split(':')[2]).split('.')[1]
 
-    # TODO Unused for now, while device names are relying on class codes and
-    # not Vendor and Device pairs
-    """
-	@staticmethod
-	def getDeviceNames(devicepaths):
-		"Gets device names from pci.ids"
-		names = {}
-		#Initialise names
-		for devicepath in devicepaths:
-			names[devicepath] = "NO_NAME"
-
-		#Attempt to access pci.ids to retrieve device name
-		try:
-			pciIdsParser = parseutil.PciIdsParser(paths.PCIIDS)
-
-		except customExceptions.PciIdsFileNotFound:
-			message.addError("pci.ids file could not be located in tool directory: "
-							 "%s. " % paths.CURRENTDIR + "Device names could not "
-							 "be obtained.\nPlease ensure that the file is in "
-							 "the directory.", False)
-
-		else:
-			for devicepath in devicepaths:
-				try:
-					venhex = extractor.extractData(os.path.join(devicepath,"vendor") )
-					devhex = extractor.extractData(os.path.join(devicepath,"device") )
-					names[devicepath] = pciIdsParser.getVendorName(venhex) #TODO Name constraint
-				except customExceptions.PciIdsFailedSearch as e:
-					message.addWarning(("Names for Device %s of Vendor %s could " +
-									   "not be found. ") % (devhex,venhex) +\
-									   "It would be a good idea to update pci.ids")
-
-				except customExceptions.PciIdsMultipleEntries as e:
-					message.addWarning("Multiple names for Device %s of Vendor %s " %
-									   (devhex, venhex) + "were found. Please "
-									   "insert the correct names manually in the "
-									   "XML file.")
-
-		return names
-	"""
-
     def getDeviceShortNames(self, devicepaths, pciids):
         shortnames = OrderedDict()
         namecount = {}
@@ -578,11 +537,8 @@ class PciDevicesCreator():
 
     def createDeviceFromPath(self, devicepath, devicecapmgr, deviceShortNames):
         device = Element("device", "deviceType")
-        # Old code that gets device name as Vendor DeviceName
-        # device["name"] = self.devicenames[devicepath]
         device["name"] = deviceShortNames[devicepath]
-        device[
-            "shared"] = "false"  # TODO Check for shared status sometime
+        device["shared"] = "false"  # TODO Check for shared status sometime
 
         # pci
         device.appendChild(self.getPci(devicepath, devicecapmgr))
@@ -597,28 +553,6 @@ class PciDevicesCreator():
         # ioports
         for ioport in self.getIoports(devicepath):
             device.appendChild(ioport)
-
-        # capabilities
-        """
-		caplist = self.devicecapmgr.getCapList(devicepath)
-		if caplist:
-			capabilities = Element("capabilities", "capabilitiesType")
-			for cap in caplist:
-				capability = Element("capability", "capabilityType")
-				capability["name"] = cap
-
-				try:
-					capability.setContent(devicecap.translate(cap))
-				except customExceptions.CapabilityUnknown:
-					message.addWarning("Capability code: %s is unknown. " % cap +
-									   "It might be a good idea to update "
-									   "'devicecap.py'.")
-					capability.setContent(cap)
-
-				capabilities.appendChild(capability)
-
-			device.appendChild(capabilities)
-		"""
 
         return device
 
@@ -642,15 +576,6 @@ class SerialDevicesCreator():
         # Get COM Device addresses
         for comdevice in self.createComDevices(self.addresses, self.COMADDRESSES):
             serialdevicelist.append(comdevice)
-
-        # Omit non COM serial devices for now
-        """
-		#Filter COM devices from list
-		filteredlist = util.removeListsFromList(self.addresses,
-												self.COMADDRESSES.iterkeys() )
-		for serialdevice in self.createSerialDevices(filteredlist):
-			serialdevicelist.append(serialdevice)
-		"""
 
         return serialdevicelist
 
@@ -713,6 +638,7 @@ class SerialDevicesCreator():
         return comdevices
 
     def createSerialDevices(self, addresses):
+        "Creates serial devices that are not COM devices"
         devices = []
         serialcount = 0
         for addr in addresses:
@@ -747,24 +673,19 @@ class IommuDevicesCreator():
         pass
 
     def createElems(self):
-        # IASL_CMD_STR = "subprocess.call(['iasl', '-d', '%s'],
-        # stdout=subprocess.PIPE)"
         CAPABILITY_OFFSET = "0x08"
         CAP_REG_BYTE_SIZE = 7
         AGAW_BIT_START = 8
         IOMMU_SIZE = "1000"
 
         elemlist = []
-        # outputpath = paths.TEMP
-        # tempname = "dmar.dat"
-        # parsedname = tempname.split('.')[0] + ".dsl"
 
         print "> Parsing DMAR table with iasl tool..."
         dmarparser = parseutil.DMARParser()
         # Create parsed copy of DMAR table
         if dmarparser.genDMAR(paths.DMAR,
                               os.path.join(paths.TEMP, "dmar.dat")):
-            # iaslcmdstr = IASL_CMD_STR % os.path.join(outputpath,tempname)
+
             if dmarparser.parseDMAR():
                 print "Parsing of DMAR file with iasl successful."
                 # Get iommu addresses from DMAR
@@ -785,48 +706,6 @@ class IommuDevicesCreator():
                                     )
 
         return elemlist
-
-    """def createElems(self):
-		IASL_CMD_STR = "subprocess.call(['iasl', '-d', '%s'], stdout=subprocess.PIPE)"
-		CAPABILITY_OFFSET = "0x08"
-		CAP_REG_BYTE_SIZE = 7
-		AGAW_BIT_START = 8
-		IOMMU_SIZE = "1000"
-
-		elemlist = []
-		outputpath = paths.TEMP
-		tempname = "dmar.dat"
-		parsedname = tempname.split('.')[0] + ".dsl"
-
-		print "> Parsing DMAR table with iasl tool..."
-		dmarparser = parseutil.DMARParser()
-		#Create parsed copy of DMAR table
-		if dmarparser.genDMAR(paths.DMAR,
-						outputpath,
-						tempname):
-			iaslcmdstr = IASL_CMD_STR % os.path.join(outputpath,tempname)
-			if dmarparser.parseDMAR(iaslcmdstr):
-				print "Parsing of DMAR file with iasl successful."
-				#Get iommu addresses from DMAR
-				iommuaddrs = dmarparser.getIommuAddrs(os.path.join(outputpath,
-																  parsedname) )
-				#Instantiate IommuNamer to set names for iommu devices
-				iommunamer = self.IommuNamer(iommuaddrs)
-
-				#Create Iommu devices
-				for addr in iommuaddrs:
-					elemlist.append(self.createDeviceFromAddr(paths.DEVMEM,
-															  addr,
-															  iommunamer,
-															  IOMMU_SIZE,
-															  CAPABILITY_OFFSET,
-															  CAP_REG_BYTE_SIZE,
-															  AGAW_BIT_START
-															  )
-								   )
-
-		return elemlist
-	"""
 
     def getIommuAGAW(self, iommuaddr, devmem, capoffset, capbytesize, agawbitstart):
         "Gets the AGAW name from a given iommuaddr, at the capability offset"

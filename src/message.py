@@ -74,8 +74,9 @@ def addMessage(msg):
 
 
 def addError(msg, forcequit=True):
-    "Adds Error Message class to messagequeue; Sets flag to end program if"
-    "forcequit is True"
+    """
+    Adds Error Message class to messagequeue; Sets flag to end program if
+    "forcequit is True"""
     add(ErrorMessage(msg))
     if forcequit:
         forceQuit()
