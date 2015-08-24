@@ -21,13 +21,15 @@ from src import customExceptions, creator, message, update, schemadata
 
 
 def init():
-    # Check for Pyxb binding configuration file
     try:
+        # Check for Pyxb binding configuration file
         open(paths.SCHEMACONFIG + ".py", "r")
     except IOError:
-        message.addError("Could not find required PyXB binding file 'schemaconfig.py' "
-                         "in location: %s.\nPlease ensure that the file is there "
-                         "and try again." % (paths.SCHEMACONFIG))
+        msg = ("Could not find required PyXB binding file 'schemaconfig.py' "
+               "in location: %s.\nPlease ensure that the file is there "
+               "and try again." % (paths.SCHEMACONFIG))
+        message.addError(msg)
+
 
 def cleanup():
     "Call this function at the end of the program to remove temp files"
@@ -45,6 +47,7 @@ def checkPermissions():
     if not os.access("/sys", os.W_OK):
         raise customExceptions.InsufficientPermissions()
 
+
 def formatXML(xmlstr):
     "Uses lxml to format xml string"
     print "Formatting XML document..."
@@ -60,20 +63,23 @@ def formatXML(xmlstr):
 
     return result
 
+
 def generateXML(elemtree):
     xmlstr = elemtree.toXML("utf-8")
     formattedxml = formatXML(xmlstr)
     return formattedxml
 
+
 def output(xml):
     OUTPUT_NAME = "output.xml"
 
     print "> XML file '%s' generated to location: \n %s" % (
-       OUTPUT_NAME, os.path.join(paths.OUTPUT,OUTPUT_NAME) )
+        OUTPUT_NAME, os.path.join(paths.OUTPUT, OUTPUT_NAME))
 
     with open(os.path.join(paths.OUTPUT, OUTPUT_NAME), "w") as f:
         for line in xml.splitlines(True):
             f.write(line)
+
 
 def hasErrors():
     hasErrors = False
@@ -85,23 +91,24 @@ def hasErrors():
 
 def handleArgs():
     "Checks arguments in command line and performs relevant actions"
-    descriptiontext = ("mugenplcfg is a tool which extracts system information and "
-                       "produces an .xml file to be used in the Muen kernel.")
+    descriptiontext = (
+        "mugenplcfg is a tool which extracts system information and produces "
+        "an .xml file to be used in the Muen kernel.")
     parser = argparse.ArgumentParser(description=descriptiontext)
-    
+
     parser.add_argument("-u", "--update",
                         help="Updates files used by the tool",
                         action="store_true")
     parser.add_argument("-f", "--force",
-                        help="Attempts to generate the output file despite errors",
+                        help="Attempts to generate the output file despite "
+                        "errors",
                         action="store_true")
     parser.add_argument("-g", "--gen",
-                        help="Generates a .py binding file from a .xsd SCHEMA file "
-                        "for use in /schemaconfig.",
+                        help="Generates a .py binding file from a .xsd SCHEMA "
+                        "file for use in /schemaconfig.",
                         action="store",
                         type=file,
                         metavar="SCHEMA")
-
 
     args = parser.parse_args()
 

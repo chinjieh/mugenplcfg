@@ -1,62 +1,82 @@
-#Module to contain custom exceptions
+# Module to contain custom exceptions
 class CustomException(Exception):
-	def __init__(self,msg=""):
-		self.msg = msg
-		super(CustomException, self).__init__(msg)
-		
+
+    def __init__(self, msg=""):
+        self.msg = msg
+        super(CustomException, self).__init__(msg)
+
+
 class MSRFileNotFound(CustomException):
-	pass
+    pass
+
 
 class CapabilityUnknown(CustomException):
-	pass
+    pass
+
 
 class DeviceCapabilitiesNotRead(CustomException):
-	pass
+    pass
+
 
 class InvalidAttribute(CustomException):
-	pass
+    pass
+
 
 class AttributeMismatch(CustomException):
-	pass
+    pass
+
 
 class PyxbgenInvalidSchema(CustomException):
-	pass
+    pass
+
 
 class NoAccessToFile(CustomException):
-	pass
+    pass
+
 
 class ProcessorSpeedNotFound(CustomException):
-	pass
+    pass
+
 
 class PciIdsFileNotFound(CustomException):
-	pass
+    pass
+
 
 class PciIdsFailedSearch(CustomException):
-	pass
+    pass
+
 
 class PciIdsMultipleEntries(CustomException):
-	pass
+    pass
+
 
 class PciIdsSubclassNotFound(CustomException):
-	pass
+    pass
+
 
 class PciIdsInvalidLink(CustomException):
-	pass
+    pass
+
 
 class DmarFileNotFound(CustomException):
-	pass
+    pass
+
 
 class DmarFileNotCopied(CustomException):
-	pass
+    pass
+
 
 class IaslToolNotFound(CustomException):
-	pass
+    pass
+
 
 class KeyNotFound(CustomException):
-	pass
+    pass
+
 
 class ForceQuit(CustomException):
-	pass
+    pass
+
 
 class InsufficientPermissions(CustomException):
-	pass
+    pass
