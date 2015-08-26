@@ -783,6 +783,31 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 
     def test_createElems(self):
         print "IommuDevicesCreatorTestCase:createElems - begin"
+        def mock_dmarparser_genDMAR(arg, *args, **kwargs):
+            return True
+        def mock_dmarparser_parseDMAR(arg, *args, **kwargs):
+            return True
+        def mock_dmarparser_getIommuAddrs(arg, *args, **kwargs):
+            return ["e00000"]
+        def mock_createDeviceFromAddr(arg, *args, **kwargs):
+            return Element("device", "deviceType")
+        
+        @mock.patch.object(parseutil.DMARParser, "genDMAR",
+                           mock_dmarparser_genDMAR)
+        @mock.patch.object(parseutil.DMARParser, "parseDMAR",
+                           mock_dmarparser_parseDMAR)
+        @mock.patch.object(parseutil.DMARParser, "getIommuAddrs",
+                           mock_dmarparser_getIommuAddrs)
+        @mock.patch.object(creator.IommuDevicesCreator, "createDeviceFromAddr",
+                           mock_createDeviceFromAddr)
+        def mock_createElems():
+            return self.iommucreator.createElems("dmarpath","temppath","devmem")
+        
+        mock_createElems()
+            
+        
+            
+        
 
     def test_getIommuAGAW(self):
         print "IommuDevicesCreatorTestCase:test_getIommuAGAW - begin"
