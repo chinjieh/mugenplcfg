@@ -98,9 +98,10 @@ class ProcessorCreatorTestCase(unittest.TestCase):
         print "ProcessorCreatorTestCase:test_createElem - begin"
         cpuinfo = os.path.join(self.testdir, "cpuinfo")
         msr = os.path.join(testpaths.PATH_TEST_GEN, "msr")
+        dmesg = os.path.join(self.testdir, "dmesg")
 
         processor = Element("processor", "processorType")
-        processor["logicalCpus", "speed", "vmxTimerRate"] = 8, "3200", 5
+        processor["logicalCpus", "speed", "vmxTimerRate"] = 8, 3193, 5
 
         VMX_OFFSET = 0x485
         VMX_BITSIZE = 5
@@ -108,9 +109,10 @@ class ProcessorCreatorTestCase(unittest.TestCase):
             f.seek(VMX_OFFSET)
             f.write(b"\x05\x0e")
 
-        result = self.procreator.createElem(cpuinfo, [msr])
+        result = self.procreator.createElem(cpuinfo, [msr], dmesg)
         self.assertEqual(
             result.isEqual(processor), True, "createElems not working")
+        processor.toXML("utf-8")
 
     def test_getLogicalCpus(self):
         print "ProcessorCreatorTestCase:test_getLogicalCpus - begin"
@@ -121,34 +123,19 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 
     def test_getSpeed(self):
         print "ProcessorCreatorTestCase:test_getSpeed - begin"
-        speedkeywords = ["GHz", "MHz"]
-        lines = {
-            "speed1" : """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GHz""",
-            "speed2" : """model name	: Intel(R) Xeon(R) CPU E31230 @ 800MHz""",
-            "speed3" : """model name	: Intel(R) Xeon(R) CPU E31230 @ 3.20GH""",
-            "speed4" : """model name	: 3.20GHz Intel(R) Xeon(R) CPU E31230""",
-            "speed5" : """model name	: 3.20 GHz Intel(R) Xeon(R) CPU""",
-            "speed_nokey" : """ processorspeed	: 3.20 GHz Intel(R) Xeon(R) CPU"""
-        }
-        files = {}
-        for line in lines.iterkeys():
-            filepath = os.path.join(testpaths.PATH_TEST_GEN, "%s" % line)
-            with open(filepath, "w") as f:
-                f.write(lines[line])
-            files[line] = filepath
-
-        self.assertEqual(self.procreator.getSpeed(
-            files["speed1"], speedkeywords), "3200", "getSpeed function not working")
-        self.assertEqual(self.procreator.getSpeed(
-            files["speed2"], speedkeywords), "800", "getSpeed function not working")
+        dmesgloc = os.path.join(self.testdir, "dmesg")
+        dmesg_nokey = os.path.join(self.testdir, "dmesg_nokey")
+        invalidloc = os.path.join(self.testdir, "invalidlocdmesg")
+        KEY = "Refined TSC clocksource calibration"
+        self.assertEqual(self.procreator.getSpeed(dmesgloc), 3192.746,
+                         "getSpeed function not working")
         self.assertRaises(customExceptions.ForceQuit,
-                          self.procreator.getSpeed, files["speed3"], speedkeywords)
-        self.assertEqual(self.procreator.getSpeed(
-            files["speed4"], speedkeywords), "3200", "getSpeed function not working")
+                          self.procreator.getSpeed,
+                          invalidloc )
         self.assertRaises(customExceptions.ForceQuit,
-                          self.procreator.getSpeed, files["speed5"], speedkeywords)
-        self.assertRaises(customExceptions.ForceQuit,
-                          self.procreator.getSpeed, files["speed_nokey"], speedkeywords)
+                          self.procreator.getSpeed,
+                          dmesg_nokey )
+        
 
     def test_getVmxTimerRate(self):
         print "ProcessorCreatorTestCase:test_getVmxTimerRate - begin"
@@ -269,6 +256,17 @@ class MemoryCreatorTestCase(unittest.TestCase):
         self.assertRaises(IOError,
                           self.memcreator.generateMemoryBlock,
                           endfile, typefile, startfile_invalid)
+        
+        def isAllocatable_true(memBlock):
+            return True
+        
+        @mock.patch.object(self.memcreator, "isAllocatable", isAllocatable_true)
+        def mock_testAllocatable():
+            return self.memcreator.generateMemoryBlock(endfile,
+                                                       typefile,
+                                                       startfile)
+        mockmemblock = mock_testAllocatable()
+        self.assertEqual(mockmemblock["allocatable"], "true", "generateMemoryBlock not working")
 
 
 class DevicesCreatorTestCase(unittest.TestCase):
@@ -283,6 +281,28 @@ class DevicesCreatorTestCase(unittest.TestCase):
 
     def tearDown(self):
         print "<> DevicesCreatorTestCase:tearDown - begin"
+        
+    def test_createElem(self):
+        print "DevicesCreatorTestCase:test_createElem - begin"
+        def mock_IommuDevicesCreator_createElems(arg, *args, **kwargs):
+            return [Element("device", "deviceType")]
+        def mock_SerialDevicesCreator_createElems(arg, *args,**kwargs):
+            return [Element("device", "deviceType")]
+        def mock_PciDevicesCreator_createElems(arg, *args, **kwargs):
+            return [Element("device", "deviceType")]
+        
+        @mock.patch.object(creator.IommuDevicesCreator, "createElems",
+                           mock_IommuDevicesCreator_createElems)
+        @mock.patch.object(creator.SerialDevicesCreator, "createElems",
+                           mock_SerialDevicesCreator_createElems)
+        @mock.patch.object(creator.PciDevicesCreator, "createElems",
+                           mock_PciDevicesCreator_createElems)
+        def mock_createElem():
+            iomem = os.path.join(self.testdir, "test_iomem")
+            return self.devcreator.createElem()
+            
+        mockelem = mock_createElem()
+        self.assertEqual(len(mockelem.childElements), 3, "createElem not working")   
 
     def test_getPciConfigAddress(self):
         print "DevicesCreatorTestCase:test_getPciConfigAddress - begin"
@@ -1456,13 +1476,17 @@ class UtilTestCase(unittest.TestCase):
         print "UtilTestCaseL:test_getSpeedValue - begin"
         validspeeds = ["GHz", "MHz"]
         self.assertEqual(util.getSpeedValue("3.20GHz", validspeeds),
-                         "3200", "getSpeedValue function not working")
+                         3200, "getSpeedValue function not working")
+        self.assertEqual(util.getSpeedValue("3.22GHz", validspeeds),
+                         3220, "getSpeedValue function not working")
         self.assertEqual(util.getSpeedValue("800.0MHz", validspeeds),
-                         "800", "getSpeedValue function not working")
+                         800.0, "getSpeedValue function not working")
         self.assertEqual(util.getSpeedValue("800KHz", validspeeds),
                          None, "getSpeedValue function not working")
         self.assertEqual(util.getSpeedValue("0GHz", validspeeds),
-                         "0", "getSpeedValue function not working")
+                         0, "getSpeedValue function not working")
+        self.assertEqual(util.getSpeedValue("GHz", validspeeds),
+                         None, "getSpeedValue function not working")
         self.assertEqual(util.getSpeedValue("TenGHz", validspeeds),
                          None, "getSpeedValue function not working")
 

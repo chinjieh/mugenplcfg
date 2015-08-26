@@ -100,7 +100,7 @@ def getLinks(path, filterexp=None):
 
 
 def getSpeedValue(speedstring, validspeeds):
-    "Returns value of speed in speedstring, converted to MHz"
+    "Returns value of speed in speedstring (etc XXXX MHz), converted to MHz"
     speedtype = None
     for id in validspeeds:
         if id in speedstring:
@@ -112,9 +112,9 @@ def getSpeedValue(speedstring, validspeeds):
         if rawvalue == "":
             return None
         try:
-            value = str(int(float(rawvalue)))
+            value = float(rawvalue)
             if speedtype == "GHz":
-                value = str(int(float(rawvalue) * 1000))
+                value = float(rawvalue) * 1000
             return value
         except ValueError:
             return None

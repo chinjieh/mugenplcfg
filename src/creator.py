@@ -23,15 +23,14 @@ PROCESSOR_SPEED_KEYWORDS = ["GHz", "MHz"]
 
 class ProcessorCreator():
 
-    def createElem(self, cpuinfopath, msrpaths):
+    def createElem(self, cpuinfopath, msrpaths, dmesgpath):
         print "> Creating element: processor"
         processor = Element("processor", "processorType")
         # Logical Cpus
         processor["logicalCpus"] = self.getLogicalCpus(cpuinfopath)
 
         # Speed
-        processor["speed"] = self.getSpeed(
-            cpuinfopath, PROCESSOR_SPEED_KEYWORDS)
+        processor["speed"] = round(self.getSpeed(dmesgpath))
 
         # vmxTimerRate
         VMX_OFFSET = 0x485
@@ -46,40 +45,25 @@ class ProcessorCreator():
         cpuinfo = extractor.extractData(cpuinfopath)
         return parseutil.count(cpuinfo, "processor")
 
-    def getSpeed(self, cpuinfopath, speedkeywords):
-        result = "0"
-
-        def handleSpeedNotFound():
-            # ProcessorSpeedNotFound
-            message.addError(
-                "Could not find processor speed in: %s\n" % cpuinfopath +
-                "Values do not match speed keywords: %s" % ", ".join(
-                    speedkeywords)
-            )
-
+    def getSpeed(self, dmesgpath):
+        "Gets speed value from dmesg"
+        PARSE_KEYWORD = "Refined TSC clocksource calibration"
+        result = 0
         try:
-            modelnamedata = parseutil.parseData_Sep(
-                extractor.extractData(cpuinfopath),
-                "model name", ":")
+            data = extractor.extractData(dmesgpath)
+            speedstr = parseutil.parseData_Sep(data, PARSE_KEYWORD, ":")
+            result = util.getSpeedValue(speedstr, PROCESSOR_SPEED_KEYWORDS)
+        except IOError:
+            errstr = ("Could not read file: %s\n" % dmesgpath +
+                      "Processor speed not found.")
+            message.addError(errstr)
         except customExceptions.KeyNotFound:
-            handleSpeedNotFound()
-        tokens = modelnamedata.split()
-        speedtoken = None
-        for token in tokens:
-            for speedtype in speedkeywords:
-                if speedtype in token:
-                    speedtoken = token
-                    break
-        if speedtoken is None:
-            handleSpeedNotFound()
+            errstr = ("Could not read find refined TSC clocksource calibration "
+                      "results in: %s\n" % dmesgpath +
+                      "Processor speed not found.")
+            message.addError(errstr)
         else:
-            speedvalue = util.getSpeedValue(speedtoken, speedkeywords)
-            if speedvalue is None:
-                handleSpeedNotFound()
-            else:
-                result = speedvalue
-
-        return result
+            return result
 
     def getVmxTimerRate(self, msrpaths, offset, vmxbitsize):
         # check for MSR
@@ -220,7 +204,9 @@ class DevicesCreator():
 
         # Add IOMMUs
         print "> Extracting IOMMU device information..."
-        devices.appendChild(IommuDevicesCreator().createElems())
+        devices.appendChild(IommuDevicesCreator().createElems(paths.DMAR,
+                                                              paths.TEMP,
+                                                              paths.DEVMEM))
 
         # Add Serial Devices
         print "> Extracting Serial device information..."
@@ -672,7 +658,7 @@ class IommuDevicesCreator():
     def __init__(self):
         pass
 
-    def createElems(self):
+    def createElems(self, dmarpath, temppath, devmempath):
         CAPABILITY_OFFSET = "0x08"
         CAP_REG_BYTE_SIZE = 7
         AGAW_BIT_START = 8
@@ -683,8 +669,8 @@ class IommuDevicesCreator():
         print "> Parsing DMAR table with iasl tool..."
         dmarparser = parseutil.DMARParser()
         # Create parsed copy of DMAR table
-        if dmarparser.genDMAR(paths.DMAR,
-                              os.path.join(paths.TEMP, "dmar.dat")):
+        if dmarparser.genDMAR(dmarpath,
+                              os.path.join(temppath, "dmar.dat")):
 
             if dmarparser.parseDMAR():
                 print "Parsing of DMAR file with iasl successful."
@@ -695,7 +681,7 @@ class IommuDevicesCreator():
 
                 # Create Iommu devices
                 for addr in iommuaddrs:
-                    elemlist.append(self.createDeviceFromAddr(paths.DEVMEM,
+                    elemlist.append(self.createDeviceFromAddr(devmempath,
                                                               addr,
                                                               iommunamer,
                                                               IOMMU_SIZE,
@@ -781,7 +767,7 @@ def createElements():
     "Creates the element tree and returns top element"
     platform = Element("platform", "platformType")
     platform.appendChild(
-        ProcessorCreator().createElem(paths.CPUINFO, paths.MSR))
+        ProcessorCreator().createElem(paths.CPUINFO, paths.MSR, paths.DMESG))
     platform.appendChild(MemoryCreator().createElem(paths.MEMMAP))
     platform.appendChild(DevicesCreator().createElem())
 
