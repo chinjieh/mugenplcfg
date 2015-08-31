@@ -47,7 +47,7 @@ from being generated. The tool can attempt to generate an output file anyway
 == [ Updating ] ==
 
 As the tool relies on external files (such as the pci.ids repository), some
-of these files might need to be updated for to retrieve accurate information.
+of these files might need to be updated to retrieve accurate information.
 You can utilise the '-u / --update' argument to download and update these files
 automatically. 
 
@@ -128,3 +128,8 @@ You can drop an email to the Muen development team's mailing list at
 or contact the author (Chen Chin Jieh) directly at
 
 	cchen@hsr.ch
+
+
+== [ Acknowledgements ] ==
+
+Big thanks to Adrian and Reto for their unending guidance and advice!
