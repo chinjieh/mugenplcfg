@@ -804,10 +804,6 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
             return self.iommucreator.createElems("dmarpath","temppath","devmem")
         
         mock_createElems()
-            
-        
-            
-        
 
     def test_getIommuAGAW(self):
         print "IommuDevicesCreatorTestCase:test_getIommuAGAW - begin"

@@ -33,7 +33,7 @@ class Element():
     # 4. Add child elements to the element by using appendChild(Element)
     #
     #	 e.g. processorChild = Element("processorChild", "processorChildType")
-    #	      processor.appendChild(processorChildElement)
+    #	      processor.appendChild(processorChild)
     #
     # 5. When the whole element tree has been created, call toXML('utf version')
     #    on the root element. This will convert the entire tree to XML format.
