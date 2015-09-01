@@ -1,61 +1,56 @@
 Mugenplcfg
 ==========
-****
 
 
 Overview
 --------
 
-mugenplcfg is a tool developed to support the [Muen Project][1].
-It retrieves information required by the Muen kernel and produces a platform
-configuration XML file.
+`mugenplcfg` is a tool developed to support the [Muen Project][1].
+It retrieves hardware information from a running Linux system and produces a
+Muen platform configuration file in XML format.
 
 
 Requirements
---------
+------------
 
-mugenplcfg requires **iasl** (part of the acpica-tools package) to be installed.
+`mugenplcfg` requires `iasl` (part of the acpica-tools package) to be installed.
 You can get it by from its website or through Ubuntu's Advanced Packaging Tool:
 
-```sh	
-$ sudo apt-get install iasl
-```
+    $ sudo apt-get install iasl
 
-Optionally, mugenplcfg also uses the Python Package [lxml][5] to format the
-generated XML file. You can grab it (if not yet installed) from the Python 
-Package Index:
+Optionally, `mugenplcfg` also uses the Python Package [lxml][5] to format the
+generated XML file. You can get it (if not yet installed) with either:
 
-```sh
-$ sudo pip install lxml
-```
+    $ sudo apt-get install python-lxml
+
+or
+
+    $ sudo pip install lxml
 
 Installing mugenplcfg
---------
+---------------------
 
-mugenplcfg can be obtained from the repository with the command:
+`mugenplcfg` can be obtained from the repository with the command:
 
-```sh
-$ git clone --recursive git@git.codelabs.ch:/muen/mugenplcfg
-```
+    $ git clone --recursive http://git.codelabs.ch/git/muen/mugenplcfg.git
 
 This clones all submodules required by the tool as well as the source files.
 
 
 Running mugenplcfg
---------
+------------------
 
-After installation, mugenplcfg can be run with the following commands:
+After installation, `mugenplcfg` can be run with the following commands:
 
-```sh
-$ sudo modprobe msr
-$ sudo python mugenplcfg/mugenplcfg.py
-```
+    $ sudo modprobe msr
+    $ sudo python mugenplcfg/mugenplcfg.py
 
-Root user permissions are necessary to allow mugenplcfg to examine system data.
+Root user permissions are necessary to allow `mugenplcfg` to examine system
+data.
 
 
 Output
---------
+------
 
 After running the tool, the output XML file will be produced in the tool
 directory and will be named **output.xml**.
@@ -75,7 +70,7 @@ automatically.
 
 
 Optional Arguments
---------
+------------------
 
 - `-u / --update`             Update files used by the tool
 - `-f / --force`              Attempt to generate the output file despite errors
@@ -83,58 +78,55 @@ Optional Arguments
 
 
 More about mugenplcfg
---------
+---------------------
 
 ### How it works
 
-mugenplcfg scans system files (*/sys, /proc, /dev*) for processor, memory and
-device information needed by the Muen kernel. It then fills up **PyXB** Python
-objects with the information and creates an XML file.
+`mugenplcfg` scans Linux system files (*/sys, /proc, /dev*) for processor,
+memory and device information needed by the Muen kernel. It then fills up
+**PyXB** Python objects with the information and creates an XML file.
 
 
 ### Use of PyXB Library
 
-mugenplcfg utilises the [PyXB package][2] to generate
+`mugenplcfg` utilises the [PyXB package][2] to generate
 a Python binding file from a platform configuration schema file. This binding
 file is then used to create and fill objects that are later converted to XML in
 the output. This pre-generated file is located at 
 */schemaconfig/schemaconfig.py* in the tool directory.
 
-The **PyXB** package is included as a submodule in the mugenplcfg repository at:
-*/contrib/pyxb*
+The **PyXB** package is included as a submodule in the `mugenplcfg` repository
+at: */contrib/pyxb*
 
 
 ### Use of pci.ids
 
-To decode device names, mugenplcfg parses the **pci.ids** file in
+To decode device names, `mugenplcfg` parses the **pci.ids** file in
 */data/pci.ids*. **pci.ids** is a repository of PCI identification numbers 
 maintained by the good people [here][3].
 
 
 Running Tests
---------
+-------------
 
-The test application for mugenplcfg requires the Python Package
+The test application for `mugenplcfg` requires the Python Package
 [mock][4]. Install it with either:
 
-```sh
-$ sudo apt-get install python-mock
-```
-OR
-```sh
-$ sudo pip install mock	
-```
+    $ sudo apt-get install python-mock
+
+or
+
+    $ sudo pip install mock
 
 After installing the required dependencies, the tests can be run with:
 
-```sh
-$ python mugenplcfg/test/testApp.py
-```
+    $ python mugenplcfg/test/testApp.py
+
 
 Additional information on generated platform file
---------
+-------------------------------------------------
 
-mugenplcfg alters the following in the XML output platform file to match the 
+`mugenplcfg` alters the following in the XML output platform file to match the 
 requirements of the Muen Kernel:
 
 ##### Memory
@@ -152,7 +144,7 @@ requirements of the Muen Kernel:
 
 
 Contact
---------
+-------
 
 You can drop an email to the Muen development team's mailing list at
 
@@ -164,7 +156,7 @@ or contact the author (Chen Chin Jieh) directly at
 
 
 Acknowledgements
---------
+----------------
 
 Big thanks to Adrian and Reto for their unending guidance and advice!
 

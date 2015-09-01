@@ -10,7 +10,8 @@ from src import customExceptions, creator, message, update, schemadata
 # Email: cchen@hsr.ch
 #
 # mugenplcfg is a tool developed to support the Muen Project (http://muen.sk/).
-# It produces a platform configuration file to be used by the Muen kernel.
+# It retrieves hardware information from a running Linux system and produces a
+# Muen platform configuration file in XML format.
 #
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
