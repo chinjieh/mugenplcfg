@@ -21,6 +21,13 @@ You can get it by from its website or through Ubuntu's Advanced Packaging Tool:
 $ sudo apt-get install iasl
 ```
 
+Optionally, mugenplcfg also uses the Python Package [lxml][5] to format the
+generated XML file. You can grab it (if not yet installed) from the Python 
+Package Index:
+
+```sh
+$ sudo pip install lxml
+```
 
 Installing mugenplcfg
 --------
@@ -166,3 +173,4 @@ Big thanks to Adrian and Reto for their unending guidance and advice!
 [2]: http://pyxb.sourceforge.net/ "PyXB"
 [3]: https://pci-ids.ucw.cz/ "The pci.ids repository"
 [4]: https://mock.readthedocs.org/en/latest/ "Mock"
+[5]: http://lxml.de/ "LXML" 
