@@ -60,6 +60,12 @@ class ListNumberer():
 # == Misc functions ==
 
 
+def makefolder(loc):
+        """Makes a folder if it does not exist"""
+        if not os.path.isdir(loc):
+            os.makedirs(loc)
+
+
 def toList(keylist):
     "Convert keylist to a list"
     if type(keylist) is not list:

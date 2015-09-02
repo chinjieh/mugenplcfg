@@ -98,7 +98,23 @@ class ExtractorTestCase(unittest.TestCase):
 # == creator.py tests ==
 import src.creator as creator
 
+class CreatorTestCase(unittest.TestCase):
+    
+    "Tests the creator.py module"
+    
+    def setUp(self):
+        print "<> CreatorTestCase:setUp - begin"
+        self.testdir = testpaths.PATH_TEST_CREATOR
 
+    def tearDown(self):
+        print "<> CreatorTestCase:tearDown - begin"
+        
+    def test_genDmesg(self):
+        print "CreatorTestCase:test_genDmesg - begin"
+        gen = testpaths.PATH_TEST_GEN
+        creator.genDmesg(gen, "test_genDmesg")
+        self.assertTrue(os.path.isfile(os.path.join(gen,"test_genDmesg")))
+    
 class ProcessorCreatorTestCase(unittest.TestCase):
 
     "Tests the ProcessorCreator class"
@@ -1448,6 +1464,7 @@ class UtilTestCase(unittest.TestCase):
 
     def setUp(self):
         print "<> UtilTestCase:setUp - begin"
+        self.testdir = testpaths.PATH_TEST_UTIL
 
     def tearDown(self):
         print "<> UtilTestCase:tearDown - begin"
@@ -1466,6 +1483,20 @@ class UtilTestCase(unittest.TestCase):
                          1, 2, 4, 5, 8, 9, 10], "removeListsFromList function not working")
         self.assertEqual(util.removeListsFromList(mainList, removeList4),
                          [], "removeListsFromList function not working")
+        
+    def test_makefolder(self):
+        print "UtilTestCase:test_makefolder - begin"
+
+        tempfolder = os.path.join(self.testdir, "test_makefolder")
+        if os.path.isdir(tempfolder):
+            os.rmdir(tempfolder)
+        util.makefolder(tempfolder)
+        self.assertEqual(
+            os.path.isdir(tempfolder), True, "makefolder failed")
+        os.rmdir(tempfolder)
+        os.mkdir(tempfolder)
+        util.makefolder(tempfolder)  # see if fails when exists
+        os.rmdir(tempfolder)
 
     def test_getBit(self):
         "Tests the getBit function"
@@ -1476,7 +1507,7 @@ class UtilTestCase(unittest.TestCase):
     def test_getLinks(self):
         "Tests the getLinks function"
         print "UtilTestCase:test_getLinks - begin"
-        testdir = os.path.join(testpaths.PATH_TEST_UTIL, "test_getFilesInPath")
+        testdir = os.path.join(self.testdir, "test_getFilesInPath")
 
         def filterexp(filename):
             if filename.startswith("file"):
@@ -2017,21 +2048,6 @@ class DMARParserTestCase(unittest.TestCase):
     def tearDown(self):
         "Cleanup code"
         print "DMARParserTestCase:tearDown - begin"
-
-    def test_genDMAR_maketempfolder(self):
-        print "DMARParserTestCase:test_genDMAR_maketempfolder - begin"
-
-        tempfolder = os.path.join(self.testdir, "genDMARtempfolder")
-        if os.path.isdir(tempfolder):
-            os.rmdir(tempfolder)
-        self.dmarparser._genDMAR_maketempfolder(tempfolder)
-        self.assertEqual(
-            os.path.isdir(tempfolder), True, "_genDMAR_maketempfolder failed")
-        os.rmdir(tempfolder)
-        os.mkdir(tempfolder)
-        self.dmarparser._genDMAR_maketempfolder(
-            tempfolder)  # see if fails when exists
-        os.rmdir(tempfolder)
 
     def test_genDMAR_copyDMAR(self):
         print "DMARParserTestCase:test_genDMAR_copyDMAR - begin"

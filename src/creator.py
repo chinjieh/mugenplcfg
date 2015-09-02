@@ -781,11 +781,21 @@ class IommuDevicesCreator():
         return device
 
 
+def genDmesg(temppath, name):
+    util.makefolder(temppath)
+    target = os.path.join(temppath, name)
+    print "Generating dmesg output to: %s" % target
+    with open(target, "w") as f:
+        subprocess.check_call(["dmesg"], stdout=f)
+    return target
+
+
 def createElements():
     "Creates the element tree and returns top element"
+    dmesg = genDmesg(paths.TEMP, "dmesg_tmp")
     platform = Element("platform", "platformType")
     platform.appendChild(
-        ProcessorCreator().createElem(paths.CPUINFO, paths.MSR, paths.DMESG))
+        ProcessorCreator().createElem(paths.CPUINFO, paths.MSR, dmesg))
     platform.appendChild(MemoryCreator().createElem(paths.MEMMAP))
     platform.appendChild(DevicesCreator().createElem())
 

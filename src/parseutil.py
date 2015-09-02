@@ -203,18 +203,13 @@ class DMARParser():
 
         outputfolder = os.path.dirname(outputloc)
         # Make temp folder
-        self._genDMAR_maketempfolder(outputfolder)
+        util.makefolder(outputfolder)
 
         # Copy DMAR file to temp folder
         if self._genDMAR_copyDMAR(dmar, outputloc):
             success = True
             self.copiedDMAR = outputloc
         return success
-
-    def _genDMAR_maketempfolder(self, loc):
-        """Makes a temp folder if does not exist"""
-        if not os.path.isdir(loc):
-            os.makedirs(loc)
 
     def _genDMAR_copyDMAR(self, src, dest):
         success = True

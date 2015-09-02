@@ -33,7 +33,6 @@ IOPORTS = "/proc/ioports"
 DMAR = "/sys/firmware/acpi/tables/DMAR"
 DMAR_TEMP = TEMP
 DEVMEM = "/dev/mem"
-DMESG = "/var/log/dmesg"
 
 ## Location of pci.ids
 PCIIDS = CURRENTDIR + "/data/pci.ids"
