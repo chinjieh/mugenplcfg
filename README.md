@@ -5,7 +5,7 @@ Mugenplcfg
 Overview
 --------
 
-`mugenplcfg` is a tool developed to support the [Muen Project][1].
+`mugenplcfg` is a Python tool developed to support the [Muen Project][1].
 It retrieves hardware information from a running Linux system and produces a
 Muen platform configuration file in XML format.
 
@@ -13,12 +13,15 @@ Muen platform configuration file in XML format.
 Requirements
 ------------
 
+`mugenplcfg` is written mainly for [Python][2] version **2.7.6**, and might not
+work correctly on Python **3**.
+
 `mugenplcfg` requires `iasl` (part of the acpica-tools package) to be installed.
 You can get it by from its website or through Ubuntu's Advanced Packaging Tool:
 
     $ sudo apt-get install iasl
 
-Optionally, `mugenplcfg` also uses the Python Package [lxml][5] to format the
+Optionally, `mugenplcfg` also uses the Python Package [lxml][3] to format the
 generated XML file. You can get it (if not yet installed) with either:
 
     $ sudo apt-get install python-lxml
@@ -63,7 +66,7 @@ from being generated. The tool can attempt to generate an output file anyway
 Updating
 --------
 
-As the tool relies on external files (such as the [pci.ids][3] repository), some
+As the tool relies on external files (such as the [pci.ids][4] repository), some
 of these files might need to be updated to retrieve accurate information.
 You can utilise the `-u / --update` argument to download and update these files
 automatically. 
@@ -89,7 +92,7 @@ memory and device information needed by the Muen kernel. It then fills up
 
 ### Use of PyXB Library
 
-`mugenplcfg` utilises the [PyXB package][2] to generate
+`mugenplcfg` utilises the [PyXB package][5] to generate
 a Python binding file from a platform configuration schema file. This binding
 file is then used to create and fill objects that are later converted to XML in
 the output. This pre-generated file is located at 
@@ -103,14 +106,14 @@ at: */contrib/pyxb*
 
 To decode device names, `mugenplcfg` parses the **pci.ids** file in
 */data/pci.ids*. **pci.ids** is a repository of PCI identification numbers 
-maintained by the good people [here][3].
+maintained by the good people [here][4].
 
 
 Running Tests
 -------------
 
 The test application for `mugenplcfg` requires the Python Package
-[mock][4]. Install it with either:
+[mock][6]. Install it with either:
 
     $ sudo apt-get install python-mock
 
@@ -162,7 +165,8 @@ Big thanks to Adrian and Reto for their unending guidance and advice!
 
 
 [1]: http://muen.sk/ "Muen website"
-[2]: http://pyxb.sourceforge.net/ "PyXB"
-[3]: https://pci-ids.ucw.cz/ "The pci.ids repository"
-[4]: https://mock.readthedocs.org/en/latest/ "Mock"
-[5]: http://lxml.de/ "LXML" 
+[2]: https://www.python.org/ "Python"
+[3]: http://lxml.de/ "LXML"
+[4]: https://pci-ids.ucw.cz/ "The pci.ids repository"
+[5]: http://pyxb.sourceforge.net/ "PyXB"
+[6]: https://mock.readthedocs.org/en/latest/ "Mock"
