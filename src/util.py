@@ -132,7 +132,7 @@ def getSpeedValue(speedstring, validspeeds):
             break
 
     if speedtype is not None:
-        rawvalue = speedstring.rstrip(speedtype).strip()
+        rawvalue = speedstring.split(speedtype, 1)[0].strip()
         if rawvalue == "":
             return None
         try:
