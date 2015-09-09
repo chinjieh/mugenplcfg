@@ -1559,6 +1559,8 @@ class UtilTestCase(unittest.TestCase):
                          None, "getSpeedValue function not working")
         self.assertEqual(util.getSpeedValue("TenGHz", validspeeds),
                          None, "getSpeedValue function not working")
+        self.assertEqual(util.getSpeedValue("2893.430 MHz.", validspeeds),
+                         2893.43, "getSpeedValue not working with trailing dot")
 
     def test_numberMultiples(self):
         "Tests the numberMultiples function"
