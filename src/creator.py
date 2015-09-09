@@ -542,7 +542,6 @@ class PciDevicesCreator():
     def createDeviceFromPath(self, devicepath, devicecapmgr, deviceShortNames):
         device = Element("device", "deviceType")
         device["name"] = deviceShortNames[devicepath]
-        device["shared"] = "false"  # TODO Check for shared status sometime
 
         # pci
         device.appendChild(self.getPci(devicepath, devicecapmgr))
@@ -631,7 +630,6 @@ class SerialDevicesCreator():
         for addr in comaddr:
             device = Element("device", "deviceType")
             device["name"] = comAddresses[addr]
-            device["shared"] = "true"
             ioport = Element("ioPort", "ioPortType")
             ioport["name"] = "ioport"
             ioport["start"] = util.toWord64(addr.start)
@@ -648,7 +646,6 @@ class SerialDevicesCreator():
         for addr in addresses:
             device = Element("device", "deviceType")
             device["name"] = "serial_%d" % serialcount
-            device["shared"] = "true"
             ioport = Element("ioPort", "ioPortType")
             ioport["name"] = "ioport"
             ioport["start"] = util.toWord64(addr.start)
@@ -748,7 +745,6 @@ class IommuDevicesCreator():
         "Generates a device element from a given iommu address"
 
         device = Element("device", "deviceType")
-        device["shared"] = "false"
 
         # name attr
         device["name"] = iommunamer.getName()
