@@ -1,0 +1,8 @@
+{
+	"project_id" : "Muen platform config generator tool",
+	"conduit_uri" : "https://dev.codelabs.ch/",
+	"git.default-relative-commit" : "devel",
+	"arc.land.onto.default" : "devel",
+	"unit.engine" : "PytestTestEngine",
+	"history.immutable" : true
+}

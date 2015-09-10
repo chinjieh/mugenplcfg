@@ -1,0 +1,10 @@
+{
+	"linters": {
+		"spelling": {
+			"type": "spelling"
+		},
+		"pep8": {
+			"type": "pep8"
+		}
+	}
+}
