@@ -680,7 +680,6 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
 
         device = Element("device", "deviceType")
         device["name"] = "smbus"
-        device["shared"] = "false"
         # pci
         pci = Element("pci", "pciType")
         pci["bus", "device", "function", "msi"] = ("16#00#",
@@ -723,7 +722,7 @@ class SerialDevicesCreatorTestCase(unittest.TestCase):
         result = self.serialcreator.createElems(ioportloc)
 
         device = Element("device", "deviceType")
-        device["name", "shared"] = "com_1", "true"
+        device["name"] = "com_1"
 
         ioport = Element("ioPort", "ioPortType")
         ioport["end", "name", "start"] = "16#03ff#", "ioport", "16#03f8#"
@@ -926,7 +925,6 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
                                                           AGAW_BIT_START)
 
         device = Element("device", "deviceType")
-        device["shared"] = "false"
 
         # name attr
         device["name"] = "iommu"
@@ -1131,7 +1129,7 @@ class SchemaDataTestCase(unittest.TestCase):
         devices["pciConfigAddress"] = "16#0000#"
 
         device1 = Element("device", "deviceType")
-        device1["shared", "name"] = "true", "Device1"
+        device1["name"] = "Device1"
 
         device1_pci = Element("pci", "pciType")
         device1_pci["bus", "device", "function"] = "16#4f#", "16#0a#", 4
@@ -1156,7 +1154,7 @@ class SchemaDataTestCase(unittest.TestCase):
             device1_capabilitytype1, device1_capabilitytype2)
 
         device2 = Element("device", "deviceType")
-        device2["shared", "name"] = "false", "Device2"
+        device2["name"] = "Device2"
 
         device2_irq1 = Element("irq", "irqType")
         device2_irq1["name", "number"] = "device2_irq1", "100"
@@ -1178,15 +1176,12 @@ class SchemaDataTestCase(unittest.TestCase):
                          1].name, "device2_irq2", "Deep nesting of elements failed")
         self.assertEqual(devices_pyxb.device[0].capabilities.capability[
                          0].name, "Device1 Capability1", "Deep nesting of elements failed")
-        self.assertEqual(
-            devices_pyxb.device[1].shared, "false", "Deep nesting of elements failed")
 
     def test_Element_isEqual(self):
         print "SchemaDataTestCase:test_Element_Compare - begin"
 
         # DEVICE_1
         device1 = Element("device", "deviceType")
-        device1["shared"] = "false"
         # name attr
         device1["name"] = "dev"
         # memory
@@ -1211,7 +1206,6 @@ class SchemaDataTestCase(unittest.TestCase):
 
         # DEVICE_2
         device2 = Element("device", "deviceType")
-        device2["shared"] = "false"
         # name attr
         device2["name"] = "dev"
         # memory
