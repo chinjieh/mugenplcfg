@@ -31,7 +31,7 @@ import argparse
 import paths
 import os
 import shutil
-from src import customExceptions, creator, message, update, schemadata
+from src import customExceptions, message, update
 
 def cleanup():
     "Call this function at the end of the program to remove temp files"
@@ -121,6 +121,7 @@ def main(forcecreate=False):
 
     try:
         checkPermissions()
+        from src import creator, schemadata
 
         print "> Extracting data from schema bindings..."
         elemtree = creator.createElements()
@@ -136,7 +137,7 @@ def main(forcecreate=False):
         print "> XML File could not be generated."
         sys.exit()
 
-    else:
+    else:   
         message.printMessages()
         cleanup()
         if len(message.messagequeue) is 0:

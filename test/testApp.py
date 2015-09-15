@@ -28,7 +28,7 @@ import paths
 import mock
 import shutil
 import subprocess
-from src import schemadata, customExceptions
+from src import customExceptions
 from collections import namedtuple
 # == Class that tests extractor.py ==
 import src.extractor as extractor
@@ -954,6 +954,7 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
             iommudev.isEqual(device), True, "createDeviceFromAddr not working")
 
 # == Tests schemadata.py ==
+from src import schemadata
 from src.schemadata import Element
 import schemadata.testschema as schema
 import copy
@@ -969,6 +970,10 @@ class SchemaDataTestCase(unittest.TestCase):
 
     def tearDown(self):
         print "<> SchemaDataTestCase:tearDown - begin"
+        
+        # Remove generated binding file in temp folder
+        if os.path.isdir(paths.TEMP):
+            shutil.rmtree(paths.TEMP)
 
     # - Element class testcases
     def test_Element_toXML(self):

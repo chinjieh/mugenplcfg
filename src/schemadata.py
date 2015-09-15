@@ -243,36 +243,3 @@ class Element():
                         return False
 
         return True
-
-
-def generateBindings(schemafile, outpath, outname):
-    "Creates a .py PyXB binding file from schemafile"
-    print "Generating binding file with PyXB submodule..."
-    success = False
-    if createBindings(schemafile, outpath, outname, paths.PYXB_GEN):
-        acceptedvalues = ["Y", "y", "N", "n", ""]
-        ans = getChoice(acceptedvalues)
-        if ans == "n" or ans == "N":
-            print "Done. Please move the file %s.py to /schemaconfig." % outname
-        else:
-            moveGeneratedFile(os.path.join(paths.CURRENTDIR, outname + ".py"),
-                              paths.SCHEMACONFIG + ".py")
-            print "DONE"
-
-        success = True
-
-    return success
-
-
-def getChoice(accepted, raw_input=raw_input):
-    while True:
-        choice = raw_input("Move to and overwrite previous binding file "
-                           "in /schemaconfig? [Y/n]")
-        if choice in accepted:
-            return choice
-        else:
-            print "Please enter a valid input"
-
-
-def moveGeneratedFile(srcfile, destfile):
-    shutil.move(srcfile, destfile)
