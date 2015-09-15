@@ -1304,70 +1304,33 @@ class SchemaDataTestCase(unittest.TestCase):
     def createBindings_patch(x, y, z, a):
         return True
 
-    @mock.patch.object(schemadata, "createBindings", createBindings_patch)
-    def test_generateBindings(self):
-        print "SchemadataTestCase:test_generateBindings - begin"
-
-        def moveGeneratedFile_patch(x, y):
-            print "File moved"
-
-        def getChoice_yes(x):
-            return "Y"
-
-        def getChoice_no(x):
-            return "n"
-
-        @mock.patch.object(schemadata, "moveGeneratedFile", moveGeneratedFile_patch)
-        @mock.patch.object(schemadata, "getChoice", getChoice_yes)
-        def runtest_yes():
-            return schemadata.generateBindings("arg1", "arg2", "arg3")
-
-        @mock.patch.object(schemadata, "moveGeneratedFile", moveGeneratedFile_patch)
-        @mock.patch.object(schemadata, "getChoice", getChoice_no)
-        def runtest_no():
-            return schemadata.generateBindings("arg1", "arg2", "arg3")
-
-        self.assertEqual(runtest_yes(), True, "generateBindings failed")
-        self.assertEqual(runtest_no(), True, "generateBindings failed")
-
     def test_createBindings(self):
         testschema = os.path.join(self.testdir, "testschema.xsd")
         testschema_invalid = os.path.join(
             self.testdir, "testschema_invalid.file")
         outpath = testpaths.PATH_TEST_GEN
         # Normal function
-        with open(testschema, "r") as f:
-            schemadata.createBindings(
-                f, outpath, "testschemaoutput", paths.PYXB_GEN)
+        schemadata.createBindings(testschema,
+                                  outpath,
+                                  "testschemaoutput",
+                                  paths.PYXB_GEN)
 
         # Invalid schema file chosen
-        with open(testschema_invalid, "r") as f:
-            self.assertRaises(customExceptions.PyxbgenInvalidSchema,
-                              schemadata.createBindings,
-                              f, outpath, "testschemaoutput", paths.PYXB_GEN)
+        
+        self.assertRaises(customExceptions.PyxbgenInvalidSchema,
+                          schemadata.createBindings,
+                          testschema_invalid,
+                          outpath,
+                          "testschemaoutput",
+                          paths.PYXB_GEN)
 
         # No pyxb detected
-        with open(testschema, "r") as f:
-            self.assertRaises(OSError,
-                              schemadata.createBindings,
-                              f, outpath, "testschemaoutput", "invalidcommand")
-
-    def test_moveGeneratedFile(self):
-        testschema = os.path.join(self.testdir, "testmoveschema.xsd")
-        testdest = os.path.join(self.testdir, "testmoveschema_dest.xsd")
-        schemadata.moveGeneratedFile(testschema, testdest)
-        open(testdest)
-        schemadata.moveGeneratedFile(testdest, testschema)
-
-    def test_getChoice(self):
-        acceptedvalues = ["y"]
-
-        def raw_input_y(msg):
-            return "y"
-        self.assertEqual(
-            schemadata.getChoice(acceptedvalues, raw_input=raw_input_y),
-            "y",
-            "getChoice not working")
+        self.assertRaises(OSError,
+                          schemadata.createBindings,
+                          testschema,
+                          outpath,
+                          "testschemaoutput",
+                          "invalidcommand")
 
     def test_copyEnvWithPythonPath(self):
         myenv = os.environ.copy()

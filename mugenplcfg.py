@@ -33,17 +33,6 @@ import os
 import shutil
 from src import customExceptions, creator, message, update, schemadata
 
-def init():
-    try:
-        # Check for Pyxb binding configuration file
-        open(paths.SCHEMACONFIG + ".py", "r")
-    except IOError:
-        msg = ("Could not find required PyXB binding file 'schemaconfig.py' "
-               "in location: %s.\nPlease ensure that the file is there "
-               "and try again." % (paths.SCHEMACONFIG))
-        message.addError(msg)
-
-
 def cleanup():
     "Call this function at the end of the program to remove temp files"
     print "Cleaning up..."
@@ -116,25 +105,11 @@ def handleArgs():
                         help="Attempts to generate the output file despite "
                         "errors",
                         action="store_true")
-    parser.add_argument("-g", "--gen",
-                        help="Generates a .py binding file from a .xsd SCHEMA "
-                        "file for use in /schemaconfig.",
-                        action="store",
-                        type=file,
-                        metavar="SCHEMA")
-
     args = parser.parse_args()
 
     runMain = True
     if args.update:
         update.update()
-        runMain = False
-
-    if args.gen is not None:
-        # args.gen: schemafile
-        outname = "schemaconfig"
-        outpath = paths.CURRENTDIR
-        schemadata.generateBindings(args.gen, outpath, outname)
         runMain = False
 
     if runMain:
@@ -146,9 +121,6 @@ def main(forcecreate=False):
 
     try:
         checkPermissions()
-
-        print "> Initializing..."
-        init()
 
         print "> Extracting data from schema bindings..."
         elemtree = creator.createElements()

@@ -24,12 +24,65 @@ import util
 import shutil
 import customExceptions
 import paths
-sys.path.append(paths.SCHEMACONFIGPATH)
-sys.path.append(paths.PYXB)
-from schemaconfig import schemaconfig as schema
-import pyxb
 import subprocess
+sys.path.append(paths.PYXB)
+import pyxb
 
+def copyEnvWithPythonPath():
+    """
+    Returns copy of current environment to use in subprocess, so that pyxbgen
+    subprocess will inherit PYTHONPATH"""
+    myenv = os.environ.copy()
+    pathstr = ""
+    for dir in sys.path:
+        pathstr = pathstr + dir + ":"
+    myenv["PYTHONPATH"] = pathstr
+    return myenv
+
+def createBindings(schemafilepath, outpath, outname, pyxbgenpath):
+    "Produces binding file from schema"
+    with open(schemafilepath) as f:
+        infile = f.name
+
+    # Copy current environments including PYTHONPATH
+    myenv = copyEnvWithPythonPath()
+    success = False
+    # try:
+        # Clear any existing generated file first
+        # generatedfileloc = os.path.join(outpath,outname+".py")
+        # if os.path.isfile(generatedfileloc):
+        #	os.remove(generatedfileloc)
+
+    print "Running PyXB 'pyxbgen' command..."
+    try:
+        proc = subprocess.check_call(
+            [pyxbgenpath, "-u", infile, "-m",
+             os.path.join(outpath, outname)], env=myenv)
+    except subprocess.CalledProcessError:
+        # Bad schema chosen.
+        raise customExceptions.PyxbgenInvalidSchema(
+            "Failed to generate bindings. Invalid schema: %s" % infile)
+    # pyxbmsg = proc.stdout.read()
+
+    # open(generatedfileloc)
+    # print "PyXB > ", pyxbmsg
+    except OSError as e:
+        if e.errno == os.errno.ENOENT:  # pyxb does not exist
+            raise OSError(
+                "'pyxbgen' script could not be found at: %s\n" % pyxbgenpath +
+                "Failed to generate bindings.")
+    else:
+        print "Generated binding file '%s.py' to: %s\n" % (outname, outpath)
+        success = True
+
+    return success
+
+# Create platformconfig.py PyXB binding module on import
+print "Initialising: PyXB Binding file"
+createBindings(paths.SCHEMAPATH, paths.TEMP, "platformconfig", paths.PYXB_GEN)
+
+sys.path.append(paths.SCHEMA_BINDING_PATH)
+import platformconfig as schema
 
 class Element():
 
@@ -209,55 +262,6 @@ def generateBindings(schemafile, outpath, outname):
         success = True
 
     return success
-
-
-def createBindings(schemafile, outpath, outname, pyxbgenpath):
-    "Produces binding file from schema"
-    infile = schemafile.name
-    # Copy current environments including PYTHONPATH
-    myenv = copyEnvWithPythonPath()
-    success = False
-    # try:
-        # Clear any existing generated file first
-        # generatedfileloc = os.path.join(outpath,outname+".py")
-        # if os.path.isfile(generatedfileloc):
-        #	os.remove(generatedfileloc)
-
-    print "Running PyXB 'pyxbgen' command..."
-    try:
-        proc = subprocess.check_call(
-            [pyxbgenpath, "-u", infile, "-m",
-             os.path.join(outpath, outname)], env=myenv)
-    except subprocess.CalledProcessError:
-        # Bad schema chosen.
-        raise customExceptions.PyxbgenInvalidSchema(
-            "Failed to generate bindings. Invalid schema: %s" % infile)
-    # pyxbmsg = proc.stdout.read()
-
-    # open(generatedfileloc)
-    # print "PyXB > ", pyxbmsg
-    except OSError as e:
-        if e.errno == os.errno.ENOENT:  # pyxb does not exist
-            raise OSError(
-                "'pyxbgen' script could not be found at: %s\n" % pyxbgenpath +
-                "Failed to generate bindings.")
-    else:
-        print "Generated binding file '%s.py' to: %s\n" % (outname, paths.CURRENTDIR)
-        success = True
-
-    return success
-
-
-def copyEnvWithPythonPath():
-    """
-    Returns copy of current environment to use in subprocess, so that pyxbgen
-    subprocess will inherit PYTHONPATH"""
-    myenv = os.environ.copy()
-    pathstr = ""
-    for dir in sys.path:
-        pathstr = pathstr + dir + ":"
-    myenv["PYTHONPATH"] = pathstr
-    return myenv
 
 
 def getChoice(accepted, raw_input=raw_input):

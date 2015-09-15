@@ -41,9 +41,9 @@ PCIIDS = CURRENTDIR + "/data/pci.ids"
 PYXB = CURRENTDIR + "/contrib/pyxb/"
 PYXB_GEN = PYXB + "scripts/pyxbgen"
 
-## Location of schemaconfig : PyXB binding file
-SCHEMACONFIGPATH = CURRENTDIR +"/schemaconfig/"
-SCHEMACONFIG = CURRENTDIR + "/schemaconfig/schemaconfig"
+## Location of schema files
+SCHEMAPATH = CURRENTDIR +"/schemaconfig/platform_config.xsd"
+SCHEMA_BINDING_PATH = TEMP
 
 ## Location of output file
 OUTPUT = CURRENTDIR + "/"
