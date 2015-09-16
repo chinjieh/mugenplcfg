@@ -2125,7 +2125,8 @@ def unittest_cleanup():
         if os.path.isdir(testpaths.PATH_TEST_GEN):
             shutil.rmtree(testpaths.PATH_TEST_GEN)
 
+import atexit
+atexit.register(unittest_cleanup)
+
 if __name__ == "__main__":
-    import atexit
-    atexit.register(unittest_cleanup)
     unittest.main()
