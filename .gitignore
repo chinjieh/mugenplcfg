@@ -4,3 +4,4 @@ htmlcov
 *.coverage
 test/__init__.pyc
 test/__pycache__
+tmp

@@ -970,10 +970,6 @@ class SchemaDataTestCase(unittest.TestCase):
 
     def tearDown(self):
         print "<> SchemaDataTestCase:tearDown - begin"
-        
-        # Remove generated binding file in temp folder
-        if os.path.isdir(paths.TEMP):
-            shutil.rmtree(paths.TEMP)
 
     # - Element class testcases
     def test_Element_toXML(self):
@@ -2121,5 +2117,15 @@ class DMARParserTestCase(unittest.TestCase):
 if not os.path.isdir(testpaths.PATH_TEST_GEN):
     os.mkdir(testpaths.PATH_TEST_GEN)
 
+def unittest_cleanup():
+        # Remove temp folders
+        if os.path.isdir(paths.TEMP):
+            shutil.rmtree(paths.TEMP)
+
+        if os.path.isdir(testpaths.PATH_TEST_GEN):
+            shutil.rmtree(testpaths.PATH_TEST_GEN)
+
 if __name__ == "__main__":
+    import atexit
+    atexit.register(unittest_cleanup)
     unittest.main()
