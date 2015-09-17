@@ -1310,9 +1310,16 @@ class SchemaDataTestCase(unittest.TestCase):
         testschema_invalid = os.path.join(
             self.testdir, "testschema_invalid.file")
         outpath = testpaths.PATH_TEST_GEN
+        outpath_noexists = os.path.join(testpaths.PATH_TEST_GEN, "newBinding")
         # Normal function
         schemadata.createBindings(testschema,
                                   outpath,
+                                  "testschemaoutput",
+                                  paths.PYXB_GEN)
+        
+        # Normal function w non-existent dir
+        schemadata.createBindings(testschema,
+                                  outpath_noexists,
                                   "testschemaoutput",
                                   paths.PYXB_GEN)
 
@@ -1341,6 +1348,17 @@ class SchemaDataTestCase(unittest.TestCase):
         myenv["PYTHONPATH"] = pythonpathstr
         self.assertEqual(schemadata.copyEnvWithPythonPath(),
                          myenv, "copyEnvWithPythonPath test failed")
+
+    def test_bindingsExist(self):
+        testschema = os.path.join(self.testdir, "testschema.py")
+        test_notexists = os.path.join(self.testdir, "testschema_notexists.py")
+        test_notexists_folder = os.path.join(self.testdir, "notexists/test.py")
+        self.assertTrue(schemadata.bindingsExist(testschema),
+                        "bindingsExist not working")
+        self.assertFalse(schemadata.bindingsExist(test_notexists),
+                         "bindingsExist not working")
+        self.assertFalse(schemadata.bindingsExist(test_notexists_folder),
+                         "bindingsExist not working")
 
 
 # == Class that tests devicecap.py ==
@@ -1655,12 +1673,24 @@ class UpdateTestCase(unittest.TestCase):
 
         def updatePciIds_patchfail(url, location):
             return False
+        
+        def updateSchemaBinding_patch(schema, bindingpath):
+            return True
+
+        def updateSchemaBinding_patchfail(schema, bindingpath):
+            return False
 
         @mock.patch.object(update, "updatePciIds", updatePciIds_patch)
+        @mock.patch.object(update,
+                          "updateSchemaBinding",
+                          updateSchemaBinding_patch)
         def runtest():
             return update.update()
 
         @mock.patch.object(update, "updatePciIds", updatePciIds_patchfail)
+        @mock.patch.object(update,
+                          "updateSchemaBinding",
+                          updateSchemaBinding_patchfail)
         def runtest_fail():
             return update.update()
 
@@ -1677,6 +1707,15 @@ class UpdateTestCase(unittest.TestCase):
                           INVALID_ADDR, testfile)
         update.updatePciIds(os.path.join(self.testdir, "test_newupdate.ids"),
                             testfile)
+        
+    def test_updateSchemaBinding(self):
+        print "UpdateTestCase:test_updateSchemaBinding - begin"
+        invalidschema = os.path.join(self.testdir, "invalidschema")
+        bindingpath = os.path.join(testpaths.PATH_TEST_GEN, "test_binding.py")
+        self.assertFalse(update.updateSchemaBinding(invalidschema,bindingpath))
+        self.assertTrue(update.updateSchemaBinding(testpaths.PATH_SCHEMA,
+                                   bindingpath) )
+    
 
 # == Class that tests message.py ==
 from src import message
@@ -2118,12 +2157,9 @@ if not os.path.isdir(testpaths.PATH_TEST_GEN):
     os.mkdir(testpaths.PATH_TEST_GEN)
 
 def unittest_cleanup():
-        # Remove temp folders
-        if os.path.isdir(paths.TEMP):
-            shutil.rmtree(paths.TEMP)
-
-        if os.path.isdir(testpaths.PATH_TEST_GEN):
-            shutil.rmtree(testpaths.PATH_TEST_GEN)
+    "Cleanup function for test application"
+    if os.path.isdir(testpaths.PATH_TEST_GEN):
+        shutil.rmtree(testpaths.PATH_TEST_GEN)
 
 import atexit
 atexit.register(unittest_cleanup)

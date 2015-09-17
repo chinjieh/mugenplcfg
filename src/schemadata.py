@@ -19,6 +19,7 @@
 # Module to contain code related to construction of XML document
 import sys
 import os
+import pwd
 import copy
 import util
 import shutil
@@ -39,6 +40,13 @@ def copyEnvWithPythonPath():
     myenv["PYTHONPATH"] = pathstr
     return myenv
 
+def bindingsExist(bindingfile):
+    "Checks if PyXB bindings exist"
+    if os.path.isfile(bindingfile):
+        return True
+    else:
+        return False
+
 def createBindings(schemafilepath, outpath, outname, pyxbgenpath):
     "Produces binding file from schema"
     with open(schemafilepath) as f:
@@ -47,11 +55,10 @@ def createBindings(schemafilepath, outpath, outname, pyxbgenpath):
     # Copy current environments including PYTHONPATH
     myenv = copyEnvWithPythonPath()
     success = False
-    # try:
-        # Clear any existing generated file first
-        # generatedfileloc = os.path.join(outpath,outname+".py")
-        # if os.path.isfile(generatedfileloc):
-        #	os.remove(generatedfileloc)
+    
+    # Make output dir
+    if not os.path.isdir(outpath):
+        os.mkdir(outpath)
 
     print "Running PyXB 'pyxbgen' command..."
     try:
@@ -62,27 +69,45 @@ def createBindings(schemafilepath, outpath, outname, pyxbgenpath):
         # Bad schema chosen.
         raise customExceptions.PyxbgenInvalidSchema(
             "Failed to generate bindings. Invalid schema: %s" % infile)
-    # pyxbmsg = proc.stdout.read()
 
-    # open(generatedfileloc)
-    # print "PyXB > ", pyxbmsg
     except OSError as e:
         if e.errno == os.errno.ENOENT:  # pyxb does not exist
             raise OSError(
                 "'pyxbgen' script could not be found at: %s\n" % pyxbgenpath +
                 "Failed to generate bindings.")
     else:
-        print "Generated binding file '%s.py' to: %s\n" % (outname, outpath)
+        print "Generated binding file to: %s" % os.path.join(outpath,
+                                                               outname + ".py")
+        
+        # Set owner to user, not root (if run as root)
+        parentdir = os.path.dirname(os.path.dirname(outpath))
+        uid = os.stat(parentdir).st_uid # Get user id of parent dir
+        gid = os.stat(parentdir).st_gid # Get group id of parent dir
+        os.chown(os.path.join(outpath, outname + ".py"), uid, gid)
+        os.chown(outpath, uid, gid)
         success = True
 
     return success
 
-# Create platformconfig.py PyXB binding module on import
-print "Initialising: PyXB Binding file"
-createBindings(paths.SCHEMAPATH, paths.TEMP, "platformconfig", paths.PYXB_GEN)
+# Create platformconfig.py PyXB binding module on import (if it does not exist)
+# then import it
+print "> Initialising: PyXB Binding file"
+BINDINGS_FOLDER = os.path.dirname(paths.SCHEMA_BINDING_PATH)
+BINDINGS_NAME = os.path.splitext(os.path.basename(paths.SCHEMA_BINDING_PATH))[0]
+BINDINGS_PATH = paths.SCHEMA_BINDING_PATH
 
-sys.path.append(paths.SCHEMA_BINDING_PATH)
+if not bindingsExist(BINDINGS_PATH):
+    print "Bindings not found, generating binding file..."
+    createBindings(paths.SCHEMAPATH,
+                   BINDINGS_FOLDER,
+                   BINDINGS_NAME,
+                   paths.PYXB_GEN)
+else:
+    print "Bindings found at: %s" % BINDINGS_PATH
+
+sys.path.append(BINDINGS_FOLDER)
 import platformconfig as schema
+
 
 class Element():
 

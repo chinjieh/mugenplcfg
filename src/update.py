@@ -24,6 +24,8 @@ import shutil
 import customExceptions
 import parseutil
 import extractor
+import schemadata
+import os
 
 PCI_IDS = "https://pci-ids.ucw.cz/v2.2/pci.ids"
 
@@ -33,6 +35,14 @@ def update():
     print "Updating tool..."
     if not updatePciIds(PCI_IDS, paths.PCIIDS):
         success = False
+        
+    if not updateSchemaBinding(paths.SCHEMAPATH, paths.SCHEMA_BINDING_PATH):
+        success = False
+        
+    if success:
+        print "Update completed."
+    else:
+        print "Update completed with errors."
 
     return success
 
@@ -40,7 +50,7 @@ def update():
 def updatePciIds(url, location):
     success = True
     localfile = False
-    print "Attempting to update file: %s" % location
+    print "> Attempting to update file: %s" % location
     try:
         print "Checking for resource file @ '%s'" % url
         urllib2.urlopen(url)
@@ -74,3 +84,24 @@ def updatePciIds(url, location):
                 newver = parseutil.parseLine_Sep(line, "Version", ":").strip()
                 break
     print "pci.ids updated: Version %s > %s" % (oldver, newver)
+    return success
+    
+def updateSchemaBinding(schemapath, bindingpath):
+    "Re-generates the PyXB binding file from the schema"
+    success = False
+    print "> Attempting to update schema bindings..."
+    BINDING_FOLDER = os.path.dirname(bindingpath)
+    BINDING_NAME = os.path.splitext(os.path.basename(bindingpath))[0]
+    try:
+        schemadata.createBindings(schemapath,
+                                  BINDING_FOLDER,
+                                  BINDING_NAME,
+                                  paths.PYXB_GEN)
+    except Exception as e:
+        print "Schema binding updating failed: %s" + str(e)
+        
+    else:
+        print "Schema bindings updated successfully."
+        success = True
+
+    return success

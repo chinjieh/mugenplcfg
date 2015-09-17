@@ -71,6 +71,8 @@ of these files might need to be updated to retrieve accurate information.
 You can utilise the `-u / --update` argument to download and update these files
 automatically. 
 
+This also re-generates the **PyXB** binding file used by the tool (see below).
+
 
 Optional Arguments
 ------------------
@@ -92,9 +94,11 @@ memory and device information needed by the Muen kernel. It then fills up
 ### Use of PyXB Library
 
 `mugenplcfg` utilises the [PyXB package][5] to generate
-a Python binding file from a platform configuration schema file which should be included with the tool distribution at */schemaconfig/platform_config.xsd*. 
-This temporary binding file is then used to create and fill objects that are 
-later converted to XML in the output.
+a Python binding file from a platform configuration schema file which should be
+included with the tool distribution at */schemaconfig/platform_config.xsd*.
+This generation happens the first time the tool is run, at the location
+*/generated/platformconfig.py*. This binding file is then used to create and
+fill objects that are later converted to XML in the output.
 
 The **PyXB** package is included as a submodule in the `mugenplcfg` repository
 at: */contrib/pyxb*

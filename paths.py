@@ -42,8 +42,8 @@ PYXB = CURRENTDIR + "/contrib/pyxb/"
 PYXB_GEN = PYXB + "scripts/pyxbgen"
 
 ## Location of schema files
-SCHEMAPATH = CURRENTDIR +"/schemaconfig/platform_config.xsd"
-SCHEMA_BINDING_PATH = TEMP
+SCHEMAPATH = CURRENTDIR + "/schemaconfig/platform_config.xsd"
+SCHEMA_BINDING_PATH = CURRENTDIR + "/generated/platformconfig.py"
 
 ## Location of output file
 OUTPUT = CURRENTDIR + "/"
