@@ -31,6 +31,7 @@ import shutil
 import customExceptions
 import paths
 import sys
+sys.path.append(paths.PYXB)
 
 
 def init(schemapath, bindingspath):
@@ -90,7 +91,7 @@ def createBindings(schemafilepath, outpath, outname, pyxbgenpath):
     except subprocess.CalledProcessError:
         # Bad schema chosen.
         raise customExceptions.PyxbgenInvalidSchema(
-            "Failed to generate bindings. Invalid schema: %s" % infile)
+            "Failed to generate bindings from file: %s" % infile)
 
     except OSError as e:
         if e.errno == os.errno.ENOENT:  # pyxb does not exist
