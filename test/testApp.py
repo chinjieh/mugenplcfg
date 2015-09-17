@@ -28,7 +28,12 @@ import paths
 import mock
 import shutil
 import subprocess
-from src import customExceptions
+from src import customExceptions, bindings
+
+# Important function to generate binding file before testing
+bindings.init(paths.SCHEMAPATH,
+              paths.SCHEMA_BINDING_PATH)
+
 from collections import namedtuple
 # == Class that tests extractor.py ==
 import src.extractor as extractor
@@ -953,10 +958,97 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
         self.assertEqual(
             iommudev.isEqual(device), True, "createDeviceFromAddr not working")
 
+
+# == Tests bindings.py ==
+
+class BindingsTestCase(unittest.TestCase):
+
+    "Tests the bindings file"
+
+    def setUp(self):
+        print "<> BindingsTestCase:setUp - begin"
+        self.testdir = testpaths.PATH_TEST_BINDINGS
+
+    def tearDown(self):
+        print "<> BindingsTestCase:tearDown - begin"
+
+    def createBindings_patch(x, y, z, a):
+        return True
+    
+    def test_init(self):
+        bindingfile = os.path.join(testpaths.PATH_TEST_GEN,
+                                   "test_binding_init.py")
+        
+        testschema = testpaths.PATH_SCHEMA
+        
+        with open(bindingfile, "w") as f:
+            f.write("TestBindingFile")
+            
+        bindings.init(testschema, bindingfile)
+        os.remove(bindingfile)
+        bindings.init(testschema,bindingfile)
+            
+        
+
+    def test_createBindings(self):
+        testschema = testpaths.PATH_SCHEMA
+        testschema_invalid = os.path.join(
+            self.testdir, "testschema_invalid.file")
+        outpath = testpaths.PATH_TEST_GEN
+        outpath_noexists = os.path.join(testpaths.PATH_TEST_GEN, "newBinding")
+        # Normal function
+        bindings.createBindings(testschema,
+                                  outpath,
+                                  "testschemaoutput",
+                                  paths.PYXB_GEN)
+        
+        # Normal function w non-existent dir
+        bindings.createBindings(testschema,
+                                  outpath_noexists,
+                                  "testschemaoutput",
+                                  paths.PYXB_GEN)
+
+        # Invalid schema file chosen
+        
+        self.assertRaises(customExceptions.PyxbgenInvalidSchema,
+                          bindings.createBindings,
+                          testschema_invalid,
+                          outpath,
+                          "testschemaoutput",
+                          paths.PYXB_GEN)
+
+        # No pyxb detected
+        self.assertRaises(OSError,
+                          bindings.createBindings,
+                          testschema,
+                          outpath,
+                          "testschemaoutput",
+                          "invalidcommand")
+
+    def test_copyEnvWithPythonPath(self):
+        myenv = os.environ.copy()
+        pythonpathstr = ""
+        for pythonpath in sys.path:
+            pythonpathstr = pythonpathstr + pythonpath + ":"
+        myenv["PYTHONPATH"] = pythonpathstr
+        self.assertEqual(bindings.copyEnvWithPythonPath(),
+                         myenv, "copyEnvWithPythonPath test failed")
+
+    def test_bindingsExist(self):
+        testbinding = os.path.join(self.testdir, "testschema.py")
+        test_notexists = os.path.join(self.testdir, "testschema_notexists.py")
+        test_notexists_folder = os.path.join(self.testdir, "notexists/test.py")
+        self.assertTrue(bindings.bindingsExist(testbinding),
+                        "bindingsExist not working")
+        self.assertFalse(bindings.bindingsExist(test_notexists),
+                         "bindingsExist not working")
+        self.assertFalse(bindings.bindingsExist(test_notexists_folder),
+                         "bindingsExist not working")
+
+
 # == Tests schemadata.py ==
 from src import schemadata
 from src.schemadata import Element
-import schemadata.testschema as schema
 import copy
 
 
@@ -1301,64 +1393,6 @@ class SchemaDataTestCase(unittest.TestCase):
 
         self.assertEqual(device1.isEqual(device2),
                          True, "Element isEqual function not working")
-
-    def createBindings_patch(x, y, z, a):
-        return True
-
-    def test_createBindings(self):
-        testschema = os.path.join(self.testdir, "testschema.xsd")
-        testschema_invalid = os.path.join(
-            self.testdir, "testschema_invalid.file")
-        outpath = testpaths.PATH_TEST_GEN
-        outpath_noexists = os.path.join(testpaths.PATH_TEST_GEN, "newBinding")
-        # Normal function
-        schemadata.createBindings(testschema,
-                                  outpath,
-                                  "testschemaoutput",
-                                  paths.PYXB_GEN)
-        
-        # Normal function w non-existent dir
-        schemadata.createBindings(testschema,
-                                  outpath_noexists,
-                                  "testschemaoutput",
-                                  paths.PYXB_GEN)
-
-        # Invalid schema file chosen
-        
-        self.assertRaises(customExceptions.PyxbgenInvalidSchema,
-                          schemadata.createBindings,
-                          testschema_invalid,
-                          outpath,
-                          "testschemaoutput",
-                          paths.PYXB_GEN)
-
-        # No pyxb detected
-        self.assertRaises(OSError,
-                          schemadata.createBindings,
-                          testschema,
-                          outpath,
-                          "testschemaoutput",
-                          "invalidcommand")
-
-    def test_copyEnvWithPythonPath(self):
-        myenv = os.environ.copy()
-        pythonpathstr = ""
-        for pythonpath in sys.path:
-            pythonpathstr = pythonpathstr + pythonpath + ":"
-        myenv["PYTHONPATH"] = pythonpathstr
-        self.assertEqual(schemadata.copyEnvWithPythonPath(),
-                         myenv, "copyEnvWithPythonPath test failed")
-
-    def test_bindingsExist(self):
-        testschema = os.path.join(self.testdir, "testschema.py")
-        test_notexists = os.path.join(self.testdir, "testschema_notexists.py")
-        test_notexists_folder = os.path.join(self.testdir, "notexists/test.py")
-        self.assertTrue(schemadata.bindingsExist(testschema),
-                        "bindingsExist not working")
-        self.assertFalse(schemadata.bindingsExist(test_notexists),
-                         "bindingsExist not working")
-        self.assertFalse(schemadata.bindingsExist(test_notexists_folder),
-                         "bindingsExist not working")
 
 
 # == Class that tests devicecap.py ==

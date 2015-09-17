@@ -31,7 +31,11 @@ import argparse
 import paths
 import os
 import shutil
-from src import customExceptions, message, update
+from src import message, customExceptions, update, bindings
+
+def init():
+    # Initialise PyXB binding file
+    bindings.init(paths.SCHEMAPATH, paths.SCHEMA_BINDING_PATH)
 
 def cleanup():
     "Call this function at the end of the program to remove temp files"
@@ -113,23 +117,26 @@ def handleArgs():
         runMain = False
 
     if runMain:
-        main(args.force)
+        try:
+            checkPermissions()
+        except customExceptions.InsufficientPermissions:
+            print ("mugenplcfg must be run with root permissions. "
+                   "Try running with 'sudo'.")
+        else:
+            main(args.force)
 
 
 def main(forcecreate=False):
     print "=== Mugenplcfg Start ==="
 
-    try:
-        checkPermissions()
-        from src import creator, schemadata
+    print "> Initialising..."
+    init()
+    from src import creator, schemadata
 
+    try:
         print "> Extracting data from schema bindings..."
         elemtree = creator.createElements()
         xml = generateXML(elemtree)
-
-    except customExceptions.InsufficientPermissions:
-        print ("mugenplcfg must be run with root permissions. "
-               "Try running with 'sudo'.")
 
     except customExceptions.ForceQuit:
         message.printMessages()
