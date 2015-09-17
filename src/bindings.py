@@ -14,17 +14,9 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with mugenplcfg.  If not, see <http://www.gnu.org/licenses/>.
-#
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#   << About mugenplcfg >>
-#
-#   mugenplcfg is a tool developed to support the Muen Project (http://muen.sk).
-#   It retrieves hardware information from a running Linux system and produces a
-#   Muen platform configuration file in XML format.
-#
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
+# Module to handle generation of PyXB binding file
 import os
 import subprocess
 import shutil
