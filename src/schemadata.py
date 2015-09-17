@@ -19,16 +19,17 @@
 # Module to contain code related to construction of XML document
 import sys
 import os
+import pwd
 import copy
 import util
 import shutil
 import customExceptions
 import paths
-sys.path.append(paths.SCHEMACONFIGPATH)
-sys.path.append(paths.PYXB)
-from schemaconfig import schemaconfig as schema
-import pyxb
 import subprocess
+sys.path.append(paths.PYXB)
+import pyxb
+sys.path.append(os.path.dirname(paths.SCHEMA_BINDING_PATH))
+import platformconfig as schema
 
 
 class Element():
@@ -190,85 +191,3 @@ class Element():
                         return False
 
         return True
-
-
-def generateBindings(schemafile, outpath, outname):
-    "Creates a .py PyXB binding file from schemafile"
-    print "Generating binding file with PyXB submodule..."
-    success = False
-    if createBindings(schemafile, outpath, outname, paths.PYXB_GEN):
-        acceptedvalues = ["Y", "y", "N", "n", ""]
-        ans = getChoice(acceptedvalues)
-        if ans == "n" or ans == "N":
-            print "Done. Please move the file %s.py to /schemaconfig." % outname
-        else:
-            moveGeneratedFile(os.path.join(paths.CURRENTDIR, outname + ".py"),
-                              paths.SCHEMACONFIG + ".py")
-            print "DONE"
-
-        success = True
-
-    return success
-
-
-def createBindings(schemafile, outpath, outname, pyxbgenpath):
-    "Produces binding file from schema"
-    infile = schemafile.name
-    # Copy current environments including PYTHONPATH
-    myenv = copyEnvWithPythonPath()
-    success = False
-    # try:
-        # Clear any existing generated file first
-        # generatedfileloc = os.path.join(outpath,outname+".py")
-        # if os.path.isfile(generatedfileloc):
-        #	os.remove(generatedfileloc)
-
-    print "Running PyXB 'pyxbgen' command..."
-    try:
-        proc = subprocess.check_call(
-            [pyxbgenpath, "-u", infile, "-m",
-             os.path.join(outpath, outname)], env=myenv)
-    except subprocess.CalledProcessError:
-        # Bad schema chosen.
-        raise customExceptions.PyxbgenInvalidSchema(
-            "Failed to generate bindings. Invalid schema: %s" % infile)
-    # pyxbmsg = proc.stdout.read()
-
-    # open(generatedfileloc)
-    # print "PyXB > ", pyxbmsg
-    except OSError as e:
-        if e.errno == os.errno.ENOENT:  # pyxb does not exist
-            raise OSError(
-                "'pyxbgen' script could not be found at: %s\n" % pyxbgenpath +
-                "Failed to generate bindings.")
-    else:
-        print "Generated binding file '%s.py' to: %s\n" % (outname, paths.CURRENTDIR)
-        success = True
-
-    return success
-
-
-def copyEnvWithPythonPath():
-    """
-    Returns copy of current environment to use in subprocess, so that pyxbgen
-    subprocess will inherit PYTHONPATH"""
-    myenv = os.environ.copy()
-    pathstr = ""
-    for dir in sys.path:
-        pathstr = pathstr + dir + ":"
-    myenv["PYTHONPATH"] = pathstr
-    return myenv
-
-
-def getChoice(accepted, raw_input=raw_input):
-    while True:
-        choice = raw_input("Move to and overwrite previous binding file "
-                           "in /schemaconfig? [Y/n]")
-        if choice in accepted:
-            return choice
-        else:
-            print "Please enter a valid input"
-
-
-def moveGeneratedFile(srcfile, destfile):
-    shutil.move(srcfile, destfile)

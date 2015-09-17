@@ -28,7 +28,12 @@ import paths
 import mock
 import shutil
 import subprocess
-from src import schemadata, customExceptions
+from src import customExceptions, bindings
+
+# Important function to generate binding file before testing
+bindings.init(paths.SCHEMAPATH,
+              paths.SCHEMA_BINDING_PATH)
+
 from collections import namedtuple
 # == Class that tests extractor.py ==
 import src.extractor as extractor
@@ -953,9 +958,97 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
         self.assertEqual(
             iommudev.isEqual(device), True, "createDeviceFromAddr not working")
 
+
+# == Tests bindings.py ==
+
+class BindingsTestCase(unittest.TestCase):
+
+    "Tests the bindings file"
+
+    def setUp(self):
+        print "<> BindingsTestCase:setUp - begin"
+        self.testdir = testpaths.PATH_TEST_BINDINGS
+
+    def tearDown(self):
+        print "<> BindingsTestCase:tearDown - begin"
+
+    def createBindings_patch(x, y, z, a):
+        return True
+    
+    def test_init(self):
+        bindingfile = os.path.join(testpaths.PATH_TEST_GEN,
+                                   "test_binding_init.py")
+        
+        testschema = testpaths.PATH_SCHEMA
+        
+        with open(bindingfile, "w") as f:
+            f.write("TestBindingFile")
+            
+        bindings.init(testschema, bindingfile)
+        os.remove(bindingfile)
+        bindings.init(testschema,bindingfile)
+            
+        
+
+    def test_createBindings(self):
+        testschema = testpaths.PATH_SCHEMA
+        testschema_invalid = os.path.join(
+            self.testdir, "testschema_invalid.file")
+        outpath = testpaths.PATH_TEST_GEN
+        outpath_noexists = os.path.join(testpaths.PATH_TEST_GEN, "newBinding")
+        # Normal function
+        bindings.createBindings(testschema,
+                                  outpath,
+                                  "testschemaoutput",
+                                  paths.PYXB_GEN)
+        
+        # Normal function w non-existent dir
+        bindings.createBindings(testschema,
+                                  outpath_noexists,
+                                  "testschemaoutput",
+                                  paths.PYXB_GEN)
+
+        # Invalid schema file chosen
+        
+        self.assertRaises(customExceptions.PyxbgenInvalidSchema,
+                          bindings.createBindings,
+                          testschema_invalid,
+                          outpath,
+                          "testschemaoutput",
+                          paths.PYXB_GEN)
+
+        # No pyxb detected
+        self.assertRaises(OSError,
+                          bindings.createBindings,
+                          testschema,
+                          outpath,
+                          "testschemaoutput",
+                          "invalidcommand")
+
+    def test_copyEnvWithPythonPath(self):
+        myenv = os.environ.copy()
+        pythonpathstr = ""
+        for pythonpath in sys.path:
+            pythonpathstr = pythonpathstr + pythonpath + ":"
+        myenv["PYTHONPATH"] = pythonpathstr
+        self.assertEqual(bindings.copyEnvWithPythonPath(),
+                         myenv, "copyEnvWithPythonPath test failed")
+
+    def test_bindingsExist(self):
+        testbinding = os.path.join(self.testdir, "testschema.py")
+        test_notexists = os.path.join(self.testdir, "testschema_notexists.py")
+        test_notexists_folder = os.path.join(self.testdir, "notexists/test.py")
+        self.assertTrue(bindings.bindingsExist(testbinding),
+                        "bindingsExist not working")
+        self.assertFalse(bindings.bindingsExist(test_notexists),
+                         "bindingsExist not working")
+        self.assertFalse(bindings.bindingsExist(test_notexists_folder),
+                         "bindingsExist not working")
+
+
 # == Tests schemadata.py ==
+from src import schemadata
 from src.schemadata import Element
-import schemadata.testschema as schema
 import copy
 
 
@@ -1301,83 +1394,6 @@ class SchemaDataTestCase(unittest.TestCase):
         self.assertEqual(device1.isEqual(device2),
                          True, "Element isEqual function not working")
 
-    def createBindings_patch(x, y, z, a):
-        return True
-
-    @mock.patch.object(schemadata, "createBindings", createBindings_patch)
-    def test_generateBindings(self):
-        print "SchemadataTestCase:test_generateBindings - begin"
-
-        def moveGeneratedFile_patch(x, y):
-            print "File moved"
-
-        def getChoice_yes(x):
-            return "Y"
-
-        def getChoice_no(x):
-            return "n"
-
-        @mock.patch.object(schemadata, "moveGeneratedFile", moveGeneratedFile_patch)
-        @mock.patch.object(schemadata, "getChoice", getChoice_yes)
-        def runtest_yes():
-            return schemadata.generateBindings("arg1", "arg2", "arg3")
-
-        @mock.patch.object(schemadata, "moveGeneratedFile", moveGeneratedFile_patch)
-        @mock.patch.object(schemadata, "getChoice", getChoice_no)
-        def runtest_no():
-            return schemadata.generateBindings("arg1", "arg2", "arg3")
-
-        self.assertEqual(runtest_yes(), True, "generateBindings failed")
-        self.assertEqual(runtest_no(), True, "generateBindings failed")
-
-    def test_createBindings(self):
-        testschema = os.path.join(self.testdir, "testschema.xsd")
-        testschema_invalid = os.path.join(
-            self.testdir, "testschema_invalid.file")
-        outpath = testpaths.PATH_TEST_GEN
-        # Normal function
-        with open(testschema, "r") as f:
-            schemadata.createBindings(
-                f, outpath, "testschemaoutput", paths.PYXB_GEN)
-
-        # Invalid schema file chosen
-        with open(testschema_invalid, "r") as f:
-            self.assertRaises(customExceptions.PyxbgenInvalidSchema,
-                              schemadata.createBindings,
-                              f, outpath, "testschemaoutput", paths.PYXB_GEN)
-
-        # No pyxb detected
-        with open(testschema, "r") as f:
-            self.assertRaises(OSError,
-                              schemadata.createBindings,
-                              f, outpath, "testschemaoutput", "invalidcommand")
-
-    def test_moveGeneratedFile(self):
-        testschema = os.path.join(self.testdir, "testmoveschema.xsd")
-        testdest = os.path.join(self.testdir, "testmoveschema_dest.xsd")
-        schemadata.moveGeneratedFile(testschema, testdest)
-        open(testdest)
-        schemadata.moveGeneratedFile(testdest, testschema)
-
-    def test_getChoice(self):
-        acceptedvalues = ["y"]
-
-        def raw_input_y(msg):
-            return "y"
-        self.assertEqual(
-            schemadata.getChoice(acceptedvalues, raw_input=raw_input_y),
-            "y",
-            "getChoice not working")
-
-    def test_copyEnvWithPythonPath(self):
-        myenv = os.environ.copy()
-        pythonpathstr = ""
-        for pythonpath in sys.path:
-            pythonpathstr = pythonpathstr + pythonpath + ":"
-        myenv["PYTHONPATH"] = pythonpathstr
-        self.assertEqual(schemadata.copyEnvWithPythonPath(),
-                         myenv, "copyEnvWithPythonPath test failed")
-
 
 # == Class that tests devicecap.py ==
 import src.devicecap as devicecap
@@ -1691,12 +1707,24 @@ class UpdateTestCase(unittest.TestCase):
 
         def updatePciIds_patchfail(url, location):
             return False
+        
+        def updateSchemaBinding_patch(schema, bindingpath):
+            return True
+
+        def updateSchemaBinding_patchfail(schema, bindingpath):
+            return False
 
         @mock.patch.object(update, "updatePciIds", updatePciIds_patch)
+        @mock.patch.object(update,
+                          "updateSchemaBinding",
+                          updateSchemaBinding_patch)
         def runtest():
             return update.update()
 
         @mock.patch.object(update, "updatePciIds", updatePciIds_patchfail)
+        @mock.patch.object(update,
+                          "updateSchemaBinding",
+                          updateSchemaBinding_patchfail)
         def runtest_fail():
             return update.update()
 
@@ -1713,6 +1741,15 @@ class UpdateTestCase(unittest.TestCase):
                           INVALID_ADDR, testfile)
         update.updatePciIds(os.path.join(self.testdir, "test_newupdate.ids"),
                             testfile)
+        
+    def test_updateSchemaBinding(self):
+        print "UpdateTestCase:test_updateSchemaBinding - begin"
+        invalidschema = os.path.join(self.testdir, "invalidschema")
+        bindingpath = os.path.join(testpaths.PATH_TEST_GEN, "test_binding.py")
+        self.assertFalse(update.updateSchemaBinding(invalidschema,bindingpath))
+        self.assertTrue(update.updateSchemaBinding(testpaths.PATH_SCHEMA,
+                                   bindingpath) )
+    
 
 # == Class that tests message.py ==
 from src import message
@@ -2152,6 +2189,14 @@ class DMARParserTestCase(unittest.TestCase):
 
 if not os.path.isdir(testpaths.PATH_TEST_GEN):
     os.mkdir(testpaths.PATH_TEST_GEN)
+
+def unittest_cleanup():
+    "Cleanup function for test application"
+    if os.path.isdir(testpaths.PATH_TEST_GEN):
+        shutil.rmtree(testpaths.PATH_TEST_GEN)
+
+import atexit
+atexit.register(unittest_cleanup)
 
 if __name__ == "__main__":
     unittest.main()

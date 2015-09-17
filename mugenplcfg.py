@@ -31,18 +31,11 @@ import argparse
 import paths
 import os
 import shutil
-from src import customExceptions, creator, message, update, schemadata
+from src import message, customExceptions, update, bindings
 
 def init():
-    try:
-        # Check for Pyxb binding configuration file
-        open(paths.SCHEMACONFIG + ".py", "r")
-    except IOError:
-        msg = ("Could not find required PyXB binding file 'schemaconfig.py' "
-               "in location: %s.\nPlease ensure that the file is there "
-               "and try again." % (paths.SCHEMACONFIG))
-        message.addError(msg)
-
+    # Initialise PyXB binding file
+    bindings.init(paths.SCHEMAPATH, paths.SCHEMA_BINDING_PATH)
 
 def cleanup():
     "Call this function at the end of the program to remove temp files"
@@ -116,13 +109,6 @@ def handleArgs():
                         help="Attempts to generate the output file despite "
                         "errors",
                         action="store_true")
-    parser.add_argument("-g", "--gen",
-                        help="Generates a .py binding file from a .xsd SCHEMA "
-                        "file for use in /schemaconfig.",
-                        action="store",
-                        type=file,
-                        metavar="SCHEMA")
-
     args = parser.parse_args()
 
     runMain = True
@@ -130,33 +116,27 @@ def handleArgs():
         update.update()
         runMain = False
 
-    if args.gen is not None:
-        # args.gen: schemafile
-        outname = "schemaconfig"
-        outpath = paths.CURRENTDIR
-        schemadata.generateBindings(args.gen, outpath, outname)
-        runMain = False
-
     if runMain:
-        main(args.force)
+        try:
+            checkPermissions()
+        except customExceptions.InsufficientPermissions:
+            print ("mugenplcfg must be run with root permissions. "
+                   "Try running with 'sudo'.")
+        else:
+            main(args.force)
 
 
 def main(forcecreate=False):
     print "=== Mugenplcfg Start ==="
 
+    print "> Initialising..."
+    init()
+    from src import creator, schemadata
+
     try:
-        checkPermissions()
-
-        print "> Initializing..."
-        init()
-
         print "> Extracting data from schema bindings..."
         elemtree = creator.createElements()
         xml = generateXML(elemtree)
-
-    except customExceptions.InsufficientPermissions:
-        print ("mugenplcfg must be run with root permissions. "
-               "Try running with 'sudo'.")
 
     except customExceptions.ForceQuit:
         message.printMessages()
@@ -164,7 +144,7 @@ def main(forcecreate=False):
         print "> XML File could not be generated."
         sys.exit()
 
-    else:
+    else:   
         message.printMessages()
         cleanup()
         if len(message.messagequeue) is 0:

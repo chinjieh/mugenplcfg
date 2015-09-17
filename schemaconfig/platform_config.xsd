@@ -46,12 +46,11 @@
 			<xs:element name="capabilities" type="capabilitiesType" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="nameType" use="required"/>
-		<xs:attribute name="shared" type="booleanType" use="required"/>
 	</xs:complexType>
-  <xs:complexType name="pciType">
-		<xs:attribute name="bus" type="byteType"/>
-		<xs:attribute name="device" type="pciDeviceNumberType"/>
-		<xs:attribute name="function" type="pciFunctionNumberType"/>
+  <xs:complexType name="pciAddressType">
+		<xs:attribute name="bus" type="byteType" use="required"/>
+		<xs:attribute name="device" type="pciDeviceNumberType" use="required"/>
+		<xs:attribute name="function" type="pciFunctionNumberType" use="required"/>
 	</xs:complexType>
   <xs:simpleType name="pciDeviceNumberType">
 		<xs:restriction base="xs:string">
@@ -63,6 +62,13 @@
 			<xs:maxInclusive value="7"/>
 		</xs:restriction>
 	</xs:simpleType>
+  <xs:complexType name="pciType">
+		<xs:complexContent>
+			<xs:extension base="pciAddressType">
+				<xs:attribute name="msi" type="xs:boolean" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
   <xs:complexType name="devicesType">
 		<xs:sequence>
 			<xs:element name="device" type="deviceType" minOccurs="0" maxOccurs="unbounded"/>
@@ -117,7 +123,7 @@
 	</xs:complexType>
   <xs:complexType name="deviceRefType">
 		<xs:sequence>
-			<xs:element name="pci" type="pciType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="pci" type="pciAddressType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="memory" type="memRefType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="ioPort" type="ioPortRefType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="irq" type="irqRefType" minOccurs="0" maxOccurs="unbounded"/>
