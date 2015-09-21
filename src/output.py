@@ -89,7 +89,7 @@ def produce_distver():
     DESCRIPTION_KEY = "Description"
     result = produceLine("Distribution: ", SPACES_MAIN)
     try:
-        distdata = _runCommand("lsb_release -a",
+        distdata = _runCommand("lsb_release -d",
                                "Dist version in output description could not "
                                "be obtained.")
     except customExceptions.FailedOutputCommand:
@@ -102,6 +102,29 @@ def produce_distver():
         else:
             result = produceLine("Distribution: %s" % distdesc, SPACES_MAIN)
 
+    return result, success
+
+
+def produce_boardinfo():
+    "Produces board information"
+    success = True
+    result = produceLine("Board information:", SPACES_MAIN)
+    try:
+        dmiparser = parseutil.DMIParser(paths.DMI)
+        result += produceLine("Vendor: %s" % dmiparser.getData("board_vendor"),
+                              SPACES_SUB)
+        result += produceLine("Name: %s" % dmiparser.getData("board_name"),
+                              SPACES_SUB)
+        result += produceLine("Version: %s" %
+                              dmiparser.getData("board_version"),
+                              SPACES_SUB)
+        result += produceLine("Asset Tag: %s" %
+                              dmiparser.getData("board_asset_tag"),
+                              SPACES_SUB)
+    except Exception as e:
+        message.addWarning("Board information in output description could not "
+                           "be obtained: %s" % e)
+        success = False
     return result, success
 
 
@@ -140,13 +163,6 @@ def produce_productinfo():
         result += produceLine("Product Version: %s" %
                               dmiparser.getData("product_version"),
                               SPACES_SUB)
-        result += produceLine("Chassis Version: %s" %
-                              dmiparser.getData("chassis_version"),
-                              SPACES_SUB)
-        result += produceLine("Serial: %s" %
-                              dmiparser.getData("product_serial"),
-                              SPACES_SUB)
-
     except Exception as e:
         message.addWarning("Product information in output description could "
                            "not be obtained: %s" % e)
@@ -218,8 +234,9 @@ def genXML(elemtree, encoding):
         produce_toolver,
         produce_linuxver,
         produce_distver,
+        produce_productinfo,
+        produce_boardinfo,
         produce_biosinfo,
-        produce_productinfo
     )
 
     # Combine declaration with header and body

@@ -304,14 +304,16 @@ class DMIParser():
         self.BIOS_VERSION = "bios_version"
         self.BIOS_DATE = "bios_version"
         self.datadict = {
+            "board_vendor": "board_vendor",
+            "board_name": "board_name",
+            "board_version": "board_version",
+            "board_asset_tag": "board_asset_tag",
             "bios_vendor": "bios_vendor",
             "bios_version": "bios_version",
             "bios_date": "bios_date",
             "product_name": "product_name",
-            "product_serial": "product_serial",
             "product_version": "product_version",
-            "product_vendor": "chassis_vendor",
-            "chassis_version": "chassis_version",
+            "product_vendor": "sys_vendor",
         }
 
     def getData(self, datakey):

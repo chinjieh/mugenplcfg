@@ -2436,6 +2436,33 @@ class OutputTestCase(unittest.TestCase):
         self.assertEqual(test_fail()[1],
                          False)
 
+    def test_produce_boardinfo(self):
+        print "OutputTestCase:test_produce_boardinfo - begin"
+
+        successline = ("""     Board information:\n"""
+                       """       Vendor: test\n"""
+                       """       Name: test\n"""
+                       """       Version: test\n"""
+                       """       Asset Tag: test\n""")
+
+        def mock_getData(*args):
+            return "test"
+
+        def mock_getData_except(*args):
+            raise IOError
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData)
+        def test_success():
+            return output.produce_boardinfo()
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData_except)
+        def test_fail():
+            return output.produce_boardinfo()
+
+        self.assertEqual(test_success()[0], successline)
+        self.assertEqual(test_success()[1], True)
+        self.assertEqual(test_fail()[1], False)
+
     def test_produce_biosinfo(self):
         print "OutputTestCase:test_produce_biosinfo - begin"
 
@@ -2468,9 +2495,7 @@ class OutputTestCase(unittest.TestCase):
         successline = ("""     Product information:\n"""
                        """       Vendor: test\n"""
                        """       Name: test\n"""
-                       """       Product Version: test\n"""
-                       """       Chassis Version: test\n"""
-                       """       Serial: test\n""")
+                       """       Product Version: test\n""")
 
         def mock_getData(*args):
             return "test"
