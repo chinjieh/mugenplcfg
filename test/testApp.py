@@ -2231,6 +2231,7 @@ class DMIParserTestCase(unittest.TestCase):
 
 # == Class that tests output.py ==
 import src.output as output
+import schemadata
 
 
 class OutputTestCase(unittest.TestCase):
@@ -2262,6 +2263,40 @@ class OutputTestCase(unittest.TestCase):
         output.output(xml, testfile)
         with open(testfile, "r") as f:
             self.assertEqual(f.read(), xml)
+
+    def test_formatXML(self):
+        print "OutputTestCase:test_formatXML - begin"
+        xml = ("""<capabilities><capability name="iommu"/>""" +
+               """<capability name="agaw">39</capability></capabilities>""")
+        formatted = ("""<?xml version='1.0' encoding='utf-8'?>\n"""
+                     """<capabilities>\n"""
+                     """  <capability name="iommu"/>\n"""
+                     """  <capability name="agaw">39</capability>\n"""
+                     """</capabilities>\n""")
+        
+        def mock_importmodule_error(*args):
+            raise ImportError
+        
+        self.assertEqual(output.formatXML(xml, "utf-8")[0],
+                         formatted)
+        self.assertEqual(output.formatXML(xml, "utf-8")[1],
+                         True)
+        
+        @mock.patch.object(output, "importmodule", mock_importmodule_error)
+        def test_importfailed():
+            return output.formatXML(xml, "utf-8")
+
+        self.assertEqual(test_importfailed()[1], False)
+
+    def test_importmodule(self):
+        print "OutputTestCase:test_importmodule - begin"
+        invalidmodule = "mugenplcfg_invalidmodule"
+        self.assertRaises(ImportError, output.importmodule, invalidmodule)
+        thismod = os.path.basename(os.path.splitext(__file__)[0])
+        output.importmodule(thismod)
+        
+    def test_genXML(self):
+        print "OutputTestCase:test_genXML - begin"
 
 
 if not os.path.isdir(testpaths.PATH_TEST_GEN):

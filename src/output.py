@@ -24,6 +24,7 @@ import subprocess
 import parseutil
 import util
 import customExceptions
+import importlib
 
 SPACES_MAIN = 5
 SPACES_SUB = 7
@@ -168,22 +169,30 @@ def formatXML(xmlstr, encoding):
     "Uses lxml to format xml string"
     print "Formatting XML document..."
     result = xmlstr
+    success = True
     try:
-        from lxml import etree
+        formatmodule = importmodule("lxml.etree")
     except ImportError:
         message.addWarning(
             "LXML library not found, could not format XML document.")
+        success = False
     else:
-        root = etree.fromstring(xmlstr)
-        result = etree.tostring(root, pretty_print=True,
-                                xml_declaration=True,
-                                encoding=encoding)
-    return result
+        root = formatmodule.fromstring(xmlstr)
+        result = formatmodule.tostring(root, pretty_print=True,
+                                       xml_declaration=True,
+                                       encoding=encoding)
+    return result, success
+
+def importmodule(modulestr):
+    "Import a module"
+    etree = importlib.import_module(modulestr)
+    return etree
+
 
 def genXML(elemtree, encoding):
     "Produce entire xml string from elemtree"
     xmlstr = elemtree.toXML(encoding)
-    xml = formatXML(xmlstr,encoding)
+    xml = formatXML(xmlstr, encoding)[0]
     
     # Find declaration
     xmltokens = xml.partition("?>")
