@@ -34,6 +34,11 @@ from src import customExceptions, bindings
 bindings.init(paths.SCHEMAPATH,
               paths.SCHEMA_BINDING_PATH)
 
+# Choose testschema.py as binding file
+from src import schemadata
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+schemadata.selectSchema("testschema")
+
 from collections import namedtuple
 # == Class that tests extractor.py ==
 import src.extractor as extractor

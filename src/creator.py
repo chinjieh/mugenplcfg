@@ -30,6 +30,7 @@ import shutil
 import mmap
 import struct
 from collections import namedtuple, OrderedDict, deque
+import schemadata
 from schemadata import Element
 
 Address = namedtuple("Address", "start end")
@@ -788,7 +789,14 @@ def genDmesg(temppath, name):
 
 def createElements():
     "Creates the element tree and returns top element"
+    
+    # Choose binding module to use
+    schemadata.selectSchema("platformconfig")
+    
+    # Initialise dmesg
     dmesg = genDmesg(paths.TEMP, "dmesg_tmp")
+    
+    # Create Elements
     platform = Element("platform", "platformType")
     platform.appendChild(
         ProcessorCreator().createElem(paths.CPUINFO, paths.MSR, dmesg))

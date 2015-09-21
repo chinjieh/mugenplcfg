@@ -26,40 +26,52 @@ import shutil
 import customExceptions
 import paths
 import subprocess
+import importlib
 sys.path.append(paths.PYXB)
-import pyxb
 sys.path.append(os.path.dirname(paths.SCHEMA_BINDING_PATH))
-import platformconfig as schema
+import pyxb
 
+schema = None
+
+def selectSchema(modulename):
+    "Choosing the module containing the PyXB bindings, call this first"
+    imported = importlib.import_module(modulename)
+    global schema
+    schema = imported
 
 class Element():
 
     "Class that wraps Pyxb and provides easier use of modification of XML elements"
 
     # How to use this class:
-    # 1. Create the element using the constructor, with the relevant fields
+    #
+    # 1. First make sure that selectSchema has been called to determine the
+    #    binding module to be used.
+    #
+    # 2. Create the element using the constructor, with the relevant fields
     #    for "name" and "elemtype" corresponding to schema
     #
     #	 e.g. processor = Element("processor", "processorType")
     #
-    # 2. Set attributes by using []. Multiple attributes can be set at once too.
+    # 3. Set attributes by using []. Multiple attributes can be set at once too.
     #
     #	 e.g. processor["attribute1"] = value1    OR
     #         processor["attribute1", "attribute2"] = value1, value2
     #
-    # 3. Set element content by using setContent("elementContent")
+    # 4. Set element content by using setContent("elementContent")
     #
-    # 4. Add child elements to the element by using appendChild(Element)
+    # 5. Add child elements to the element by using appendChild(Element)
     #
     #	 e.g. processorChild = Element("processorChild", "processorChildType")
     #	      processor.appendChild(processorChild)
     #
-    # 5. When the whole element tree has been created, call toXML('utf version')
+    # 6. When the whole element tree has been created, call toXML('utf version')
     #    on the root element. This will convert the entire tree to XML format.
     #	 e.g. xml = processor.toXML('utf-8')
 
     def __init__(self, name, elemtype):
         "name: schema's name attribute; elemtype: schema's 'type' "
+        schema = None
         self.name = name
         self.type = elemtype
         self.childElements = []
