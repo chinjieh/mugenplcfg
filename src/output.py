@@ -92,8 +92,12 @@ def produce_distver():
     except customExceptions.FailedOutputCommand:
         success = False
     else:
-        distdesc = parseutil.parseData_Sep(distdata, DESCRIPTION_KEY, ":")
-        result = produceLine("Distribution: %s" % distdesc, SPACES_MAIN)
+        try:
+            distdesc = parseutil.parseData_Sep(distdata, DESCRIPTION_KEY, ":")
+        except customExceptions.KeyNotFound:
+            success = False
+        else:
+            result = produceLine("Distribution: %s" % distdesc, SPACES_MAIN)
 
     return result, success
 
@@ -144,14 +148,13 @@ def produce_productinfo():
         success = False
     return result, success
 
-def produceHeader(*producers):
+def produceHeader(borderwidth, *producers):
     "Produces descriptive header comment code"
-    BORDER_WIDTH = 42
-    topborder = "<!-- " + ("=" * BORDER_WIDTH) + "\n"
+    topborder = "<!-- " + ("=" * borderwidth) + "\n"
     header = topborder
     for producer in producers:
         header += producer()[0]
-    header += "     " + ("=" * BORDER_WIDTH) + " -->\n"
+    header += "     " + ("=" * borderwidth) + " -->\n"
 
     return header
 
@@ -191,9 +194,10 @@ def importmodule(modulestr):
 
 def genXML(elemtree, encoding):
     "Produce entire xml string from elemtree"
+    BORDER_WIDTH = 42
     xmlstr = elemtree.toXML(encoding)
     xml = formatXML(xmlstr, encoding)[0]
-    
+ 
     # Find declaration
     xmltokens = xml.partition("?>")
     xml_declare = xmltokens[0] + xmltokens[1]
@@ -201,6 +205,7 @@ def genXML(elemtree, encoding):
     
     # Produce header
     header = produceHeader(
+        BORDER_WIDTH,
         produce_toolver,
         produce_linuxver,
         produce_distver,
