@@ -98,3 +98,8 @@ class ForceQuit(CustomException):
 
 class InsufficientPermissions(CustomException):
     pass
+
+
+class FailedOutputCommand(CustomException):
+    pass
+

@@ -22,90 +22,147 @@ import paths
 import message
 import subprocess
 import parseutil
+import util
+import customExceptions
+
+SPACES_MAIN = 5
+SPACES_SUB = 7
     
 def produce_toolver():
     "Produces tool version using git describe"
-    result = "Generated with mugenplcfg"
-    commandstr = "git describe --always"
-    command = commandstr.split()
+    success = True
+    result = produceLine("Generated with mugenplcfg.", SPACES_MAIN)
     try:
-        subprocess.check_output(command, stderr=subprocess.STDOUT)
-    except Exception as e:
-        message.addWarning("Tool version in output description could not be "
-                           "obtained: Subprocess '%s' encountered an error > %s"
-                           % (commandstr, e.output))
+        version = _runCommand("git describe --always",
+                              "Tool version in output description could not "
+                              "be obtained.")
+    except customExceptions.FailedOutputCommand:
+        success = False
     else:
-        proc = subprocess.Popen(command, stdout=subprocess.PIPE)
-        version = proc.communicate()[0].strip()
-        result = "Generated with mugenplcfg (commit %s)" % version
+        result = produceLine("Generated with mugenplcfg (commit %s)" % version,
+                             SPACES_MAIN)
 
-    return result
-    
-def produce_linuxver():
-    "Produces linux version using uname"
-    result = "Linux kernel version: "
-    commandstr = "uname -r"
+    return result, success
+
+def _runCommand(commandstr, errmsg):
+    result = None
     command = commandstr.split()
     try:
-        subprocess.check_call(command, stdout=subprocess.PIPE)
-    except OSError as e:
-        message.addWarning("Linux kernel version in output description could "
-                           "not be obtained: Subprocess '%s' encountered an "
-                           "error > %s"% (commandstr, e))
-    else:
-        proc = subprocess.Popen(command, stdout=subprocess.PIPE)
-        version = proc.communicate()[0].strip()
-        result = "Linux kernel version: %s" % version
-
-    return result
-
-def produce_distver():
-    "Produces distribution version using lsb_release"
-    DESCRIPTION = "Description"
-    result = "Distribution: "
-    commandstr = "lsb_release -a"
-    command = commandstr.split()
-    try:
-        output = subprocess.check_output(command, stderr=subprocess.STDOUT)
-    except OSError as e:
-        message.addWarning("Dist version in output description could not be "
-                           "obtained: Subprocess '%s' encountered an error > %s"
-                           % (commandstr, e))
+        subprocess.check_call(command,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE)
+    except (subprocess.CalledProcessError, OSError) as e:
+        warning = (errmsg + " Subprocess '%s' encountered an error > %s" %
+                   (commandstr, e) )
+        message.addWarning(warning)
+        raise customExceptions.FailedOutputCommand(str(e))
     else:
         proc = subprocess.Popen(command,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
-        distdata = proc.communicate()[0]
-        distdesc = parseutil.parseData_Sep(distdata, DESCRIPTION, ":")
-        result = "Distribution: %s" % distdesc
-
+        result = proc.communicate()[0].strip()
+    
     return result
 
-def produceHeader():
+    
+def produce_linuxver():
+    "Produces linux version using uname"
+    success = True
+    result = produceLine("Linux kernel version: ", SPACES_MAIN)
+    try:
+        version = _runCommand("uname -r", "Linux kernel version in output "
+                              "description could not be obtained.")
+    except customExceptions.FailedOutputCommand:
+        success = False
+    else:
+        result = produceLine("Linux kernel version: %s" % version, SPACES_MAIN)
+
+    return result, success
+
+def produce_distver():
+    "Produces distribution version using lsb_release"
+    success = True
+    DESCRIPTION_KEY = "Description"
+    result = produceLine("Distribution: ", SPACES_MAIN)
+    try:
+        distdata = _runCommand("lsb_release -a",
+                               "Dist version in output description could not "
+                               "be obtained.")
+    except customExceptions.FailedOutputCommand:
+        success = False
+    else:
+        distdesc = parseutil.parseData_Sep(distdata, DESCRIPTION_KEY, ":")
+        result = produceLine("Distribution: %s" % distdesc, SPACES_MAIN)
+
+    return result, success
+
+def produce_biosinfo():
+    "Produces bios information"
+    success = True
+    result = produceLine("BIOS information:",SPACES_MAIN)
+    try:
+        dmiparser = parseutil.DMIParser(paths.DMI)
+        result += produceLine("Vendor: %s" % dmiparser.getData("bios_vendor"),
+                              SPACES_SUB)
+        result += produceLine("Version: %s" %
+                              dmiparser.getData("bios_version"),
+                              SPACES_SUB)
+        result += produceLine("Date: %s" % dmiparser.getData("bios_date"),
+                              SPACES_SUB)
+    except Exception as e:
+        message.addWarning("BIOS information in output description could not "
+                           "be obtained: %s" % e)
+        success = False
+    return result, success
+
+def produce_productinfo():
+    "Produces product information"
+    success = True
+    result = produceLine("Product information:", SPACES_MAIN)
+    try:
+        dmiparser = parseutil.DMIParser(paths.DMI)
+        result += produceLine("Vendor: %s" %
+                              dmiparser.getData("product_vendor"),
+                              SPACES_SUB)
+        result += produceLine("Name: %s" %
+                              dmiparser.getData("product_name"),
+                              SPACES_SUB)
+        result += produceLine("Product Version: %s" %
+                              dmiparser.getData("product_version"),
+                              SPACES_SUB)
+        result += produceLine("Chassis Version: %s" %
+                              dmiparser.getData("chassis_version"),
+                              SPACES_SUB)
+        result += produceLine("Serial: %s" %
+                              dmiparser.getData("product_serial"),
+                              SPACES_SUB)
+
+    except Exception as e:
+        message.addWarning("Product information in output description could "
+                           "not be obtained: %s" % e)
+        success = False
+    return result, success
+
+def produceHeader(*producers):
     "Produces descriptive header comment code"
-    LINE_WIDTH = 50
-    BORDER_WIDTH = LINE_WIDTH - 5
-    producers = [
-        produce_toolver,
-        produce_linuxver,
-        produce_distver
-    ]
-    border = "<!-- "
-    border += "=" * BORDER_WIDTH
-    border += " -->\n"
-    header = border
+    BORDER_WIDTH = 42
+    topborder = "<!-- " + ("=" * BORDER_WIDTH) + "\n"
+    header = topborder
     for producer in producers:
-        line = ""
-        info = producer()
-        if info != "":
-            line += "<!-- " + info
-            line = line.ljust(LINE_WIDTH, " ")
-            line += " -->"
-            line += "\n"
-            header += line
-    header += border
+        header += producer()[0]
+    header += "     " + ("=" * BORDER_WIDTH) + " -->\n"
 
     return header
+
+def produceLine(info, lspace):
+    "Produces a line in the header"
+    line = ""
+    if info != "":
+        line += " " * lspace
+        line += info
+        line += "\n"
+    
+    return line
 
 def formatXML(xmlstr, encoding):
     "Uses lxml to format xml string"
@@ -121,7 +178,6 @@ def formatXML(xmlstr, encoding):
         result = etree.tostring(root, pretty_print=True,
                                 xml_declaration=True,
                                 encoding=encoding)
-
     return result
 
 def genXML(elemtree, encoding):
@@ -134,17 +190,26 @@ def genXML(elemtree, encoding):
     xml_declare = xmltokens[0] + xmltokens[1]
     xml_body = xmltokens[2]
     
+    # Produce header
+    header = produceHeader(
+        produce_toolver,
+        produce_linuxver,
+        produce_distver,
+        produce_biosinfo,
+        produce_productinfo
+    )
+    
     # Combine declaration with header and body
-    xml = xml_declare + "\n" + produceHeader() + "\n" + xml_body
+    xml = xml_declare + "\n" + header + "\n" + xml_body
 
     return xml
 
-def output(xml):
-    OUTPUT_NAME = "output.xml"
+def output(xml, outpath):
+    OUTPUT_NAME = os.path.basename(outpath)
 
     print "> XML file '%s' generated to location: \n %s" % (
-        OUTPUT_NAME, os.path.join(paths.OUTPUT, OUTPUT_NAME))
+        OUTPUT_NAME, outpath)
 
-    with open(os.path.join(paths.OUTPUT, OUTPUT_NAME), "w") as f:
+    with open(outpath, "w") as f:
         for line in xml.splitlines(True):
             f.write(line)

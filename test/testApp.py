@@ -1613,6 +1613,21 @@ class UtilTestCase(unittest.TestCase):
                          "5123fa", "stripvalue function not working")
         self.assertEqual(
             util.stripvalue("100"), "100", "stripvalud function not working")
+        
+    def test_addPadding(self):
+        print "UtilTestCase:test_addPadding - begin"
+        before = "a\nbb\nccc"
+        after = "a   \nbb  \nccc "
+        
+        before2 = "a"
+        after2 ="a    "
+        
+        self.assertEqual(util.addPadding(before, 4),
+                         after,
+                         "addPadding not working")
+        self.assertEqual(util.addPadding(before2, 5),
+                         after2,
+                         "addPadding not working")
 
     def test_toWord64(self):
         "Tests the toWord64 function"
@@ -2076,7 +2091,6 @@ class DMARParserTestCase(unittest.TestCase):
         print "<> DMARParserTestCase:setUp - begin"
         self.testdir = os.path.join(testpaths.PATH_TEST_PARSEUTIL)
         self.dmarparser = parseutil.DMARParser()
-        # TO MOVE TO PARSEUTIL FOLDER
 
     def tearDown(self):
         "Cleanup code"
@@ -2185,6 +2199,69 @@ class DMARParserTestCase(unittest.TestCase):
         self.assertEqual(self.dmarparser.getIommuAddrs(invalidloc),
                          [],
                          "getIommuAddrs function not working")
+
+
+class DMIParserTestCase(unittest.TestCase):
+    
+    "Tests the DMIParser class in parseutil"
+    
+    def setUp(self):
+        "Setup code"
+        print "<> DMIParserTestCase:setUp - begin"
+        self.testdir = os.path.join(testpaths.PATH_TEST_PARSEUTIL)
+        self.dmiparser = parseutil.DMIParser(os.path.join(self.testdir, "dmi"))
+
+    def tearDown(self):
+        "Cleanup code"
+        print "DMIParserTestCase:tearDown - begin"
+
+    def test_getData(self):
+        print "DMIParserTestCase:test_getData - begin"
+        self.assertEqual(self.dmiparser.getData("bios_vendor"),
+                         "test_bios_vendor")
+        self.assertEqual(self.dmiparser.getData("bios_version"),
+                         "")
+        self.assertRaises(KeyError,
+                          self.dmiparser.getData,
+                          "incorrectdatakey")
+        self.assertRaises(IOError,
+                          self.dmiparser.getData,
+                          "product_vendor")
+
+
+# == Class that tests output.py ==
+import src.output as output
+
+
+class OutputTestCase(unittest.TestCase):
+
+    "Tests the output.py file"
+
+    def setUp(self):
+        print "<> OutputTestCase:setUp - begin"
+        self.testdir = testpaths.PATH_TEST_OUTPUT
+
+    def tearDown(self):
+        print "<> OutputTestCase:tearDown - begin"
+        
+    def test_produceLine(self):
+        print "OutputTestCase:test_produceLine - begin"
+        info = "info"
+        result = "   info\n"
+        SPACES = 3
+        self.assertEqual(output.produceLine(info, SPACES), result)
+        
+        emptyinfo = ""
+        result = ""
+        self.assertEqual(output.produceLine(emptyinfo, SPACES), result)
+        
+    def test_output(self):
+        print "OutputTestCase:test_output - begin"
+        xml = "<test/>"
+        testfile = os.path.join(testpaths.PATH_TEST_GEN, "output_xml.xml")
+        output.output(xml, testfile)
+        with open(testfile, "r") as f:
+            self.assertEqual(f.read(), xml)
 
 
 if not os.path.isdir(testpaths.PATH_TEST_GEN):

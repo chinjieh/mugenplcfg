@@ -122,11 +122,11 @@ def main(forcecreate=False):
 
         if hasErrors():
             if forcecreate:
-                output.output(xml)
+                output.output(xml, paths.OUTPUT)
             else:
                 print "> XML File could not be generated."
         else:
-            output.output(xml)
+            output.output(xml, paths.OUTPUT)
 
 
 if __name__ == "__main__":
