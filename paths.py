@@ -33,6 +33,7 @@ IOPORTS = "/proc/ioports"
 DMAR = "/sys/firmware/acpi/tables/DMAR"
 DMAR_TEMP = TEMP
 DEVMEM = "/dev/mem"
+DMI = "/sys/devices/virtual/dmi/id/"
 
 ## Location of pci.ids
 PCIIDS = CURRENTDIR + "/data/pci.ids"
@@ -46,5 +47,5 @@ SCHEMAPATH = CURRENTDIR + "/schemaconfig/platform_config.xsd"
 SCHEMA_BINDING_PATH = CURRENTDIR + "/generated/platformconfig.py"
 
 ## Location of output file
-OUTPUT = CURRENTDIR + "/"
+OUTPUT = CURRENTDIR + "/output.xml"
 

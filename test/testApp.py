@@ -34,6 +34,11 @@ from src import customExceptions, bindings
 bindings.init(paths.SCHEMAPATH,
               paths.SCHEMA_BINDING_PATH)
 
+# Choose testschema.py as binding file
+from src import schemadata
+sys.path.append(os.path.dirname(os.path.abspath(testpaths.PATH_BINDINGS)))
+schemadata.selectSchema("testschema")
+
 from collections import namedtuple
 # == Class that tests extractor.py ==
 import src.extractor as extractor
@@ -103,23 +108,25 @@ class ExtractorTestCase(unittest.TestCase):
 # == creator.py tests ==
 import src.creator as creator
 
+
 class CreatorTestCase(unittest.TestCase):
-    
+
     "Tests the creator.py module"
-    
+
     def setUp(self):
         print "<> CreatorTestCase:setUp - begin"
         self.testdir = testpaths.PATH_TEST_CREATOR
 
     def tearDown(self):
         print "<> CreatorTestCase:tearDown - begin"
-        
+
     def test_genDmesg(self):
         print "CreatorTestCase:test_genDmesg - begin"
         gen = testpaths.PATH_TEST_GEN
         creator.genDmesg(gen, "test_genDmesg")
-        self.assertTrue(os.path.isfile(os.path.join(gen,"test_genDmesg")))
-    
+        self.assertTrue(os.path.isfile(os.path.join(gen, "test_genDmesg")))
+
+
 class ProcessorCreatorTestCase(unittest.TestCase):
 
     "Tests the ProcessorCreator class"
@@ -170,11 +177,10 @@ class ProcessorCreatorTestCase(unittest.TestCase):
                          "getSpeed function not working")
         self.assertRaises(customExceptions.ForceQuit,
                           self.procreator.getSpeed,
-                          invalidloc )
+                          invalidloc)
         self.assertRaises(customExceptions.ForceQuit,
                           self.procreator.getSpeed,
-                          dmesg_nokey )
-        
+                          dmesg_nokey)
 
     def test_getVmxTimerRate(self):
         print "ProcessorCreatorTestCase:test_getVmxTimerRate - begin"
@@ -295,17 +301,18 @@ class MemoryCreatorTestCase(unittest.TestCase):
         self.assertRaises(IOError,
                           self.memcreator.generateMemoryBlock,
                           endfile, typefile, startfile_invalid)
-        
+
         def isAllocatable_true(memBlock):
             return True
-        
+
         @mock.patch.object(self.memcreator, "isAllocatable", isAllocatable_true)
         def mock_testAllocatable():
             return self.memcreator.generateMemoryBlock(endfile,
                                                        typefile,
                                                        startfile)
         mockmemblock = mock_testAllocatable()
-        self.assertEqual(mockmemblock["allocatable"], "true", "generateMemoryBlock not working")
+        self.assertEqual(
+            mockmemblock["allocatable"], "true", "generateMemoryBlock not working")
 
 
 class DevicesCreatorTestCase(unittest.TestCase):
@@ -320,16 +327,19 @@ class DevicesCreatorTestCase(unittest.TestCase):
 
     def tearDown(self):
         print "<> DevicesCreatorTestCase:tearDown - begin"
-        
+
     def test_createElem(self):
         print "DevicesCreatorTestCase:test_createElem - begin"
+
         def mock_IommuDevicesCreator_createElems(arg, *args, **kwargs):
             return [Element("device", "deviceType")]
-        def mock_SerialDevicesCreator_createElems(arg, *args,**kwargs):
+
+        def mock_SerialDevicesCreator_createElems(arg, *args, **kwargs):
             return [Element("device", "deviceType")]
+
         def mock_PciDevicesCreator_createElems(arg, *args, **kwargs):
             return [Element("device", "deviceType")]
-        
+
         @mock.patch.object(creator.IommuDevicesCreator, "createElems",
                            mock_IommuDevicesCreator_createElems)
         @mock.patch.object(creator.SerialDevicesCreator, "createElems",
@@ -339,9 +349,10 @@ class DevicesCreatorTestCase(unittest.TestCase):
         def mock_createElem():
             iomem = os.path.join(self.testdir, "test_iomem")
             return self.devcreator.createElem()
-            
+
         mockelem = mock_createElem()
-        self.assertEqual(len(mockelem.childElements), 3, "createElem not working")   
+        self.assertEqual(
+            len(mockelem.childElements), 3, "createElem not working")
 
     def test_getPciConfigAddress(self):
         print "DevicesCreatorTestCase:test_getPciConfigAddress - begin"
@@ -821,15 +832,19 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
 
     def test_createElems(self):
         print "IommuDevicesCreatorTestCase:createElems - begin"
+
         def mock_dmarparser_genDMAR(arg, *args, **kwargs):
             return True
+
         def mock_dmarparser_parseDMAR(arg, *args, **kwargs):
             return True
+
         def mock_dmarparser_getIommuAddrs(arg, *args, **kwargs):
             return ["e00000"]
+
         def mock_createDeviceFromAddr(arg, *args, **kwargs):
             return Element("device", "deviceType")
-        
+
         @mock.patch.object(parseutil.DMARParser, "genDMAR",
                            mock_dmarparser_genDMAR)
         @mock.patch.object(parseutil.DMARParser, "parseDMAR",
@@ -839,8 +854,8 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
         @mock.patch.object(creator.IommuDevicesCreator, "createDeviceFromAddr",
                            mock_createDeviceFromAddr)
         def mock_createElems():
-            return self.iommucreator.createElems("dmarpath","temppath","devmem")
-        
+            return self.iommucreator.createElems("dmarpath", "temppath", "devmem")
+
         mock_createElems()
 
     def test_getIommuAGAW(self):
@@ -974,21 +989,19 @@ class BindingsTestCase(unittest.TestCase):
 
     def createBindings_patch(x, y, z, a):
         return True
-    
+
     def test_init(self):
         bindingfile = os.path.join(testpaths.PATH_TEST_GEN,
                                    "test_binding_init.py")
-        
+
         testschema = testpaths.PATH_SCHEMA
-        
+
         with open(bindingfile, "w") as f:
             f.write("TestBindingFile")
-            
+
         bindings.init(testschema, bindingfile)
         os.remove(bindingfile)
-        bindings.init(testschema,bindingfile)
-            
-        
+        bindings.init(testschema, bindingfile)
 
     def test_createBindings(self):
         testschema = testpaths.PATH_SCHEMA
@@ -998,18 +1011,18 @@ class BindingsTestCase(unittest.TestCase):
         outpath_noexists = os.path.join(testpaths.PATH_TEST_GEN, "newBinding")
         # Normal function
         bindings.createBindings(testschema,
-                                  outpath,
-                                  "testschemaoutput",
-                                  paths.PYXB_GEN)
-        
+                                outpath,
+                                "testschemaoutput",
+                                paths.PYXB_GEN)
+
         # Normal function w non-existent dir
         bindings.createBindings(testschema,
-                                  outpath_noexists,
-                                  "testschemaoutput",
-                                  paths.PYXB_GEN)
+                                outpath_noexists,
+                                "testschemaoutput",
+                                paths.PYXB_GEN)
 
         # Invalid schema file chosen
-        
+
         self.assertRaises(customExceptions.PyxbgenInvalidSchema,
                           bindings.createBindings,
                           testschema_invalid,
@@ -1493,7 +1506,7 @@ class UtilTestCase(unittest.TestCase):
                          1, 2, 4, 5, 8, 9, 10], "removeListsFromList function not working")
         self.assertEqual(util.removeListsFromList(mainList, removeList4),
                          [], "removeListsFromList function not working")
-        
+
     def test_makefolder(self):
         print "UtilTestCase:test_makefolder - begin"
 
@@ -1614,6 +1627,21 @@ class UtilTestCase(unittest.TestCase):
         self.assertEqual(
             util.stripvalue("100"), "100", "stripvalud function not working")
 
+    def test_addPadding(self):
+        print "UtilTestCase:test_addPadding - begin"
+        before = "a\nbb\nccc"
+        after = "a   \nbb  \nccc "
+
+        before2 = "a"
+        after2 = "a    "
+
+        self.assertEqual(util.addPadding(before, 4),
+                         after,
+                         "addPadding not working")
+        self.assertEqual(util.addPadding(before2, 5),
+                         after2,
+                         "addPadding not working")
+
     def test_toWord64(self):
         "Tests the toWord64 function"
         print "UtilTestCase: test_toWord64 - begin"
@@ -1707,7 +1735,7 @@ class UpdateTestCase(unittest.TestCase):
 
         def updatePciIds_patchfail(url, location):
             return False
-        
+
         def updateSchemaBinding_patch(schema, bindingpath):
             return True
 
@@ -1716,15 +1744,15 @@ class UpdateTestCase(unittest.TestCase):
 
         @mock.patch.object(update, "updatePciIds", updatePciIds_patch)
         @mock.patch.object(update,
-                          "updateSchemaBinding",
-                          updateSchemaBinding_patch)
+                           "updateSchemaBinding",
+                           updateSchemaBinding_patch)
         def runtest():
             return update.update()
 
         @mock.patch.object(update, "updatePciIds", updatePciIds_patchfail)
         @mock.patch.object(update,
-                          "updateSchemaBinding",
-                          updateSchemaBinding_patchfail)
+                           "updateSchemaBinding",
+                           updateSchemaBinding_patchfail)
         def runtest_fail():
             return update.update()
 
@@ -1741,15 +1769,16 @@ class UpdateTestCase(unittest.TestCase):
                           INVALID_ADDR, testfile)
         update.updatePciIds(os.path.join(self.testdir, "test_newupdate.ids"),
                             testfile)
-        
+
     def test_updateSchemaBinding(self):
         print "UpdateTestCase:test_updateSchemaBinding - begin"
         invalidschema = os.path.join(self.testdir, "invalidschema")
         bindingpath = os.path.join(testpaths.PATH_TEST_GEN, "test_binding.py")
-        self.assertFalse(update.updateSchemaBinding(invalidschema,bindingpath))
+        self.assertFalse(
+            update.updateSchemaBinding(invalidschema, bindingpath))
         self.assertTrue(update.updateSchemaBinding(testpaths.PATH_SCHEMA,
-                                   bindingpath) )
-    
+                                                   bindingpath))
+
 
 # == Class that tests message.py ==
 from src import message
@@ -2076,7 +2105,6 @@ class DMARParserTestCase(unittest.TestCase):
         print "<> DMARParserTestCase:setUp - begin"
         self.testdir = os.path.join(testpaths.PATH_TEST_PARSEUTIL)
         self.dmarparser = parseutil.DMARParser()
-        # TO MOVE TO PARSEUTIL FOLDER
 
     def tearDown(self):
         "Cleanup code"
@@ -2187,8 +2215,324 @@ class DMARParserTestCase(unittest.TestCase):
                          "getIommuAddrs function not working")
 
 
+class DMIParserTestCase(unittest.TestCase):
+
+    "Tests the DMIParser class in parseutil"
+
+    def setUp(self):
+        "Setup code"
+        print "<> DMIParserTestCase:setUp - begin"
+        self.testdir = os.path.join(testpaths.PATH_TEST_PARSEUTIL)
+        self.dmiparser = parseutil.DMIParser(os.path.join(self.testdir, "dmi"))
+
+    def tearDown(self):
+        "Cleanup code"
+        print "DMIParserTestCase:tearDown - begin"
+
+    def test_getData(self):
+        print "DMIParserTestCase:test_getData - begin"
+        self.assertEqual(self.dmiparser.getData("bios_vendor"),
+                         "test_bios_vendor")
+        self.assertEqual(self.dmiparser.getData("bios_version"),
+                         "")
+        self.assertRaises(KeyError,
+                          self.dmiparser.getData,
+                          "incorrectdatakey")
+        self.assertRaises(IOError,
+                          self.dmiparser.getData,
+                          "product_vendor")
+
+
+# == Class that tests output.py ==
+import src.output as output
+from src import parseutil
+from src import schemadata
+from src.schemadata import Element
+import subprocess
+
+
+class OutputTestCase(unittest.TestCase):
+
+    "Tests the output.py file"
+
+    def setUp(self):
+        print "<> OutputTestCase:setUp - begin"
+        self.testdir = testpaths.PATH_TEST_OUTPUT
+
+    def tearDown(self):
+        print "<> OutputTestCase:tearDown - begin"
+
+    def test_produceLine(self):
+        print "OutputTestCase:test_produceLine - begin"
+        info = "info"
+        result = "   info\n"
+        SPACES = 3
+        self.assertEqual(output.produceLine(info, SPACES), result)
+
+        emptyinfo = ""
+        result = ""
+        self.assertEqual(output.produceLine(emptyinfo, SPACES), result)
+
+    def test_output(self):
+        print "OutputTestCase:test_output - begin"
+        xml = "<test/>"
+        testfile = os.path.join(testpaths.PATH_TEST_GEN, "output_xml.xml")
+        output.output(xml, testfile)
+        with open(testfile, "r") as f:
+            self.assertEqual(f.read(), xml)
+
+    def test_formatXML(self):
+        print "OutputTestCase:test_formatXML - begin"
+        xml = ("""<capabilities><capability name="iommu"/>""" +
+               """<capability name="agaw">39</capability></capabilities>""")
+        formatted = ("""<?xml version='1.0' encoding='utf-8'?>\n"""
+                     """<capabilities>\n"""
+                     """  <capability name="iommu"/>\n"""
+                     """  <capability name="agaw">39</capability>\n"""
+                     """</capabilities>\n""")
+
+        def mock_importmodule_error(*args):
+            raise ImportError
+
+        self.assertEqual(output.formatXML(xml, "utf-8")[0],
+                         formatted)
+        self.assertEqual(output.formatXML(xml, "utf-8")[1],
+                         True)
+
+        @mock.patch.object(output, "importmodule", mock_importmodule_error)
+        def test_importfailed():
+            return output.formatXML(xml, "utf-8")
+
+        self.assertEqual(test_importfailed()[1], False)
+
+    def test_importmodule(self):
+        print "OutputTestCase:test_importmodule - begin"
+        invalidmodule = "mugenplcfg_invalidmodule"
+        self.assertRaises(ImportError, output.importmodule, invalidmodule)
+        thismod = os.path.basename(os.path.splitext(__file__)[0])
+        output.importmodule(thismod)
+
+    def test_produceHeader(self):
+        print "OutputTestCase:test_produceHeader - begin"
+        testresult = ("""<!-- =====\n"""
+                      """     headerinfo\n"""
+                      """     ===== -->\n""")
+
+        def produceinfo():
+            return "     headerinfo\n", True
+
+        BORDER_WIDTH = 5
+        self.assertEqual(output.produceHeader(BORDER_WIDTH, produceinfo),
+                         testresult)
+
+    def test_genXML(self):
+        print "OutputTestCase:test_genXML - begin"
+        memory = Element("memory", "physicalMemoryType")
+
+        testresult = ("""<?xml version='1.0' encoding='utf-8'?>\n"""
+                      """header\n\n"""
+                      """<memory/>\n""")
+
+        def mock_produceHeader(*args):
+            return "header"
+
+        @mock.patch.object(output, "produceHeader", mock_produceHeader)
+        def test():
+            return output.genXML(memory, "utf-8")
+
+        self.assertEqual(test(), testresult)
+
+    def test_produce_toolver(self):
+        print "OutputTestCase:test_produce_toolver - begin"
+
+        def mockcommand(*args):
+            return "version"
+
+        def mockcommand_fail(*args):
+            raise customExceptions.FailedOutputCommand()
+
+        @mock.patch.object(output, "_runCommand", mockcommand)
+        def test_success():
+            return output.produce_toolver()
+
+        @mock.patch.object(output, "_runCommand", mockcommand_fail)
+        def test_fail():
+            return output.produce_toolver()
+
+        successline = ("""     Generated with mugenplcfg (commit version)\n""")
+
+        self.assertEqual(test_success()[0],
+                         successline)
+
+        self.assertEqual(test_success()[1],
+                         True)
+
+        self.assertEqual(test_fail()[1],
+                         False)
+
+    def test_produce_linuxver(self):
+        print "OutputTestCase:test_produce_linuxver - begin"
+
+        def mockcommand(*args):
+            return "version"
+
+        def mockcommand_fail(*args):
+            raise customExceptions.FailedOutputCommand()
+
+        @mock.patch.object(output, "_runCommand", mockcommand)
+        def test_success():
+            return output.produce_linuxver()
+
+        @mock.patch.object(output, "_runCommand", mockcommand_fail)
+        def test_fail():
+            return output.produce_linuxver()
+
+        successline = ("""     Linux kernel version: version\n""")
+
+        self.assertEqual(test_success()[0],
+                         successline)
+
+        self.assertEqual(test_success()[1],
+                         True)
+
+        self.assertEqual(test_fail()[1],
+                         False)
+
+    def test_produce_distver(self):
+        print "OutputTestCase:test_produce_distver - begin"
+
+        def mockcommand(*args):
+            return "Description: 1.0"
+
+        def mockcommand_nokey(*args):
+            return "Version: 1.0"
+
+        def mockcommand_fail(*args):
+            raise customExceptions.FailedOutputCommand()
+
+        @mock.patch.object(output, "_runCommand", mockcommand)
+        def test_success():
+            return output.produce_distver()
+
+        @mock.patch.object(output, "_runCommand", mockcommand_nokey)
+        def test_nokey():
+            return output.produce_distver()
+
+        @mock.patch.object(output, "_runCommand", mockcommand_fail)
+        def test_fail():
+            return output.produce_distver()
+
+        successline = ("""     Distribution: 1.0\n""")
+
+        self.assertEqual(test_success()[0],
+                         successline)
+
+        self.assertEqual(test_success()[1],
+                         True)
+
+        self.assertEqual(test_nokey()[1],
+                         False)
+
+        self.assertEqual(test_fail()[1],
+                         False)
+
+    def test_produce_boardinfo(self):
+        print "OutputTestCase:test_produce_boardinfo - begin"
+
+        successline = ("""     Board information:\n"""
+                       """       Vendor: test\n"""
+                       """       Name: test\n"""
+                       """       Version: test\n""")
+
+        def mock_getData(*args):
+            return "test"
+
+        def mock_getData_except(*args):
+            raise IOError
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData)
+        def test_success():
+            return output.produce_boardinfo()
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData_except)
+        def test_fail():
+            return output.produce_boardinfo()
+
+        self.assertEqual(test_success()[0], successline)
+        self.assertEqual(test_success()[1], True)
+        self.assertEqual(test_fail()[1], False)
+
+    def test_produce_biosinfo(self):
+        print "OutputTestCase:test_produce_biosinfo - begin"
+
+        successline = ("""     BIOS information:\n"""
+                       """       Vendor: test\n"""
+                       """       Version: test\n"""
+                       """       Date: test\n""")
+
+        def mock_getData(*args):
+            return "test"
+
+        def mock_getData_except(*args):
+            raise IOError
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData)
+        def test_success():
+            return output.produce_biosinfo()
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData_except)
+        def test_fail():
+            return output.produce_biosinfo()
+
+        self.assertEqual(test_success()[0], successline)
+        self.assertEqual(test_success()[1], True)
+        self.assertEqual(test_fail()[1], False)
+
+    def test_produce_productinfo(self):
+        print "OutputTestCase:test_produce_productinfo - begin"
+
+        successline = ("""     Product information:\n"""
+                       """       Vendor: test\n"""
+                       """       Name: test\n"""
+                       """       Product Version: test\n""")
+
+        def mock_getData(*args):
+            return "test"
+
+        def mock_getData_except(*args):
+            raise IOError
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData)
+        def test_success():
+            return output.produce_productinfo()
+
+        @mock.patch.object(parseutil.DMIParser, "getData", mock_getData_except)
+        def test_fail():
+            return output.produce_productinfo()
+
+        self.assertEqual(test_success()[0], successline)
+        self.assertEqual(test_success()[1], True)
+        self.assertEqual(test_fail()[1], False)
+
+    def test_runCommand(self):
+        print "OutputTestCase:test_runCommand - begin"
+
+        def command_fail(*args, **kwargs):
+            raise subprocess.CalledProcessError(-1, -1, -1)
+
+        @mock.patch.object(subprocess, "check_call", command_fail)
+        def test_fail():
+            return output._runCommand("commandline", "error")
+
+        self.assertEqual(output._runCommand("echo success", "err"),
+                         "success")
+        self.assertRaises(customExceptions.FailedOutputCommand,
+                          test_fail)
+
+
 if not os.path.isdir(testpaths.PATH_TEST_GEN):
     os.mkdir(testpaths.PATH_TEST_GEN)
+
 
 def unittest_cleanup():
     "Cleanup function for test application"

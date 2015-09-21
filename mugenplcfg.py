@@ -31,11 +31,13 @@ import argparse
 import paths
 import os
 import shutil
-from src import message, customExceptions, update, bindings
+from src import message, customExceptions, update, bindings, output
+
 
 def init():
     # Initialise PyXB binding file
     bindings.init(paths.SCHEMAPATH, paths.SCHEMA_BINDING_PATH)
+
 
 def cleanup():
     "Call this function at the end of the program to remove temp files"
@@ -52,39 +54,6 @@ def checkPermissions():
     "Check user permissions"
     if not os.access("/sys", os.W_OK):
         raise customExceptions.InsufficientPermissions()
-
-
-def formatXML(xmlstr):
-    "Uses lxml to format xml string"
-    print "Formatting XML document..."
-    result = xmlstr
-    try:
-        from lxml import etree
-    except ImportError:
-        message.addWarning(
-            "LXML library not found, could not format XML document.")
-    else:
-        root = etree.fromstring(xmlstr)
-        result = etree.tostring(root, pretty_print=True)
-
-    return result
-
-
-def generateXML(elemtree):
-    xmlstr = elemtree.toXML("utf-8")
-    formattedxml = formatXML(xmlstr)
-    return formattedxml
-
-
-def output(xml):
-    OUTPUT_NAME = "output.xml"
-
-    print "> XML file '%s' generated to location: \n %s" % (
-        OUTPUT_NAME, os.path.join(paths.OUTPUT, OUTPUT_NAME))
-
-    with open(os.path.join(paths.OUTPUT, OUTPUT_NAME), "w") as f:
-        for line in xml.splitlines(True):
-            f.write(line)
 
 
 def hasErrors():
@@ -134,9 +103,9 @@ def main(forcecreate=False):
     from src import creator, schemadata
 
     try:
-        print "> Extracting data from schema bindings..."
+        print "> Extracting data from system..."
         elemtree = creator.createElements()
-        xml = generateXML(elemtree)
+        xml = output.genXML(elemtree, 'utf-8')
 
     except customExceptions.ForceQuit:
         message.printMessages()
@@ -144,7 +113,7 @@ def main(forcecreate=False):
         print "> XML File could not be generated."
         sys.exit()
 
-    else:   
+    else:
         message.printMessages()
         cleanup()
         if len(message.messagequeue) is 0:
@@ -158,11 +127,11 @@ def main(forcecreate=False):
 
         if hasErrors():
             if forcecreate:
-                output(xml)
+                output.output(xml, paths.OUTPUT)
             else:
                 print "> XML File could not be generated."
         else:
-            output(xml)
+            output.output(xml, paths.OUTPUT)
 
 
 if __name__ == "__main__":

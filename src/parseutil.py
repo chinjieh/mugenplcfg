@@ -294,6 +294,33 @@ class DMARParser():
         return iommuaddrs
 
 
+class DMIParser():
+
+    "Handles parsing of DMI (SMBios) files"
+
+    def __init__(self, dmipath):
+        self.dmipath = dmipath
+        self.BIOS_VENDOR = "bios_vendor"
+        self.BIOS_VERSION = "bios_version"
+        self.BIOS_DATE = "bios_version"
+        self.datadict = {
+            "board_vendor": "board_vendor",
+            "board_name": "board_name",
+            "board_version": "board_version",
+            "bios_vendor": "bios_vendor",
+            "bios_version": "bios_version",
+            "bios_date": "bios_date",
+            "product_name": "product_name",
+            "product_version": "product_version",
+            "product_vendor": "sys_vendor",
+        }
+
+    def getData(self, datakey):
+        filename = self.datadict[datakey]
+        filepath = os.path.join(self.dmipath, filename)
+        return extractor.extractData(filepath)
+
+
 def parseLine_Sep(line, key, separatorList=""):
     """
     Reads single line, gets value from key-value pair delimited by separator.

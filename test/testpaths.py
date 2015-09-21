@@ -11,10 +11,12 @@ PATH_TEST_UTIL = CURRENTDIR + "/util/"
 PATH_TEST_UPDATE = CURRENTDIR + "/update/"
 PATH_TEST_DEVICECAP = CURRENTDIR + "/devicecap/"
 PATH_TEST_BINDINGS = CURRENTDIR + "/bindings/"
+PATH_TEST_OUTPUT = CURRENTDIR + "/output/"
 
 PATH_PCIIDS = os.path.join(CURRENTDIR, "testpciids")
 PATH_IOPORTS = os.path.join(PATH_TEST_CREATOR, "devicescreator/test_ioports")
 PATH_DEVICELINKS = os.path.join(PATH_TEST_CREATOR,"devicescreator/devices_test_links")
 PATH_SCHEMA = os.path.join(CURRENTDIR, "testschema.xsd")
+PATH_BINDINGS = os.path.join(CURRENTDIR, "testschema.py")
 
 PATH_TEST_GEN = CURRENTDIR + "/gen/"
