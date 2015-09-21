@@ -98,7 +98,7 @@ def main(forcecreate=False):
     from src import creator, schemadata
 
     try:
-        print "> Extracting data from schema bindings..."
+        print "> Extracting data from system..."
         elemtree = creator.createElements()
         xml = output.genXML(elemtree, 'utf-8')
 
