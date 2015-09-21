@@ -118,9 +118,6 @@ def produce_boardinfo():
         result += produceLine("Version: %s" %
                               dmiparser.getData("board_version"),
                               SPACES_SUB)
-        result += produceLine("Asset Tag: %s" %
-                              dmiparser.getData("board_asset_tag"),
-                              SPACES_SUB)
     except Exception as e:
         message.addWarning("Board information in output description could not "
                            "be obtained: %s" % e)

@@ -2442,8 +2442,7 @@ class OutputTestCase(unittest.TestCase):
         successline = ("""     Board information:\n"""
                        """       Vendor: test\n"""
                        """       Name: test\n"""
-                       """       Version: test\n"""
-                       """       Asset Tag: test\n""")
+                       """       Version: test\n""")
 
         def mock_getData(*args):
             return "test"

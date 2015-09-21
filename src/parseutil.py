@@ -307,7 +307,6 @@ class DMIParser():
             "board_vendor": "board_vendor",
             "board_name": "board_name",
             "board_version": "board_version",
-            "board_asset_tag": "board_asset_tag",
             "bios_vendor": "bios_vendor",
             "bios_version": "bios_version",
             "bios_date": "bios_date",
