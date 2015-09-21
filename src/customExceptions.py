@@ -102,4 +102,3 @@ class InsufficientPermissions(CustomException):
 
 class FailedOutputCommand(CustomException):
     pass
-

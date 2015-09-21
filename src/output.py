@@ -28,7 +28,8 @@ import importlib
 
 SPACES_MAIN = 5
 SPACES_SUB = 7
-    
+
+
 def produce_toolver():
     "Produces tool version using git describe"
     success = True
@@ -45,6 +46,7 @@ def produce_toolver():
 
     return result, success
 
+
 def _runCommand(commandstr, errmsg):
     result = None
     command = commandstr.split()
@@ -54,7 +56,7 @@ def _runCommand(commandstr, errmsg):
                               stderr=subprocess.PIPE)
     except (subprocess.CalledProcessError, OSError) as e:
         warning = (errmsg + " Subprocess '%s' encountered an error > %s" %
-                   (commandstr, e) )
+                   (commandstr, e))
         message.addWarning(warning)
         raise customExceptions.FailedOutputCommand(str(e))
     else:
@@ -62,10 +64,10 @@ def _runCommand(commandstr, errmsg):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         result = proc.communicate()[0].strip()
-    
+
     return result
 
-    
+
 def produce_linuxver():
     "Produces linux version using uname"
     success = True
@@ -79,6 +81,7 @@ def produce_linuxver():
         result = produceLine("Linux kernel version: %s" % version, SPACES_MAIN)
 
     return result, success
+
 
 def produce_distver():
     "Produces distribution version using lsb_release"
@@ -101,10 +104,11 @@ def produce_distver():
 
     return result, success
 
+
 def produce_biosinfo():
     "Produces bios information"
     success = True
-    result = produceLine("BIOS information:",SPACES_MAIN)
+    result = produceLine("BIOS information:", SPACES_MAIN)
     try:
         dmiparser = parseutil.DMIParser(paths.DMI)
         result += produceLine("Vendor: %s" % dmiparser.getData("bios_vendor"),
@@ -119,6 +123,7 @@ def produce_biosinfo():
                            "be obtained: %s" % e)
         success = False
     return result, success
+
 
 def produce_productinfo():
     "Produces product information"
@@ -148,6 +153,7 @@ def produce_productinfo():
         success = False
     return result, success
 
+
 def produceHeader(borderwidth, *producers):
     "Produces descriptive header comment code"
     topborder = "<!-- " + ("=" * borderwidth) + "\n"
@@ -158,6 +164,7 @@ def produceHeader(borderwidth, *producers):
 
     return header
 
+
 def produceLine(info, lspace):
     "Produces a line in the header"
     line = ""
@@ -165,8 +172,9 @@ def produceLine(info, lspace):
         line += " " * lspace
         line += info
         line += "\n"
-    
+
     return line
+
 
 def formatXML(xmlstr, encoding):
     "Uses lxml to format xml string"
@@ -186,6 +194,7 @@ def formatXML(xmlstr, encoding):
                                        encoding=encoding)
     return result, success
 
+
 def importmodule(modulestr):
     "Import a module"
     etree = importlib.import_module(modulestr)
@@ -197,12 +206,12 @@ def genXML(elemtree, encoding):
     BORDER_WIDTH = 42
     xmlstr = elemtree.toXML(encoding)
     xml = formatXML(xmlstr, encoding)[0]
- 
+
     # Find declaration
     xmltokens = xml.partition("?>")
     xml_declare = xmltokens[0] + xmltokens[1]
     xml_body = xmltokens[2]
-    
+
     # Produce header
     header = produceHeader(
         BORDER_WIDTH,
@@ -212,11 +221,12 @@ def genXML(elemtree, encoding):
         produce_biosinfo,
         produce_productinfo
     )
-    
+
     # Combine declaration with header and body
     xml = xml_declare + "\n" + header + "\n" + xml_body
 
     return xml
+
 
 def output(xml, outpath):
     OUTPUT_NAME = os.path.basename(outpath)

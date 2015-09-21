@@ -172,8 +172,8 @@ def numberMultiples(listin):
 
 # == Functions to support generation of schema ==
 
+
 def addPadding(line, width):
-    
     """
     Adds blank padding to line. If there is a newline character, adds padding
     to each newline """
@@ -187,9 +187,10 @@ def addPadding(line, width):
         for index, token in enumerate(linetokens):
             newtoken = token.ljust(width)
             result += newtoken
-            if index != (len(linetokens) - 1):  #if token is not last token
+            if index != (len(linetokens) - 1):  # if token is not last token
                 result += "\n"
     return result
+
 
 def isHex(value):
     if isinstance(value, basestring):

@@ -789,13 +789,13 @@ def genDmesg(temppath, name):
 
 def createElements():
     "Creates the element tree and returns top element"
-    
+
     # Choose binding module to use
     schemadata.selectSchema("platformconfig")
-    
+
     # Initialise dmesg
     dmesg = genDmesg(paths.TEMP, "dmesg_tmp")
-    
+
     # Create Elements
     platform = Element("platform", "platformType")
     platform.appendChild(

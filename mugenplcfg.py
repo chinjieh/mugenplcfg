@@ -33,9 +33,11 @@ import os
 import shutil
 from src import message, customExceptions, update, bindings, output
 
+
 def init():
     # Initialise PyXB binding file
     bindings.init(paths.SCHEMAPATH, paths.SCHEMA_BINDING_PATH)
+
 
 def cleanup():
     "Call this function at the end of the program to remove temp files"
@@ -43,13 +45,16 @@ def cleanup():
     CURRENTDIR = os.path.dirname(__file__)
     shutil.rmtree(paths.TEMP, onerror=cleanupErrorHandler)
 
+
 def cleanupErrorHandler(function, path, excinfo):
     message.addWarning("Could not remove temp directory: %s" % path)
+
 
 def checkPermissions():
     "Check user permissions"
     if not os.access("/sys", os.W_OK):
         raise customExceptions.InsufficientPermissions()
+
 
 def hasErrors():
     hasErrors = False
@@ -108,7 +113,7 @@ def main(forcecreate=False):
         print "> XML File could not be generated."
         sys.exit()
 
-    else:   
+    else:
         message.printMessages()
         cleanup()
         if len(message.messagequeue) is 0:

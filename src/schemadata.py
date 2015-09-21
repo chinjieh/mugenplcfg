@@ -31,13 +31,17 @@ sys.path.append(paths.PYXB)
 sys.path.append(os.path.dirname(paths.SCHEMA_BINDING_PATH))
 import pyxb
 
+# Global variable declaring binding module
 schema = None
+
 
 def selectSchema(modulename):
     "Choosing the module containing the PyXB bindings, call this first"
     imported = importlib.import_module(modulename)
     global schema
     schema = imported
+    print "Binding module to be used: '%s'." % (schema.__file__)
+
 
 class Element():
 
