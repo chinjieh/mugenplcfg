@@ -79,8 +79,8 @@ class ProcessorCreator():
                       "Processor speed not found.")
             message.addError(errstr)
         except customExceptions.KeyNotFound:
-            errstr = ("Could not read find refined TSC clocksource calibration "
-                      "results in: %s\n" % dmesgpath +
+            errstr = ("Could not read find refined TSC clocksource "
+                      "calibration results in: %s\n" % dmesgpath +
                       "Processor speed not found.")
             message.addError(errstr)
         else:
@@ -106,8 +106,8 @@ class ProcessorCreator():
             for path in msrpaths:
                 errormsg += ("%s\n" % path)
 
-            errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' to "
-                         "probe for MSR, then run the tool again.")
+            errormsg += ("vmxTimerRate could not be found. Try 'modprobe msr' "
+                         "to probe for MSR, then run the tool again.")
             message.addError(errormsg)
 
         return vmxTimerRate
@@ -344,7 +344,8 @@ class PciDevicesCreator():
     def isBridge(self, devicepath):
         isBridge = False
         PCI_BRIDGE = "0x0604"
-        if extractor.extractData(os.path.join(devicepath, "class"))[0:6] == PCI_BRIDGE:
+        if extractor.extractData(os.path.join(devicepath,
+                                              "class"))[0:6] == PCI_BRIDGE:
             isBridge = True
 
         return isBridge
@@ -531,7 +532,7 @@ class PciDevicesCreator():
             ioportcount = 0
             for line in resourceData.splitlines():
                 tokens = line.split(' ')
-                if tokens[2][-3] == '1':  # if line represents ioport information
+                if tokens[2][-3] == '1':  # if line represents ioport info
 
                     ioPort = Element("ioPort", "ioPortType")
                     ioPort["name"] = "ioport%d" % ioportcount
@@ -580,7 +581,8 @@ class SerialDevicesCreator():
         serialdevicelist = []
         self.addresses = self.getSerialAddresses(ioportspath)
         # Get COM Device addresses
-        for comdevice in self.createComDevices(self.addresses, self.COMADDRESSES):
+        for comdevice in self.createComDevices(self.addresses,
+                                               self.COMADDRESSES):
             serialdevicelist.append(comdevice)
 
         return serialdevicelist
@@ -607,7 +609,8 @@ class SerialDevicesCreator():
                 for line in lines:
                     serialAddresses.append(self.getAddressFromLine(line))
 
-        print "Serial devices found: %d\n------------------" % len(serialAddresses)
+        print ("Serial devices found: %d\n------------------" %
+               len(serialAddresses))
         for addr in serialAddresses:
             print "  Start: ", "0x" + addr.start, " End: ", "0x" + addr.end
 
@@ -699,19 +702,23 @@ class IommuDevicesCreator():
 
                 # Create Iommu devices
                 for addr in iommuaddrs:
-                    elemlist.append(self.createDeviceFromAddr(devmempath,
-                                                              addr,
-                                                              iommunamer,
-                                                              IOMMU_SIZE,
-                                                              CAPABILITY_OFFSET,
-                                                              CAP_REG_BYTE_SIZE,
-                                                              AGAW_BIT_START
-                                                              )
-                                    )
+                    elemlist.append(
+                        self.createDeviceFromAddr(devmempath,
+                                                  addr,
+                                                  iommunamer,
+                                                  IOMMU_SIZE,
+                                                  CAPABILITY_OFFSET,
+                                                  CAP_REG_BYTE_SIZE,
+                                                  AGAW_BIT_START))
 
         return elemlist
 
-    def getIommuAGAW(self, iommuaddr, devmem, capoffset, capbytesize, agawbitstart):
+    def getIommuAGAW(self,
+                     iommuaddr,
+                     devmem,
+                     capoffset,
+                     capbytesize,
+                     agawbitstart):
         "Gets the AGAW name from a given iommuaddr, at the capability offset"
         AGAW_39_BITNO = 1
         AGAW_48_BITNO = 2
@@ -733,8 +740,8 @@ class IommuDevicesCreator():
             elif util.getBit(agaw, AGAW_48_BITNO):
                 name = AGAW_48_NAME
             else:
-                message.addError("AGAW Capability could not be found for IOMMU "
-                                 "device at: %s" % iommuaddr, False)
+                message.addError("AGAW Capability could not be found for "
+                                 "IOMMU device at: %s" % iommuaddr, False)
         return name
 
     def createDeviceFromAddr(self,

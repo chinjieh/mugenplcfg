@@ -20,9 +20,9 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #   << About mugenplcfg >>
 #
-#   mugenplcfg is a tool developed to support the Muen Project (http://muen.sk).
-#   It retrieves hardware information from a running Linux system and produces a
-#   Muen platform configuration file in XML format.
+#   mugenplcfg is a tool developed to support the Muen Project
+#   (http://muen.sk). It retrieves hardware information from a running Linux
+#   system and produces a Muen platform configuration file in XML format.
 #
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 

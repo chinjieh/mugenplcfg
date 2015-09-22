@@ -86,7 +86,8 @@ class PciIdsParser():
         if self.isVendor(line) is False:
             if line.startswith("\t"):
                 if line.count("\t") is 1:
-                    if self.isValidDeviceCode(line.partition("  ")[0].lstrip()):
+                    code = line.partition("  ")[0].lstrip()
+                    if self.isValidDeviceCode(code):
                         result = True
         return result
 
@@ -149,8 +150,9 @@ class PciIdsParser():
                         "%s%s" % (lastClass, tokens[0])] = subclassname
 
         except IOError:
-            raise customExceptions.PciIdsFileNotFound("pci.ids file could not be "
-                                                      "located in directory")
+            raise customExceptions.PciIdsFileNotFound("pci.ids file could not "
+                                                      "be located in "
+                                                      "directory")
 
     def getVendorName(self, venhex):
         vencode = util.stripvalue(venhex, True)
@@ -228,11 +230,11 @@ class DMARParser():
             try:
                 shutil.copyfile(src, dest)
             except IOError:
-                message.addMessage("DMAR table at: '%s' " % src +
-                                   "could not be copied to location: '%s'" % dest)
+                message.addMessage("DMAR table at: '%s' " % src + "could not "
+                                   "be copied to location: '%s'" % dest)
                 # DmarFileNotCopied
-                message.addError("Could not obtain DMAR information; IOMMU device "
-                                 "information not found.", False)
+                message.addError("Could not obtain DMAR information; IOMMU "
+                                 "device information not found.", False)
                 success = False
 
         if success:
@@ -279,8 +281,8 @@ class DMARParser():
         try:
             dmardata = extractor.extractData(parsedDMAR)
         except IOError:
-            message.addError("Could not find parsed DMAR file in location: %s." %
-                             parsedDMAR, False)
+            message.addError("Could not find parsed DMAR file in "
+                             "location: %s." % parsedDMAR, False)
         else:
             for line in dmardata.splitlines():
                 try:

@@ -50,4 +50,3 @@ SCHEMA_BINDING_PATH = CURRENTDIR + "/generated/platformconfig.py"
 
 ## Location of output file
 OUTPUT = CURRENTDIR + "/output.xml"
-
