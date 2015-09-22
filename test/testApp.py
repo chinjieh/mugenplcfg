@@ -1,4 +1,6 @@
-#   Copyright (C) 2015 Chen Chin Jieh <cchen@hsr.ch>
+#   Copyright (C) 2015 Chen Chin Jieh <chinjieh@gmail.com>
+#   Copyright (C) 2015 Reto Buerki <reet@codelabs.ch>
+#   Copyright (C) 2015 Adrian-Ken Rueegsegger <ken@codelabs.ch>
 #
 #   This file is part of mugenplcfg.
 #

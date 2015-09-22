@@ -157,7 +157,7 @@ You can drop an email to the Muen development team's mailing list at
 
 or contact the author (Chen Chin Jieh) directly at
 
-	cchen@hsr.ch
+	chinjieh@gmail.com
 
 
 Acknowledgements
