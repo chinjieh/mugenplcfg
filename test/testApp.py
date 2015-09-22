@@ -65,20 +65,16 @@ class ExtractorTestCase(unittest.TestCase):
         print "ExtractorTestCase:test_extractData - begin"
 
         loc = self.testdir + "testExtractData.txt"
-        self.assertEqual(extractor.extractData(loc), "test",
-                         "Extracted Data from file " + loc + " does not match.")
-        self.assertNotEqual(extractor.extractData(loc), "test2",
-                            "Extracted Data from file " + loc + " matches incorrectly.")
-        self.assertNotEqual(extractor.extractData(loc), "",
-                            "Extracted Data from file " + loc + " matches incorrectly.")
+        self.assertEqual(extractor.extractData(loc), "test")
+        self.assertNotEqual(extractor.extractData(loc), "test2")
+        self.assertNotEqual(extractor.extractData(loc), "")
 
     def test_extractData_blank(self):
         "Tests the extractData function with blank file"
         print "ExtractorTestCase:test_extractData_blank - begin"
 
         loc = self.testdir + "testExtractData_blank.txt"
-        self.assertEqual(extractor.extractData(loc), "",
-                         "Extracted Data from file " + loc + " does not match.")
+        self.assertEqual(extractor.extractData(loc), "")
 
     def test_extractData_doesNotExist(self):
         "Tests the extractData function with file that does not exist"
@@ -95,17 +91,23 @@ class ExtractorTestCase(unittest.TestCase):
         with open(loc, "wb") as f:
             f.write(b"\x01\x02\x03\x04")
         self.assertEqual(extractor.extractBinaryData(loc, 0, 4),
-                         "0x04030201", "extractBinaryData function not working")
-        self.assertEqual(extractor.extractBinaryData(loc, 0, 4, chunks=True), [
-                         "0x04", "0x03", "0x02", "0x01"], "extractBinaryData function not working")
-        self.assertEqual(extractor.extractBinaryData(loc, 2, 2, chunks=True), [
-                         "0x04", "0x03"], "extractBinaryData function not working")
-        self.assertEqual(extractor.extractBinaryData(loc, 0, 2, "LITTLE_ENDIAN", chunks=True), [
-                         "0x01", "0x02"], "extractBinaryData function not working")
+                         "0x04030201")
+        self.assertEqual(extractor.extractBinaryData(loc, 0, 4, chunks=True),
+                         ["0x04", "0x03", "0x02", "0x01"])
+        self.assertEqual(extractor.extractBinaryData(loc, 2, 2, chunks=True),
+                         ["0x04", "0x03"])
+        self.assertEqual(extractor.extractBinaryData(loc, 0, 2,
+                                                     "LITTLE_ENDIAN",
+                                                     chunks=True),
+                         ["0x01", "0x02"])
         self.assertRaises(
-            customExceptions.NoAccessToFile, extractor.extractBinaryData, loc, 3, 2)
+            customExceptions.NoAccessToFile,
+            extractor.extractBinaryData,
+            loc, 3, 2)
         self.assertRaises(
-            ValueError, extractor.extractBinaryData, loc, 0, 4, "MIDDLE_ENDIAN", chunks=True)
+            ValueError,
+            extractor.extractBinaryData,
+            loc, 0, 4, "MIDDLE_ENDIAN", chunks=True)
 
 # == creator.py tests ==
 import src.creator as creator
@@ -159,15 +161,13 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 
         result = self.procreator.createElem(cpuinfo, [msr], dmesg)
         self.assertEqual(
-            result.isEqual(processor), True, "createElems not working")
+            result.isEqual(processor), True)
         processor.toXML("utf-8")
 
     def test_getLogicalCpus(self):
         print "ProcessorCreatorTestCase:test_getLogicalCpus - begin"
         cpuinfoloc = os.path.join(self.testdir, "cpuinfo")
-        self.assertEqual(
-            self.procreator.getLogicalCpus(cpuinfoloc), 8,
-            "getLogicalCpus function not working")
+        self.assertEqual(self.procreator.getLogicalCpus(cpuinfoloc), 8)
 
     def test_getSpeed(self):
         print "ProcessorCreatorTestCase:test_getSpeed - begin"
@@ -175,8 +175,7 @@ class ProcessorCreatorTestCase(unittest.TestCase):
         dmesg_nokey = os.path.join(self.testdir, "dmesg_nokey")
         invalidloc = os.path.join(self.testdir, "invalidlocdmesg")
         KEY = "Refined TSC clocksource calibration"
-        self.assertEqual(self.procreator.getSpeed(dmesgloc), 3192.746,
-                         "getSpeed function not working")
+        self.assertEqual(self.procreator.getSpeed(dmesgloc), 3192.746)
         self.assertRaises(customExceptions.ForceQuit,
                           self.procreator.getSpeed,
                           invalidloc)
@@ -201,8 +200,7 @@ class ProcessorCreatorTestCase(unittest.TestCase):
 
         self.assertEqual(
             self.procreator.getVmxTimerRate(msrpathlist, OFFSET, VMX_BITSIZE),
-            1,
-            "getVmxTimerRate function not working")
+            1)
 
     def test_getVmxFromMSR(self):
         print "ProcessorCreatorTestCase:test_getVmxFromMSR - begin"
@@ -212,18 +210,20 @@ class ProcessorCreatorTestCase(unittest.TestCase):
         OFFSET = 0
         VMX_BITSIZE = 5
         self.assertEqual(self.procreator.getVmxFromMSR(
-            msrpath, OFFSET, VMX_BITSIZE), 1, "getVmxFromMSR function not working")
+            msrpath, OFFSET, VMX_BITSIZE), 1)
         with open(msrpath, "wb") as f:
             f.write(b"\x05\x02\x03\x04")
         self.assertEqual(self.procreator.getVmxFromMSR(
-            msrpath, OFFSET, VMX_BITSIZE), 5, "getVmxFromMSR function not working")
+            msrpath, OFFSET, VMX_BITSIZE), 5)
         with open(msrpath, "wb") as f:
             f.write(b"\x11\x02\x03\x04")
         self.assertEqual(self.procreator.getVmxFromMSR(
-            msrpath, OFFSET, VMX_BITSIZE), 17, "getVmxFromMSR function not working")
+            msrpath, OFFSET, VMX_BITSIZE), 17)
         msrinvalidpath = os.path.join(self.testdir, "testmsr_invalid")
         self.assertRaises(
-            IOError, self.procreator.getVmxFromMSR, msrinvalidpath, OFFSET, VMX_BITSIZE)
+            IOError,
+            self.procreator.getVmxFromMSR,
+            msrinvalidpath, OFFSET, VMX_BITSIZE)
 
 
 class MemoryCreatorTestCase(unittest.TestCase):
@@ -264,14 +264,10 @@ class MemoryCreatorTestCase(unittest.TestCase):
 
         memblock_4 = Element("memoryBlock", "memoryBlockType")
         memblock_4["name", "physicalAddress"] = "System RAM2", "0x1000"
-        self.assertEqual(self.memcreator.isAllocatable(
-            memblock_1), True, "isAllocatable function is not working")
-        self.assertEqual(self.memcreator.isAllocatable(
-            memblock_2), False, "isAllocatable function is not working")
-        self.assertEqual(self.memcreator.isAllocatable(
-            memblock_3), False, "isAllocatable function is not working")
-        self.assertEqual(self.memcreator.isAllocatable(
-            memblock_4), False, "isAllocatable function is not working")
+        self.assertEqual(self.memcreator.isAllocatable(memblock_1), True)
+        self.assertEqual(self.memcreator.isAllocatable(memblock_2), False)
+        self.assertEqual(self.memcreator.isAllocatable(memblock_3), False)
+        self.assertEqual(self.memcreator.isAllocatable(memblock_4), False)
 
         # Test getMemoryBlocks
         memoryBlockList_invalid = self.memcreator.getMemoryBlocks(invalidloc)
@@ -280,12 +276,9 @@ class MemoryCreatorTestCase(unittest.TestCase):
         memoryBlockList = self.memcreator.getMemoryBlocks(loc)
         memoryBlock0 = memoryBlockList[0].compileToPyxb()
         memoryBlock1 = memoryBlockList[1].compileToPyxb()
-        self.assertEqual(memoryBlock0.physicalAddress,
-                         "16#000a#", "getMemoryBlocks function not working")
-        self.assertEqual(
-            memoryBlock0.size, "16#f000#", "getMemoryBlocks function not working")
-        self.assertEqual(
-            memoryBlock1.name, "1_type", "getMemoryBlocks function not working")
+        self.assertEqual(memoryBlock0.physicalAddress, "16#000a#")
+        self.assertEqual(memoryBlock0.size, "16#f000#")
+        self.assertEqual(memoryBlock1.name, "1_type")
 
         # Test generateMemoryBlock
         startfile = os.path.join(loc, "0/start")
@@ -296,10 +289,8 @@ class MemoryCreatorTestCase(unittest.TestCase):
         memoryBlock = self.memcreator.generateMemoryBlock(
             endfile, typefile, startfile)
         memoryBlock_pyxb = memoryBlock.compileToPyxb()
-        self.assertEqual(
-            memoryBlock_pyxb.name, "0_type", "generateMemoryBlock not working")
-        self.assertEqual(memoryBlock_pyxb.physicalAddress,
-                         "16#000a#", "generateMemoryBlock not working")
+        self.assertEqual(memoryBlock_pyxb.name, "0_type")
+        self.assertEqual(memoryBlock_pyxb.physicalAddress, "16#000a#")
         self.assertRaises(IOError,
                           self.memcreator.generateMemoryBlock,
                           endfile, typefile, startfile_invalid)
@@ -307,14 +298,15 @@ class MemoryCreatorTestCase(unittest.TestCase):
         def isAllocatable_true(memBlock):
             return True
 
-        @mock.patch.object(self.memcreator, "isAllocatable", isAllocatable_true)
+        @mock.patch.object(self.memcreator,
+                           "isAllocatable",
+                           isAllocatable_true)
         def mock_testAllocatable():
             return self.memcreator.generateMemoryBlock(endfile,
                                                        typefile,
                                                        startfile)
         mockmemblock = mock_testAllocatable()
-        self.assertEqual(
-            mockmemblock["allocatable"], "true", "generateMemoryBlock not working")
+        self.assertEqual(mockmemblock["allocatable"], "true")
 
 
 class DevicesCreatorTestCase(unittest.TestCase):
@@ -353,8 +345,7 @@ class DevicesCreatorTestCase(unittest.TestCase):
             return self.devcreator.createElem()
 
         mockelem = mock_createElem()
-        self.assertEqual(
-            len(mockelem.childElements), 3, "createElem not working")
+        self.assertEqual(len(mockelem.childElements), 3)
 
     def test_getPciConfigAddress(self):
         print "DevicesCreatorTestCase:test_getPciConfigAddress - begin"
@@ -362,8 +353,8 @@ class DevicesCreatorTestCase(unittest.TestCase):
         testinvalidloc = os.path.join(
             self.testdir, "testgetpciconfig_invalidloc")
         testnokey = os.path.join(self.testdir, "test_iomem_nopciconfig")
-        self.assertEqual(self.devcreator.getPciConfigAddress(
-            testiomem), "e0000000", "getPciConfigAddress function not working")
+        self.assertEqual(self.devcreator.getPciConfigAddress(testiomem),
+                         "e0000000")
         self.devcreator.getPciConfigAddress(testinvalidloc)
         self.devcreator.getPciConfigAddress(testnokey)
 
@@ -388,8 +379,7 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         print "PciDevicesCreatorTestCase:test_createElems - begin"
         devicesdir = os.path.join(self.testdir, "devices_test_links")
         self.assertEqual(len(self.pcicreator.createElems(devicesdir)),
-                         12,
-                         "createElems function not working")
+                         12)
 
     def test_init_DevicecapManager(self):
         print "PciDevicesCreatorTestCase:test_init_DevicecapManager - begin"
@@ -402,8 +392,7 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         self.pcicreator.init_DevicecapManager(devicepaths)
         devicecapmgr_invalid = self.pcicreator.init_DevicecapManager(
             "invaliddevicepaths")
-        self.assertEqual(
-            len(devicecapmgr_invalid.getCapabilities()), 0, "init_DevicecapManager not working")
+        self.assertEqual(len(devicecapmgr_invalid.getCapabilities()), 0)
 
     def test_filterDevicePaths(self):
         print "PciDevicesCreatorTestCase:test_filterDevicePaths - begin"
@@ -412,11 +401,6 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         devicepaths = []
         for devicename in devices:
             devicepaths.append(os.path.join(testloc, devicename))
-        """
-		devicepaths.append(os.path.join(testloc,"0000:00:01.0/0000:01:00.0"))
-		devicepaths.append(os.path.join(testloc,"0000:00:01.0/0000:01:00.1"))
-		devicepaths.append(os.path.join(testloc,"0000:00:1c.4/0000:03:00.0"))
-		"""
 
         devicecapmgr = devicecap.DevicecapManager()
         devicecapmgr.extractCapabilities(devicepaths)
@@ -430,32 +414,32 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
     def test_isDeviceName(self):
         print "PciDevicesCreatorTestCase:test_isDeviceName - begin"
         self.assertEqual(self.pcicreator.isDeviceName(
-            "0000:01:00.0"), True, "isDeviceName function not working")
+            "0000:01:00.0"), True)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "0000:00:01.2"), True, "isDeviceName function not working")
+            "0000:00:01.2"), True)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "0001:17:02.5"), True, "isDeviceName function not working")
+            "0001:17:02.5"), True)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "010:10:01.2"), False, "isDeviceName function not working")
+            "010:10:01.2"), False)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "0000:10:01"), False, "isDeviceName function not working")
+            "0000:10:01"), False)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "000:10:01.1"), False, "isDeviceName function not working")
+            "000:10:01.1"), False)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "000:10:010.1"), False, "isDeviceName function not working")
+            "000:10:010.1"), False)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "000:10:01.11"), False, "isDeviceName function not working")
+            "000:10:01.11"), False)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "000:10:01:00.1"), False, "isDeviceName function not working")
+            "000:10:01:00.1"), False)
         self.assertEqual(self.pcicreator.isDeviceName(
-            "0003:0E0F:0003.0001"), False, "isDeviceName function not working")
+            "0003:0E0F:0003.0001"), False)
 
     def test_isBridge(self):
         print "PciDevicesCreatorTestCase:test_isBridge - begin"
         self.assertEqual(self.pcicreator.isBridge(
-            os.path.join(self.devloc, "pcibridge0")), True, "isBridge function not working")
+            os.path.join(self.devloc, "pcibridge0")), True)
         self.assertEqual(self.pcicreator.isBridge(
-            os.path.join(self.devloc, "dev0")), False, "isBridge function not working")
+            os.path.join(self.devloc, "dev0")), False)
 
     def test_isPciExpress(self):
         print "PciDevicesCreatorTestCase:test_isPciExpress - begin"
@@ -464,26 +448,24 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         devicecapmgr = devicecap.DevicecapManager()
         devicecapmgr.extractCapabilities([dev0, dev1])
         self.assertEqual(self.pcicreator.isPciExpress(dev0, devicecapmgr),
-                         True,
-                         "isPciExpress function not working")
+                         True)
         self.assertEqual(self.pcicreator.isPciExpress(dev1, devicecapmgr),
-                         False,
-                         "isPciExpress function not working")
+                         False)
 
     def test_getDeviceBus(self):
         print "PciDevicesCreatorTestCase:test_getDeviceBus - begin"
-        self.assertEqual(self.pcicreator.getDeviceBus(
-            "0011:01:02.3"), "01", "getDeviceBus function not working")
+        self.assertEqual(self.pcicreator.getDeviceBus("0011:01:02.3"),
+                         "01")
 
     def test_getDeviceNo(self):
         print "PciDevicesCreatorTestCase:test_getDeviceNo - begin"
-        self.assertEqual(self.pcicreator.getDeviceNo(
-            "0000:01:02.3"), "02", "getDeviceNo function not working")
+        self.assertEqual(self.pcicreator.getDeviceNo("0000:01:02.3"),
+                         "02")
 
     def test_getDeviceFunction(self):
         print "PciDevicesCreatorTestCase:test_getDeviceFunction - begin"
-        self.assertEqual(self.pcicreator.getDeviceFunction(
-            "0000:01:02.3"), "3", "getDeviceFunction function not working")
+        self.assertEqual(self.pcicreator.getDeviceFunction("0000:01:02.3"),
+                         "3")
 
     def test_getDeviceShortNames(self):
         print "PciDevicesCreatorTestCase:test_getDeviceShortNames - begin"
@@ -499,12 +481,10 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         }
 
         result = self.pcicreator.getDeviceShortNames(devpaths, testpciids)
-        self.assertEqual(result, testresult, "getDeviceShortNames not working")
-        self.assertEqual(
-            len(self.pcicreator.getDeviceShortNames(
-                devpaths, "invalidpciidsloc")),
-            0,
-            "getDeviceShortNames not working")
+        self.assertEqual(result, testresult)
+        shortnames = self.pcicreator.getDeviceShortNames(devpaths,
+                                                         "invalidpciidsloc")
+        self.assertEqual(len(shortnames), 0)
 
     def test_getClassName(self):
         print "PciDevicesCreatorTestCase:test_getClassName - begin"
@@ -514,12 +494,10 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         devpath_invalidclass = os.path.join(
             self.testdir, "devices/dev_invalidclass")
         self.assertEqual(self.pcicreator.getClassName(devpath, pciidsparser),
-                         "host_bridge",
-                         "getClassName function not working")
+                         "host_bridge")
         self.assertEqual(
             self.pcicreator.getClassName(devpath_invalidclass, pciidsparser),
-            "0x06ff00",
-            "getClassName function not working")
+            "0x06ff00")
 
     def test_getPci(self):
         print "PciDevicesCreatorTestCase:test_getPci - begin"
@@ -529,12 +507,9 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         devicecapmgr.extractCapabilities([dev])
 
         dev_pci = self.pcicreator.getPci(dev, devicecapmgr)
-        self.assertEqual(
-            dev_pci["bus"], "16#01#", "getPci function not working")
-        self.assertEqual(
-            dev_pci["function"], "3", "getPci function not working")
-        self.assertEqual(
-            dev_pci["device"], "16#02#", "getPci function not working")
+        self.assertEqual(dev_pci["bus"], "16#01#")
+        self.assertEqual(dev_pci["function"], "3")
+        self.assertEqual(dev_pci["device"], "16#02#")
 
     def test_getPci_MSI(self):
         print "PciDevicesCreatorTestCase:test_getPci_MSI - begin"
@@ -547,14 +522,11 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         devicecapmgr.extractCapabilities(devicelist)
 
         self.assertEqual(self.pcicreator.getPci_MSI(dev0, devicecapmgr),
-                         "true",
-                         "_getPci_MSI function not working")
+                         "true")
         self.assertEqual(self.pcicreator.getPci_MSI(dev1, devicecapmgr),
-                         "true",
-                         "_getPci_MSI function not working")
+                         "true")
         self.assertEqual(self.pcicreator.getPci_MSI(dev2, devicecapmgr),
-                         "false",
-                         "_getPci_MSI function not working")
+                         "false")
 
     def test_getIrq(self):
         print "PciDevicesCreatorTestCase:test_getIrq - begin"
@@ -567,10 +539,9 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         dev1_irq = self.pcicreator.getIrq(dev1)
         dev_invalid_irq = self.pcicreator.getIrq(dev_invalid)
 
-        self.assertEqual(
-            dev1_irq["number"], "15", "getIrq function not working")
-        self.assertEqual(dev0_irq, None, "getIrqfunction not working")
-        self.assertEqual(dev_invalid_irq, None, "getIrqfunction not working")
+        self.assertEqual(dev1_irq["number"], "15")
+        self.assertEqual(dev0_irq, None)
+        self.assertEqual(dev_invalid_irq, None)
 
     def test_getDeviceMemoryBlocks(self):
         print "PciDevicesCreatorTestCase:test_getDeviceMemoryBlocks - begin"
@@ -614,9 +585,9 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
             )
 
         self.assertEqual(dev0_memblocktuplelist_nofilter,
-                         dev0_testmemblock_nofilter, "getDeviceMemoryBlocks not working")
+                         dev0_testmemblock_nofilter)
         self.assertEqual(dev2_memblocktuplelist_nofilter,
-                         dev2_testmemblock_nofilter, "getDeviceMemoryBlocks not working")
+                         dev2_testmemblock_nofilter)
 
         # Filter on
         dev0_testmemblock_filter = [
@@ -631,19 +602,17 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
             )
 
         self.assertEqual(dev0_memblocktuplelist_filter,
-                         dev0_testmemblock_filter, "getDeviceMemoryBlocks not working")
+                         dev0_testmemblock_filter)
 
         # Test empty resource
         dev_emptyresource_list = self.pcicreator.getDeviceMemoryBlocks(
             dev_emptyresource)
-        self.assertEqual(
-            dev_emptyresource_list, [], "getDeviceMemoryBlocks not working")
+        self.assertEqual(dev_emptyresource_list, [])
 
         # Test invalid resource
         dev_invalidresourcelist = self.pcicreator.getDeviceMemoryBlocks(
             dev_invalidresource)
-        self.assertEqual(
-            dev_invalidresourcelist, [], "getDeviceMemoryBlocks not working")
+        self.assertEqual(dev_invalidresourcelist, [])
 
     def test_getIoports(self):
         print "PciDevicesCreatorTestCase:test_getIoports - begin"
@@ -675,14 +644,11 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
                              end=ioport["end"])
             dev0_ioport_tuplelist.append(iotuple)
 
-        self.assertEqual(
-            dev0_ioport_tuplelist, dev0_testioports, "getIoports function not working")
-        self.assertEqual(
-            dev1_ioports, dev1_testioports, "getIoports function not working")
+        self.assertEqual(dev0_ioport_tuplelist, dev0_testioports)
+        self.assertEqual(dev1_ioports, dev1_testioports)
         self.assertEqual(dev_emptyresource_ioports,
-                         dev_emptyresource_testioports, "getIoports function not working")
-        self.assertEqual(self.pcicreator.getIoports(
-            dev_noresource), [], "getIoports function not working")
+                         dev_emptyresource_testioports)
+        self.assertEqual(self.pcicreator.getIoports(dev_noresource), [])
 
     def test_createDeviceFromPath(self):
         print "PciDevicesCreator:test_createDeviceFromPath - begin"
@@ -708,17 +674,16 @@ class PciDevicesCreatorTestCase(unittest.TestCase):
         irq["name", "number"] = "irq", "3"
 
         memory = Element("memory", "deviceMemoryType")
-        memory["caching", "name", "physicalAddress", "size"] = ("UC",
-                                                                "mem0",
-                                                                "16#fb22_4000#",
-                                                                "16#1000#")
+        memory["caching",
+               "name",
+               "physicalAddress",
+               "size"] = ("UC", "mem0", "16#fb22_4000#", "16#1000#")
         ioport = Element("ioPort", "ioPortType")
         ioport["end", "name", "start"] = "16#f01f#", "ioport0", "16#f000#"
 
         device.appendChild(pci, irq, memory, ioport)
 
-        self.assertEqual(
-            resultdev.isEqual(device), True, "createDeviceFromPath not working")
+        self.assertEqual(resultdev.isEqual(device), True)
 
 
 class SerialDevicesCreatorTestCase(unittest.TestCase):
@@ -746,8 +711,7 @@ class SerialDevicesCreatorTestCase(unittest.TestCase):
         ioport["end", "name", "start"] = "16#03ff#", "ioport", "16#03f8#"
         device.appendChild(ioport)
 
-        self.assertEqual(
-            result[0].isEqual(device), True, "createElems not working")
+        self.assertEqual(result[0].isEqual(device), True)
 
     # -- SerialDevicesCreator testcases
     def test_getSerialAddresses(self):
@@ -755,18 +719,14 @@ class SerialDevicesCreatorTestCase(unittest.TestCase):
         ioportloc = os.path.join(self.testdir, "test_ioports")
         ioportloc_nokey = os.path.join(self.testdir, "test_ioports_nokey")
         self.assertEqual(self.serialcreator.getSerialAddresses(ioportloc),
-                         [("03f8", "03ff"), (
-                          "0ff0", "0ff8"), ("0ff9", "0fff")],
-                         "getSerialAddresses function not working")
+                         [("03f8", "03ff"),
+                          ("0ff0", "0ff8"),
+                          ("0ff9", "0fff")])
         self.assertEqual(
             self.serialcreator.getSerialAddresses(
-                "test_ioport_invalid_location"),
-            [],
-            "getSerialAddresses function not working")
+                "test_ioport_invalid_location"), [])
         self.assertEqual(
-            self.serialcreator.getSerialAddresses(ioportloc_nokey),
-            [],
-            "getSerialAddresses function not working")
+            self.serialcreator.getSerialAddresses(ioportloc_nokey), [])
 
     def test_createComDevices(self):
         print "SerialDevicesCreator:test_createComDevices - begin"
@@ -792,8 +752,7 @@ class SerialDevicesCreatorTestCase(unittest.TestCase):
         for dev in comdev:
             names.append(dev["name"])
 
-        self.assertEqual(
-            set(names), set(testresult), "createComDevices not working")
+        self.assertEqual(set(names), set(testresult))
 
     def test_createSerialDevices(self):
         print "SerialDevicesCreator:test_createSerialDevices - begin"
@@ -808,15 +767,16 @@ class SerialDevicesCreatorTestCase(unittest.TestCase):
         names = []
         for dev in serialdev:
             names.append(dev["name"])
-        self.assertEqual(
-            set(names), set(testresult), "createSerialDevices not working")
+        self.assertEqual(set(names), set(testresult))
 
     def test_getAddressFromLine(self):
         print "SerialDevicesCreator:test_getAddressFromLine - begin"
-        self.assertEqual(self.serialcreator.getAddressFromLine("  3e0f-3e50 : serial"), (
-            "3e0f", "3e50"), "getAddressFromLine function not working")
-        self.assertEqual(self.serialcreator.getAddressFromLine("    3e05-3e10 : serial"), (
-            "3e05", "3e10"), "getAddressFromLine function not working")
+        self.assertEqual(
+            self.serialcreator.getAddressFromLine("  3e0f-3e50 : serial"),
+            ("3e0f", "3e50"))
+        self.assertEqual(
+            self.serialcreator.getAddressFromLine("    3e05-3e10 : serial"),
+            ("3e05", "3e10"))
 
 
 class IommuDevicesCreatorTestCase(unittest.TestCase):
@@ -856,7 +816,9 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
         @mock.patch.object(creator.IommuDevicesCreator, "createDeviceFromAddr",
                            mock_createDeviceFromAddr)
         def mock_createElems():
-            return self.iommucreator.createElems("dmarpath", "temppath", "devmem")
+            return self.iommucreator.createElems("dmarpath",
+                                                 "temppath",
+                                                 "devmem")
 
         mock_createElems()
 
@@ -876,8 +838,7 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
                                                         CAP_OFFSET,
                                                         CAP_REG_BYTE_SIZE,
                                                         AGAW_BIT_START),
-                         "39",
-                         "getIommuAGAW function not working")
+                         "39")
 
         with open(testdevmem, "wb") as f:
             f.write(b"\x04\x02\x03\x04")
@@ -886,8 +847,7 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
                                                         CAP_OFFSET,
                                                         CAP_REG_BYTE_SIZE,
                                                         AGAW_BIT_START),
-                         "48",
-                         "getIommuAGAW function not working")
+                         "48")
         with open(testdevmem, "wb") as f:
             f.write(b"\x01\x02\x03\x04")
         self.assertEqual(self.iommucreator.getIommuAGAW(IOMMUADDR,
@@ -895,16 +855,14 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
                                                         CAP_OFFSET,
                                                         CAP_REG_BYTE_SIZE,
                                                         AGAW_BIT_START),
-                         "agaw",
-                         "getIommuAGAW function not working")
+                         "agaw")
 
         self.assertEqual(self.iommucreator.getIommuAGAW(IOMMUADDR,
                                                         testdevmem_invalid,
                                                         CAP_OFFSET,
                                                         CAP_REG_BYTE_SIZE,
                                                         AGAW_BIT_START),
-                         "agaw",
-                         "getIommuAGAW function not working")
+                         "agaw")
 
     def test_IommuNamer(self):
         print "IommuDevicesCreatorTestCase:test_IommuNamer - begin"
@@ -912,18 +870,17 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
         iommuaddrlist = ["addr1", "addr2", "addr3", "addr4"]
         iommunamer1 = creator.IommuDevicesCreator.IommuNamer(iommuaddrlist)
         self.assertEqual(
-            iommunamer1.getName(), "iommu_1", "IommuNamer class not working")
+            iommunamer1.getName(), "iommu_1")
         self.assertEqual(
-            iommunamer1.getName(), "iommu_2", "IommuNamer class not working")
+            iommunamer1.getName(), "iommu_2")
         self.assertEqual(
-            iommunamer1.getName(), "iommu_3", "IommuNamer class not working")
+            iommunamer1.getName(), "iommu_3")
         self.assertEqual(
-            iommunamer1.getName(), "iommu_4", "IommuNamer class not working")
+            iommunamer1.getName(), "iommu_4")
 
         iommuaddrlist2 = ["addr1"]
         iommunamer2 = creator.IommuDevicesCreator.IommuNamer(iommuaddrlist2)
-        self.assertEqual(
-            iommunamer2.getName(), "iommu", "IommuNamer class not working")
+        self.assertEqual(iommunamer2.getName(), "iommu")
 
     def test_createDeviceFromAddr(self):
         print "IommuDevicesCreatorTestCase:test_IommuNamer - begin"
@@ -972,8 +929,7 @@ class IommuDevicesCreatorTestCase(unittest.TestCase):
         capabilities.appendChild(agawcap)
         device.appendChild(capabilities)
 
-        self.assertEqual(
-            iommudev.isEqual(device), True, "createDeviceFromAddr not working")
+        self.assertEqual(iommudev.isEqual(device), True)
 
 
 # == Tests bindings.py ==
@@ -1047,18 +1003,15 @@ class BindingsTestCase(unittest.TestCase):
             pythonpathstr = pythonpathstr + pythonpath + ":"
         myenv["PYTHONPATH"] = pythonpathstr
         self.assertEqual(bindings.copyEnvWithPythonPath(),
-                         myenv, "copyEnvWithPythonPath test failed")
+                         myenv)
 
     def test_bindingsExist(self):
         testbinding = os.path.join(self.testdir, "testschema.py")
         test_notexists = os.path.join(self.testdir, "testschema_notexists.py")
         test_notexists_folder = os.path.join(self.testdir, "notexists/test.py")
-        self.assertTrue(bindings.bindingsExist(testbinding),
-                        "bindingsExist not working")
-        self.assertFalse(bindings.bindingsExist(test_notexists),
-                         "bindingsExist not working")
-        self.assertFalse(bindings.bindingsExist(test_notexists_folder),
-                         "bindingsExist not working")
+        self.assertTrue(bindings.bindingsExist(testbinding))
+        self.assertFalse(bindings.bindingsExist(test_notexists))
+        self.assertFalse(bindings.bindingsExist(test_notexists_folder))
 
 
 # == Tests schemadata.py ==
@@ -1086,9 +1039,10 @@ class SchemaDataTestCase(unittest.TestCase):
         processor = Element("processor", "processorType")
         processor["logicalCpus", "speed", "vmxTimerRate"] = 1, 2, 3
 
-        testxml = """<?xml version="1.0" encoding="utf-8"?><processor logicalCpus="1" speed="2" vmxTimerRate="3"/>"""
-        self.assertEqual(
-            processor.toXML("utf-8"), testxml, "toXML function not working")
+        testxml = ("""<?xml version="1.0" encoding="utf-8"?>"""
+                   """<processor logicalCpus="1" """
+                   """speed="2" vmxTimerRate="3"/>""")
+        self.assertEqual(processor.toXML("utf-8"), testxml)
 
     def test_Element_SetAttribute(self):
         "Tests the validity of setting attributes"
@@ -1101,14 +1055,19 @@ class SchemaDataTestCase(unittest.TestCase):
 
         # Test for setting of invalid attribute of processorType
         self.assertRaises(
-            customExceptions.InvalidAttribute, processor.__setitem__, "price", 100)
+            customExceptions.InvalidAttribute,
+            processor.__setitem__,
+            "price", 100)
 
         # Test for permanence of attribute setting when converted to binding
         # Pyxb object
         processor_pyxb = processor.compileToPyxb()
-        self.assertEqual(
-            processor_pyxb.logicalCpus, 10, "Attribute setting failed")
-        self.assertEqual(processor_pyxb.speed, 15, "Attribute setting failed")
+        self.assertEqual(processor_pyxb.logicalCpus,
+                         10,
+                         "Attribute setting failed")
+        self.assertEqual(processor_pyxb.speed,
+                         15,
+                         "Attribute setting failed")
 
         # Test for correctly not setting empty attributes
         devices = Element("devices", "devicesType")
@@ -1118,17 +1077,22 @@ class SchemaDataTestCase(unittest.TestCase):
         # Test for setting multiple attributes
         processor["logicalCpus", "speed", "vmxTimerRate"] = 1, 2, 3
         processor_pyxb = processor.compileToPyxb()
-        self.assertEqual(
-            processor_pyxb.logicalCpus, 1, "Multiple attribute setting failed")
-        self.assertEqual(
-            processor_pyxb.speed, 2, "Multiple attribute setting failed")
-        self.assertEqual(
-            processor_pyxb.vmxTimerRate, 3, "Multiple attribute setting failed")
+        self.assertEqual(processor_pyxb.logicalCpus,
+                         1,
+                         "Multiple attribute setting failed")
+        self.assertEqual(processor_pyxb.speed,
+                         2,
+                         "Multiple attribute setting failed")
+        self.assertEqual(processor_pyxb.vmxTimerRate,
+                         3,
+                         "Multiple attribute setting failed")
 
         self.assertRaises(customExceptions.AttributeMismatch,
-                          processor.__setitem__, ["logicalCpus", "speed"], [1, 2, 3])
+                          processor.__setitem__,
+                          ["logicalCpus", "speed"], [1, 2, 3])
         self.assertRaises(customExceptions.InvalidAttribute,
-                          processor.__setitem__, ["logicalCpus", "price", "speed"], [1, 2, 3])
+                          processor.__setitem__,
+                          ["logicalCpus", "price", "speed"], [1, 2, 3])
 
     def test_Element_SetContent(self):
         "Tests the validity of setting element content"
@@ -1136,9 +1100,9 @@ class SchemaDataTestCase(unittest.TestCase):
         capability = Element("capability", "capabilityType")
         capability.setContent("Content1")
         capability["name"] = "content1"
-        testXML = """<?xml version="1.0" encoding="utf-8"?><capability name="content1">Content1</capability>"""
-        self.assertEqual(capability.toXML('utf-8'),
-                         testXML, "setContent function not working")
+        testXML = ("""<?xml version="1.0" encoding="utf-8"?>"""
+                   """<capability name="content1">Content1</capability>""")
+        self.assertEqual(capability.toXML('utf-8'), testXML)
 
     def test_Element_GetItem(self):
         "Tests the validity of retrieving attributes"
@@ -1169,14 +1133,12 @@ class SchemaDataTestCase(unittest.TestCase):
                      "allocatable"] = "16#0101#", "16#0000#", "mem2", "true"
 
         memory.appendChild(memoryBlock)
-        self.assertEqual(
-            memoryBlock.getParent(), memory, "appendChild function not working")
+        self.assertEqual(memoryBlock.getParent(), memory)
         memory.removeChild(memoryBlock)
 
         memory.appendChild(memoryBlock)
         memory_pyxb = memory.compileToPyxb()
-        self.assertEqual(memory_pyxb.memoryBlock[
-                         0].size, "16#2222#", "appendChild function failed")
+        self.assertEqual(memory_pyxb.memoryBlock[0].size, "16#2222#")
 
         memory.removeChild(memoryBlock)
         memory_pyxb = memory.compileToPyxb()
@@ -1184,16 +1146,13 @@ class SchemaDataTestCase(unittest.TestCase):
 
         memory.appendChild(memoryBlock, memoryBlock2)
         memory_pyxb = memory.compileToPyxb()
-        self.assertEqual(memory_pyxb.memoryBlock[
-                         1].name, "mem2", "appendChild function failed")
+        self.assertEqual(memory_pyxb.memoryBlock[1].name, "mem2")
 
         memory.appendChild([memoryBlock, memoryBlock2])
         memory_pyxb = memory.compileToPyxb()
-        self.assertEqual(memory_pyxb.memoryBlock[
-                         1].name, "mem2", "appendChild function failed")
+        self.assertEqual(memory_pyxb.memoryBlock[1].name, "mem2")
 
-        self.assertEqual(memory.appendChild(None),
-                         False, "appendChild function not working")
+        self.assertEqual(memory.appendChild(None), False)
 
     def test_Element_ListElements(self):
         "Tests the capabilities to include list elements"
@@ -1218,16 +1177,24 @@ class SchemaDataTestCase(unittest.TestCase):
         memory.appendChild(memoryBlock3)
 
         memory_pyxb = memory.compileToPyxb()
-        self.assertEqual(memory_pyxb.memoryBlock[
-                         0].name, "mem1", "Nesting of list elements failed")
-        self.assertEqual(memory_pyxb.memoryBlock[
-                         1].physicalAddress, "16#0101#", "Nesting of list elements failed")
+        self.assertEqual(memory_pyxb.memoryBlock[0].name,
+                         "mem1",
+                         "Nesting of list elements failed")
+        self.assertEqual(memory_pyxb.memoryBlock[1].physicalAddress,
+                         "16#0101#",
+                         "Nesting of list elements failed")
 
-        testXML = """<?xml version="1.0" encoding="utf-8"?><memory><memoryBlock name="mem1" physicalAddress="16#0000#" size="16#4fff#"/>"""
-        testXML += """<memoryBlock allocatable="true" name="mem2" physicalAddress="16#0101#" size="16#0000#"/></memory>"""
+        testXML = ("""<?xml version="1.0" encoding="utf-8"?>"""
+                   """<memory><memoryBlock name="mem1" """
+                   """physicalAddress="16#0000#" size="16#4fff#"/>"""
+                   """<memoryBlock allocatable="true" name="mem2" """
+                   """physicalAddress="16#0101#" size="16#0000#"/>"""
+                   """</memory>""")
 
-        self.assertEqual(memory.toXML("utf-8"), testXML,
-                         "Compiling of list elements does not match expected output")
+        self.assertEqual(memory.toXML("utf-8"),
+                         testXML,
+                         "Compiling of list elements does not match expected "
+                         "output")
 
     def test_Element_NestedElements(self):
         "Tests the capabilities to have deep nested elements"
@@ -1273,17 +1240,26 @@ class SchemaDataTestCase(unittest.TestCase):
         device2_memory2 = Element("memory", "deviceMemoryType")
         device2.appendChild(device2_memory1, device2_memory2)
         device2_memory1["name", "physicalAddress", "size",
-                        "caching"] = "device2_memory1", "16#0000#", "16#1111#", "UC"
+                        "caching"] = ("device2_memory1",
+                                      "16#0000#",
+                                      "16#1111#",
+                                      "UC")
         device2_memory2["name", "physicalAddress", "size",
-                        "caching"] = "device2_memory2", "16#3333#", "16#4444#", "WC"
+                        "caching"] = ("device2_memory2",
+                                      "16#3333#",
+                                      "16#4444#",
+                                      "WC")
 
         devices.appendChild(device1, device2)
         devices_pyxb = devices.compileToPyxb()
 
-        self.assertEqual(devices_pyxb.device[1].irq[
-                         1].name, "device2_irq2", "Deep nesting of elements failed")
+        self.assertEqual(devices_pyxb.device[1].irq[1].name,
+                         "device2_irq2",
+                         "Deep nesting of elements failed")
         self.assertEqual(devices_pyxb.device[0].capabilities.capability[
-                         0].name, "Device1 Capability1", "Deep nesting of elements failed")
+                         0].name,
+                         "Device1 Capability1",
+                         "Deep nesting of elements failed")
 
     def test_Element_isEqual(self):
         print "SchemaDataTestCase:test_Element_Compare - begin"
@@ -1354,12 +1330,10 @@ class SchemaDataTestCase(unittest.TestCase):
 
         self.assertEqual(dict1, dict2, "Dicts don't match")
         # Test attribute equals on one layer
-        self.assertEqual(iommucap1.isEqual(iommucap2),
-                         True, "Element isEqual function not working")
+        self.assertEqual(iommucap1.isEqual(iommucap2), True)
 
         # Test attribute equals on two layers
-        self.assertEqual(
-            cap_1.isEqual(cap_2), False, "Element isEqual function not working")
+        self.assertEqual(cap_1.isEqual(cap_2), False,)
         mem1 = Element("memory", "physicalMemoryType")
         mem1_block1 = Element("memoryBlock", "memoryBlockType")
         mem1_block1[
@@ -1390,24 +1364,18 @@ class SchemaDataTestCase(unittest.TestCase):
                                                                  "false")
         mem2.appendChild(mem2_block1, mem2_block2)
 
-        self.assertEqual(
-            mem1.isEqual(mem2), False, "Element isEqual function not working")
+        self.assertEqual(mem1.isEqual(mem2), False)
         mem2_block2["allocatable"] = "true"
-        self.assertEqual(
-            mem1.isEqual(mem2), True, "Element isEqual function not working")
+        self.assertEqual(mem1.isEqual(mem2), True)
 
         # Test content equals
         mem1_block2.content = "content"
         mem2_block2.content = "content2"
 
-        self.assertEqual(
-            mem1.isEqual(mem2), False, "Element isEqual function not working")
+        self.assertEqual(mem1.isEqual(mem2), False)
         mem2_block2.content = "content"
-        self.assertEqual(
-            mem1.isEqual(mem2), True, "Element isEqual function not working")
-
-        self.assertEqual(device1.isEqual(device2),
-                         True, "Element isEqual function not working")
+        self.assertEqual(mem1.isEqual(mem2), True)
+        self.assertEqual(device1.isEqual(device2), True)
 
 
 # == Class that tests devicecap.py ==
@@ -1428,8 +1396,7 @@ class DevicecapTestCase(unittest.TestCase):
     def test_translate(self):
         "Tests the translate function"
         print "DevicecapTestCase:test_translate - begin"
-        self.assertEqual(devicecap.translate("0x10"),
-                         "PCI Express", "translate function not working")
+        self.assertEqual(devicecap.translate("0x10"), "PCI Express")
         self.assertRaises(
             customExceptions.CapabilityUnknown, devicecap.translate, "0x0101")
 
@@ -1458,19 +1425,23 @@ class DevicecapTestCase(unittest.TestCase):
 
         # -- readCapFile function
         loc = os.path.join(testpaths.PATH_TEST_GEN, "testReadCapFile")
+              # 00  01  02  03  04  05  06  07  08  09  0a  0b  0c  0d  0e  0f
+        b = b"\x00\x01\x04\x03\x0a\x0e\x0c\x0a\x0e\x0c\x0d\x08\x0f\x00\x0b\x06"
         with open(loc, "wb") as f:
-                           # 00  01  02  03  04  05  06  07  08  09  0a  0b  0c
-                           # 0d  0e  0f
-            f.write(
-                b"\x00\x01\x04\x03\x0a\x0e\x0c\x0a\x0e\x0c\x0d\x08\x0f\x00\x0b\x06")
+            f.write(b)
         test_capcode1 = [
             cap.code for cap in devicecapmgr._readCapFile(loc, 0x02, 1, 1)]
         test_capcode2 = [
-            cap.code for cap in devicecapmgr._readCapFile(loc, 0x02, 1, 1, 0x0, 3)]
-        self.assertEqual(
-            test_capcode1, ["0x0a", "0x0b", "0x0c", "0x0d", "0x0e", "0x0f"], "readCapFile function not working")
-        self.assertEqual(
-            test_capcode2, ["0x0a", "0x0b", "0x0c"], "readCapFile function not working")
+            cap.code for cap in devicecapmgr._readCapFile(loc,
+                                                          0x02,
+                                                          1,
+                                                          1,
+                                                          0x0,
+                                                          3)]
+        self.assertEqual(test_capcode1,
+                         ["0x0a", "0x0b", "0x0c", "0x0d", "0x0e", "0x0f"])
+        self.assertEqual(test_capcode2,
+                         ["0x0a", "0x0b", "0x0c"])
         noaccessloc = os.path.join(devloc, "dev1_noaccess/config")
         # Read out of bounds offset to simulate "no access" - only 64 bytes
         # can be read without being root user
@@ -1502,12 +1473,16 @@ class UtilTestCase(unittest.TestCase):
         removeList2 = [3, 7]
         removeList3 = [3, 6]
         removeList4 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        self.assertEqual(util.removeListsFromList(mainList, removeList1, removeList2), [
-                         1, 5, 6, 8, 9, 10], "removeListsFromList function not working")
-        self.assertEqual(util.removeListsFromList(mainList, removeList2, removeList3), [
-                         1, 2, 4, 5, 8, 9, 10], "removeListsFromList function not working")
+        self.assertEqual(util.removeListsFromList(mainList,
+                                                  removeList1,
+                                                  removeList2),
+                         [1, 5, 6, 8, 9, 10])
+        self.assertEqual(util.removeListsFromList(mainList,
+                                                  removeList2,
+                                                  removeList3),
+                         [1, 2, 4, 5, 8, 9, 10])
         self.assertEqual(util.removeListsFromList(mainList, removeList4),
-                         [], "removeListsFromList function not working")
+                         [])
 
     def test_makefolder(self):
         print "UtilTestCase:test_makefolder - begin"
@@ -1526,8 +1501,8 @@ class UtilTestCase(unittest.TestCase):
     def test_getBit(self):
         "Tests the getBit function"
         print "UtilTestCase:test_getBit - begin"
-        self.assertEqual(util.getBit(5, 2), 1, "getBit function not working")
-        self.assertEqual(util.getBit(5, 5), 0, "getBit function not working")
+        self.assertEqual(util.getBit(5, 2), 1)
+        self.assertEqual(util.getBit(5, 5), 0)
 
     def test_getLinks(self):
         "Tests the getLinks function"
@@ -1559,33 +1534,24 @@ class UtilTestCase(unittest.TestCase):
             testfilteredpaths.append(absLink)
 
         self.assertEqual(util.getLinks(testdir),
-                         testnotfilteredpaths,
-                         "getFilesInPath function not working")
+                         testnotfilteredpaths)
 
         self.assertEqual(util.getLinks(testdir, filterexp),
-                         testfilteredpaths,
-                         "getFilesInPath function not working")
+                         testfilteredpaths)
 
     def test_getSpeedValue(self):
         "Tests the getSpeedValue function"
         print "UtilTestCaseL:test_getSpeedValue - begin"
         validspeeds = ["GHz", "MHz"]
-        self.assertEqual(util.getSpeedValue("3.20GHz", validspeeds),
-                         3200, "getSpeedValue function not working")
-        self.assertEqual(util.getSpeedValue("3.22GHz", validspeeds),
-                         3220, "getSpeedValue function not working")
-        self.assertEqual(util.getSpeedValue("800.0MHz", validspeeds),
-                         800.0, "getSpeedValue function not working")
-        self.assertEqual(util.getSpeedValue("800KHz", validspeeds),
-                         None, "getSpeedValue function not working")
-        self.assertEqual(util.getSpeedValue("0GHz", validspeeds),
-                         0, "getSpeedValue function not working")
-        self.assertEqual(util.getSpeedValue("GHz", validspeeds),
-                         None, "getSpeedValue function not working")
-        self.assertEqual(util.getSpeedValue("TenGHz", validspeeds),
-                         None, "getSpeedValue function not working")
+        self.assertEqual(util.getSpeedValue("3.20GHz", validspeeds), 3200)
+        self.assertEqual(util.getSpeedValue("3.22GHz", validspeeds), 3220)
+        self.assertEqual(util.getSpeedValue("800.0MHz", validspeeds), 800.0)
+        self.assertEqual(util.getSpeedValue("800KHz", validspeeds), None)
+        self.assertEqual(util.getSpeedValue("0GHz", validspeeds), 0)
+        self.assertEqual(util.getSpeedValue("GHz", validspeeds), None)
+        self.assertEqual(util.getSpeedValue("TenGHz", validspeeds), None)
         self.assertEqual(util.getSpeedValue("2893.430 MHz.", validspeeds),
-                         2893.43, "getSpeedValue not working with trailing dot")
+                         2893.43)
 
     def test_numberMultiples(self):
         "Tests the numberMultiples function"
@@ -1593,41 +1559,31 @@ class UtilTestCase(unittest.TestCase):
         testlist = ["elem", "elem", "elem2", "elem2", "elem3"]
         resultlist = ["elem_1", "elem_2", "elem2_1", "elem2_2", "elem3"]
         failedlist = ["elem_1", "elem2_1", "elem_2", "elem2_2", "elem3"]
-        self.assertEqual(util.numberMultiples(testlist),
-                         resultlist, "numberMultiples function not working")
-        self.assertEqual(util.numberMultiples(
-            []), [], "numberMultiples function not working")
+        self.assertEqual(util.numberMultiples(testlist), resultlist)
+        self.assertEqual(util.numberMultiples([]), [])
 
     def test_ListNumberer(self):
         "Tests the ListNumberer class"
         print "UtilTestCase:test_ListNumberer - begin"
         testlist = ["elem", "elem", "elem2", "elem2", "elem3"]
         listnumberer = util.ListNumberer(testlist)
-        self.assertEqual(listnumberer.getName("elem"),
-                         "elem_1", "ListNumberer class not working")
-        self.assertEqual(listnumberer.getName("elem"),
-                         "elem_2", "ListNumberer class not working")
-        self.assertEqual(listnumberer.getName("elem2"),
-                         "elem2_1", "ListNumberer class not working")
-        self.assertEqual(listnumberer.getName(
-            "elem3"), "elem3", "ListNumberer class not working")
+        self.assertEqual(listnumberer.getName("elem"), "elem_1")
+        self.assertEqual(listnumberer.getName("elem"), "elem_2")
+        self.assertEqual(listnumberer.getName("elem2"), "elem2_1")
+        self.assertEqual(listnumberer.getName("elem3"), "elem3")
         self.assertRaises(ValueError, listnumberer.getName, "elem4")
 
     def test_isHex(self):
         "Tests the isHex function"
         print "UtilTestCase:test_isHex - begin"
-        self.assertEqual(
-            util.isHex("0x34Fa"), True, "isHex function not working")
-        self.assertEqual(
-            util.isHex("03Fa0x"), False, "isHex function not working")
+        self.assertEqual(util.isHex("0x34Fa"), True)
+        self.assertEqual(util.isHex("03Fa0x"), False)
 
     def test_stripvalue(self):
         "Tests the stripvalue function"
         print "UtilTestCase:test_stripvalue - begin"
-        self.assertEqual(util.stripvalue("0x5123fa"),
-                         "5123fa", "stripvalue function not working")
-        self.assertEqual(
-            util.stripvalue("100"), "100", "stripvalud function not working")
+        self.assertEqual(util.stripvalue("0x5123fa"), "5123fa")
+        self.assertEqual(util.stripvalue("100"), "100")
 
     def test_addPadding(self):
         print "UtilTestCase:test_addPadding - begin"
@@ -1637,78 +1593,60 @@ class UtilTestCase(unittest.TestCase):
         before2 = "a"
         after2 = "a    "
 
-        self.assertEqual(util.addPadding(before, 4),
-                         after,
-                         "addPadding not working")
-        self.assertEqual(util.addPadding(before2, 5),
-                         after2,
-                         "addPadding not working")
+        self.assertEqual(util.addPadding(before, 4), after)
+        self.assertEqual(util.addPadding(before2, 5), after2)
 
     def test_toWord64(self):
         "Tests the toWord64 function"
         print "UtilTestCase: test_toWord64 - begin"
-        self.assertEqual(util.toWord64("0x5faFFaD"),
-                         "16#05fa_FFaD#", "toWord64 function not working")
-        self.assertEqual(
-            util.toWord64("0x0"), "16#0000#", "toWord64 function not working")
-        self.assertEqual(
-            util.toWord64(""), "", "toWords64 function not working")
+        self.assertEqual(util.toWord64("0x5faFFaD"), "16#05fa_FFaD#")
+        self.assertEqual(util.toWord64("0x0"), "16#0000#")
+        self.assertEqual(util.toWord64(""), "")
 
     def test_unwrapWord64(self):
         "Tests the unwrapWord64 function"
         print "UtilTestCase: test_unwrapWord64 - begin"
-        self.assertEqual(util.unwrapWord64("16#0009_a000#"),
-                         "0x9a000", "unwrapWord64 function not working")
-        self.assertEqual(util.unwrapWord64("16#0000#"),
-                         "0x0", "unwrapWord64 function not working")
-        self.assertEqual(util.unwrapWord64("0x1234"),
-                         "0x1234", "unwrapWord64 function not working")
+        self.assertEqual(util.unwrapWord64("16#0009_a000#"), "0x9a000")
+        self.assertEqual(util.unwrapWord64("16#0000#"), "0x0")
+        self.assertEqual(util.unwrapWord64("0x1234"), "0x1234")
         self.assertRaises(ValueError, util.unwrapWord64, "15#0009_a000#")
 
     def test_wrap16(self):
         "Tests the wrap16 function"
         print "UtilTestCase: test_wrap16 - begin"
-        self.assertEqual(
-            util.wrap16("1234"), "16#1234#", "wrap16 function not working")
-        self.assertEqual(
-            util.wrap16(""), "16##", "wrap16 function not working")
+        self.assertEqual(util.wrap16("1234"), "16#1234#")
+        self.assertEqual(util.wrap16(""), "16##")
 
     def test_spacesToUnderscores(self):
         "Tests the spacesToUnderscores function"
         print "UtilTestCase: test_spacesToUnderscores - begin"
-        self.assertEqual(util.spacesToUnderscores("asd def"),
-                         "asd_def", "spacestoUnderscores function not working")
+        self.assertEqual(util.spacesToUnderscores("asd def"), "asd_def")
 
     def test_sizeOf(self):
         "Tests the sizeOf function"
         print "UtilTestCase: test_sizeOf - begin"
-        self.assertEqual(
-            util.sizeOf("0x0002", "0x0001"), "0x2", "sizeOf function not working")
-        self.assertEqual(
-            util.sizeOf("0xe000", "0xe07f"), "0x80", "sizeOf function not working")
+        self.assertEqual(util.sizeOf("0x0002", "0x0001"), "0x2")
+        self.assertEqual(util.sizeOf("0xe000", "0xe07f"), "0x80")
         self.assertRaises(ValueError, util.sizeOf, "0x1000", 2)
 
     def test_hexFloor(self):
         "Tests the hexFloor function"
         print "UtilTestCase: test_hexFloor - begin"
         MINSIZE = "0x1000"
-        self.assertEqual(util.hexFloor("0x10", MINSIZE),
-                         MINSIZE, "hexFloor function not working")
-        self.assertEqual(util.hexFloor("0x1000", MINSIZE),
-                         "0x1000", "hexFloor function not working")
-        self.assertEqual(util.hexFloor("0x10000", MINSIZE),
-                         "0x10000", "hexFloor function not working")
+        self.assertEqual(util.hexFloor("0x10", MINSIZE), MINSIZE)
+        self.assertEqual(util.hexFloor("0x1000", MINSIZE), "0x1000")
+        self.assertEqual(util.hexFloor("0x10000", MINSIZE), "0x10000")
 
     def test_hexRoundToMultiple(self):
         "Tests the hexRoundToMultiple function"
         print "UtilTestCase: test_hexRoundToMultiple - begin"
         self.assertEqual(util.hexRoundToMultiple("0x9d800", "0x1000"),
-                         "0x9e000", "hexRoundToMultiple function not working")
+                         "0x9e000")
         self.assertEqual(util.hexRoundToMultiple("0x9e000", "0x1000"),
-                         "0x9e000", "hexRoundToMultiple function not working")
+                         "0x9e000")
         self.assertEqual(
             util.hexRoundToMultiple("0x9d800", "0x1000", rounddown=True),
-            "0x9d000", "hexRoundToMultiple function not working")
+            "0x9d000")
 
 
 # == Class that tests update.py ==
@@ -1758,9 +1696,8 @@ class UpdateTestCase(unittest.TestCase):
         def runtest_fail():
             return update.update()
 
-        self.assertEqual(runtest(), True, "update function not working")
-
-        self.assertEqual(runtest_fail(), False, "update function not working")
+        self.assertEqual(runtest(), True)
+        self.assertEqual(runtest_fail(), False)
 
     def test_updatePciIds(self):
         print "UpdateTestCase:test_updatePciIds - begin"
@@ -1800,8 +1737,7 @@ class MessageTestCase(unittest.TestCase):
 
     def test_reset(self):
         message.reset()
-        self.assertEqual(
-            len(message.messagequeue), 0, "Reset function not working")
+        self.assertEqual(len(message.messagequeue), 0)
 
     def test_addMessage(self):
         message.reset()
@@ -1842,22 +1778,23 @@ class ParseUtilTestCase(unittest.TestCase):
 
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
-        self.assertEqual(parseutil.parseLine_Sep(
-            data.splitlines()[4], "testKey4", ":"), "testValue4", "Value obtained from file " + loc + " is incorrect.")
-        self.assertEqual(parseutil.parseLine_Sep(
-            data.splitlines()[0], "testKey"), "testValue", "Value obtained from file " + loc + " is incorrect.")
-        self.assertEqual(parseutil.parseLine_Sep(data.splitlines()[0], "testKey", [
-                         ":", ",", ""]), "testValue", "Value obtained from file " + loc + "is incorrect.")
+        self.assertEqual(parseutil.parseLine_Sep(data.splitlines()[4],
+                                                 "testKey4", ":"),
+                         "testValue4")
+        self.assertEqual(parseutil.parseLine_Sep(data.splitlines()[0],
+                                                 "testKey"),
+                         "testValue")
+        self.assertEqual(parseutil.parseLine_Sep(data.splitlines()[0],
+                                                 "testKey", [":", ",", ""]),
+                         "testValue")
 
         loc = self.testdir + "testCpuInfo.txt"
         data = extractor.extractData(loc)
         self.assertEqual(parseutil.parseLine_Sep(
-            data.splitlines()[8], "cache size", ":"), "8192 KB", "Value obtained from file " + loc + " is incorrect.")
+            data.splitlines()[8], "cache size", ":"), "8192 KB")
         self.assertEqual(
             parseutil.parseLine_Sep(data.splitlines()[4], "model name", ":"),
-            "Intel(R) Xeon(R) CPU E31230 @ 3.20GHz",
-            "Value obtained from file " + loc + " is incorrect."
-        )
+            "Intel(R) Xeon(R) CPU E31230 @ 3.20GHz")
 
     def test_parseLine_Sep_keyDoesNotExist(self):
         "Tests parseLine_Sep with nonexistent key"
@@ -1866,14 +1803,17 @@ class ParseUtilTestCase(unittest.TestCase):
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
         self.assertRaises(customExceptions.KeyNotFound,
-                          parseutil.parseLine_Sep, data.splitlines()[0], "testKey2")
+                          parseutil.parseLine_Sep,
+                          data.splitlines()[0], "testKey2")
         self.assertRaises(customExceptions.KeyNotFound,
-                          parseutil.parseLine_Sep, data.splitlines()[0], "testKey12")
+                          parseutil.parseLine_Sep,
+                          data.splitlines()[0], "testKey12")
 
         loc = self.testdir + "testCpuInfo.txt"
         data = extractor.extractData(loc)
         self.assertRaises(customExceptions.KeyNotFound,
-                          parseutil.parseLine_Sep, data.splitlines()[0], "numprocessors")
+                          parseutil.parseLine_Sep,
+                          data.splitlines()[0], "numprocessors")
 
     def test_parseLine_Sep_valueDoesNotExist(self):
         "Tests parseLine_Sep with nonexistent value"
@@ -1881,15 +1821,19 @@ class ParseUtilTestCase(unittest.TestCase):
 
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
-        self.assertEqual(parseutil.parseLine_Sep(
-            data.splitlines()[2], "testKey3"), "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
-        self.assertEqual(parseutil.parseLine_Sep(
-            data.splitlines()[5], "testKey5", ":"), "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
+        self.assertEqual(parseutil.parseLine_Sep(data.splitlines()[2],
+                                                 "testKey3"),
+                         "NO_VALUE")
+        self.assertEqual(parseutil.parseLine_Sep(data.splitlines()[5],
+                                                 "testKey5", ":"),
+                         "NO_VALUE")
 
         loc = self.testdir + "testCpuInfo.txt"
         data = extractor.extractData(loc)
-        self.assertEqual(parseutil.parseLine_Sep(
-            data.splitlines()[24], "power management", ":"), "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
+        self.assertEqual(parseutil.parseLine_Sep(data.splitlines()[24],
+                                                 "power management",
+                                                 ":"),
+                         "NO_VALUE")
 
     def test_parseLine_Sep_sepDoesNotExist(self):
         "Tests parseLine_Sep when separator cannot be found"
@@ -1898,12 +1842,13 @@ class ParseUtilTestCase(unittest.TestCase):
         loc = self.testdir + "testCpuInfo.txt"
         data = extractor.extractData(loc)
         self.assertEqual(parseutil.parseData_Sep(
-            data.splitlines()[5], "stepping", ","), "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
+            data.splitlines()[5], "stepping", ","), "NO_VALUE")
 
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
-        self.assertEqual(parseutil.parseData_Sep(
-            data.splitlines()[0], "testKey", ":"), "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
+        self.assertEqual(parseutil.parseData_Sep(data.splitlines()[0],
+                                                 "testKey", ":"),
+                         "NO_VALUE")
 
     # -- parseData_Sep tests
     def test_parseData_Sep(self):
@@ -1912,14 +1857,13 @@ class ParseUtilTestCase(unittest.TestCase):
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
         self.assertEqual(parseutil.parseData_Sep(data, "testKey4", ":"),
-                         "testValue4", "Value obtained from file " + loc + " is incorrect.")
+                         "testValue4")
         self.assertEqual(parseutil.parseData_Sep(data, "testKey2"),
-                         "testValue2 testValue2.1 testValue2.2", "Value obtained from file " + loc + " is incorrect.")
+                         "testValue2 testValue2.1 testValue2.2")
 
         loc = self.testdir + "testCpuInfo.txt"
         data = extractor.extractData(loc)
-        self.assertEqual(parseutil.parseData_Sep(data, "cpu cores", ":"),
-                         "4", "Value obtained from file " + loc + " is incorrect.")
+        self.assertEqual(parseutil.parseData_Sep(data, "cpu cores", ":"), "4")
 
     def test_parseData_Sep_keyNotFound(self):
         "Tests parseData_Sep with inexistent key"
@@ -1927,12 +1871,14 @@ class ParseUtilTestCase(unittest.TestCase):
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
         self.assertRaises(customExceptions.KeyNotFound,
-                          parseutil.parseData_Sep, data, "testKeyNotExists")
+                          parseutil.parseData_Sep,
+                          data, "testKeyNotExists")
 
         loc = self.testdir + "testCpuInfo.txt"
         data = extractor.extractData(loc)
         self.assertRaises(customExceptions.KeyNotFound,
-                          parseutil.parseData_Sep, data, "testKeyNotExists")
+                          parseutil.parseData_Sep,
+                          data, "testKeyNotExists")
 
     def test_parseData_Sep_valueDoesNotExist(self):
         "Tests parseData_Sep to obtain value that does not exist"
@@ -1941,7 +1887,7 @@ class ParseUtilTestCase(unittest.TestCase):
         data = extractor.extractData(loc)
         self.assertEqual(
             parseutil.parseData_Sep(data, "power management", ":"),
-            "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
+            "NO_VALUE")
 
     def test_parseData_Sep_sepDoesNotExist(self):
         "Tests parseData_Sep when separator cannot be found"
@@ -1949,12 +1895,12 @@ class ParseUtilTestCase(unittest.TestCase):
         loc = self.testdir + "testCpuInfo.txt"
         data = extractor.extractData(loc)
         self.assertEqual(parseutil.parseData_Sep(data, "stepping", ","),
-                         "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
+                         "NO_VALUE")
 
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
         self.assertEqual(parseutil.parseData_Sep(data, "testKey", ":"),
-                         "NO_VALUE", "Value obtained from file " + loc + " is incorrect.")
+                         "NO_VALUE")
 
     # -- findLines tests
         "Tests findLines function"
@@ -1962,7 +1908,7 @@ class ParseUtilTestCase(unittest.TestCase):
         loc = self.testdir + "testParseUtil.txt"
         data = extractor.extractData(loc)
         self.assertEqual(parseutil.findLines(data, "testValue4")[
-                         0], "testKey4 : testValue4", "findLine function not working")
+                         0], "testKey4 : testValue4")
 
     # -- count tests
     def test_count(self):
@@ -1994,66 +1940,52 @@ class ParseUtilTestCase(unittest.TestCase):
         parser = parseutil.PciIdsParser(pciIdsLoc)
 
         # isValidVendorCode function
-        self.assertEqual(parser.isValidVendorCode("0000"),
-                         True, "isValidVendorCode function not working")
-        self.assertEqual(parser.isValidVendorCode("a0102"),
-                         False, "isValidVendorCodefunction not working")
-        self.assertEqual(parser.isValidVendorCode("#"),
-                         False, "isValidVendorCode function not working")
+        self.assertEqual(parser.isValidVendorCode("0000"), True)
+        self.assertEqual(parser.isValidVendorCode("a0102"), False)
+        self.assertEqual(parser.isValidVendorCode("#"), False)
 
         # isValidDeviceCode function
-        self.assertEqual(parser.isValidDeviceCode("0000"),
-                         True, "isValidDeviceCode function not working")
-        self.assertEqual(parser.isValidDeviceCode("12"),
-                         False, "isValidDeviceCodefunction not working")
-        self.assertEqual(parser.isValidDeviceCode("#"),
-                         False, "isValidDeviceCode function not working")
-        self.assertEqual(parser.isValidDeviceCode("____"),
-                         False, "isValidDeviceCode function not working")
+        self.assertEqual(parser.isValidDeviceCode("0000"), True)
+        self.assertEqual(parser.isValidDeviceCode("12"), False)
+        self.assertEqual(parser.isValidDeviceCode("#"), False)
+        self.assertEqual(parser.isValidDeviceCode("____"), False)
 
         # isValidClassCode function
-        self.assertEqual(parser.isValidClassCode("02"),
-                         True, "isValidClassCode function not working")
-        self.assertEqual(parser.isValidClassCode("0301"),
-                         False, "isValidClassCodefunction not working")
-        self.assertEqual(parser.isValidClassCode("#"),
-                         False, "isValidClassCode function not working")
+        self.assertEqual(parser.isValidClassCode("02"), True)
+        self.assertEqual(parser.isValidClassCode("0301"), False)
+        self.assertEqual(parser.isValidClassCode("#"), False)
 
         # isValidSubclassCode function
-        self.assertEqual(parser.isValidSubclassCode("01"),
-                         True, "isValidSubclassCode function not working")
-        self.assertEqual(parser.isValidSubclassCode("a12"),
-                         False, "isValidSubclassCodefunction not working")
-        self.assertEqual(parser.isValidSubclassCode("#"),
-                         False, "isValidSubclassCode function not working")
+        self.assertEqual(parser.isValidSubclassCode("01"), True)
+        self.assertEqual(parser.isValidSubclassCode("a12"), False)
+        self.assertEqual(parser.isValidSubclassCode("#"), False)
 
         # isVendor function
         self.assertEqual(
-            parser.isVendor("0a12  Vendor1"), True, "isVendor function not working")
+            parser.isVendor("0a12  Vendor1"), True)
         self.assertEqual(
-            parser.isVendor("0a12  Vendor1, Inc."), True, "isVendor function not working")
+            parser.isVendor("0a12  Vendor1, Inc."), True)
         self.assertEqual(
-            parser.isVendor("	0a12  Vendor2"), False, "isVendor function not working")
+            parser.isVendor("	0a12  Vendor2"), False)
 
         # isDevice function
         self.assertEqual(
-            parser.isDevice("	0101  Device1"), True, "isDevice function not working")
+            parser.isDevice("	0101  Device1"), True)
         self.assertEqual(
-            parser.isDevice("      0203  Device1_spacenottab"), False, "isDevice function not working")
+            parser.isDevice("      0203  Device1_spacenottab"), False)
         self.assertEqual(
-            parser.isDevice("		0232  Device1"), False, "isDevice function not working")
+            parser.isDevice("		0232  Device1"), False)
 
         # isClass function
         self.assertEqual(
-            parser.isClass("C 01  Class1"), True, "isClass function not working")
+            parser.isClass("C 01  Class1"), True)
         self.assertEqual(
-            parser.isClass("0a12 Vendor1"), False, "isClass function not working")
+            parser.isClass("0a12 Vendor1"), False)
 
         # isSubclass function
         self.assertEqual(
-            parser.isSubclass("	02  Subclass1"), True, "isSubclass function not working")
-        self.assertEqual(parser.isSubclass("		02  Subsubclass"),
-                         False, "isSubclass function not working")
+            parser.isSubclass("	02  Subclass1"), True)
+        self.assertEqual(parser.isSubclass("		02  Subsubclass"), False)
 
         # init function
         parser_init = parseutil.PciIdsParser(pciIdsLocInit)
@@ -2065,37 +1997,41 @@ class ParseUtilTestCase(unittest.TestCase):
                          10, "PciIdsParser not initialised properly")
 
         self.assertRaises(
-            customExceptions.PciIdsMultipleEntries, parseutil.PciIdsParser, pciIdsLocMultiple)
+            customExceptions.PciIdsMultipleEntries,
+            parseutil.PciIdsParser,
+            pciIdsLocMultiple)
 
         # getVendorName function
         self.assertEqual(parser.getVendorName("0x0e11"),
-                         "Compaq Computer Corporation", "getVendorName function not working")
+                         "Compaq Computer Corporation")
         self.assertRaises(
-            customExceptions.PciIdsFailedSearch, parser.getVendorName, "0x0400")
+            customExceptions.PciIdsFailedSearch,
+            parser.getVendorName,
+            "0x0400")
 
         # getDeviceName function
         self.assertEqual(parser.getDeviceName("0x0675", "0x1700"),
-                         "IS64PH ISDN Adapter", "getDeviceName function not working")
+                         "IS64PH ISDN Adapter")
         self.assertEqual(parser.getDeviceName("0x0675", "0x1704"),
-                         "ISDN Adapter (PCI Bus, D, C)", "getDeviceName function not working")
+                         "ISDN Adapter (PCI Bus, D, C)")
         self.assertEqual(parser.getDeviceName("0x8086", "0x0108"),
-                         "Xeon E3-1200 Processor Family DRAM Controller", "getDeviceName function not working")
+                         "Xeon E3-1200 Processor Family DRAM Controller")
         self.assertRaises(
-            customExceptions.PciIdsFailedSearch, parser.getDeviceName, "0x0675", "0x2000")
+            customExceptions.PciIdsFailedSearch,
+            parser.getDeviceName,
+            "0x0675", "0x2000")
 
         # getClassName function
-        self.assertEqual(parser.getClassName("0x0604"),
-                         "PCI bridge", "getClassName function not working")
-        self.assertEqual(parser.getClassName("0x0c06"),
-                         "InfiniBand", "getClassName function not working")
-        self.assertEqual(parser.getClassName("0x0608"),
-                         "RACEway bridge", "getClassName function not working")
-        self.assertEqual(parser.getClassName("0x0600"),
-                         "Host bridge", "getClassName function not working")
+        self.assertEqual(parser.getClassName("0x0604"), "PCI bridge")
+        self.assertEqual(parser.getClassName("0x0c06"), "InfiniBand")
+        self.assertEqual(parser.getClassName("0x0608"), "RACEway bridge")
+        self.assertEqual(parser.getClassName("0x0600"), "Host bridge")
         self.assertRaises(
-            customExceptions.PciIdsSubclassNotFound, parser.getClassName, "0x0685")
+            customExceptions.PciIdsSubclassNotFound,
+            parser.getClassName, "0x0685")
         self.assertRaises(
-            customExceptions.PciIdsFailedSearch, parser.getClassName, "0x1400")
+            customExceptions.PciIdsFailedSearch,
+            parser.getClassName, "0x1400")
 
 
 class DMARParserTestCase(unittest.TestCase):
@@ -2130,12 +2066,10 @@ class DMARParserTestCase(unittest.TestCase):
             "_genDMAR_copyDMAR function not working")
 
         self.assertEqual(self.dmarparser._genDMAR_copyDMAR(dmarloc, dest),
-                         True,
-                         "_genDMAR_copyDMAR function not working")
+                         True)
 
         self.assertEqual(self.dmarparser.getCopiedDmarPath(),
-                         dest,
-                         "_genDMAR_copyDMAR function not working")
+                         dest)
 
     def test_parseDMAR(self):
         print "DMARParserTestCase:test_parseDMAR - begin"
@@ -2157,7 +2091,9 @@ class DMARParserTestCase(unittest.TestCase):
 
         # Define functions with patched objects
         @mock.patch.object(parseutil.DMARParser, "_runIasl", _runIasl_success)
-        @mock.patch.object(parseutil.DMARParser, "getCopiedDmarPath", _getCopiedDmarPath)
+        @mock.patch.object(parseutil.DMARParser,
+                           "getCopiedDmarPath",
+                           _getCopiedDmarPath)
         def test_success(dmarloc):
             dmarparser = parseutil.DMARParser()
             return (dmarparser.parseDMAR(), dmarparser.getParsedDmarPath())
@@ -2172,15 +2108,9 @@ class DMARParserTestCase(unittest.TestCase):
             dmarparser = parseutil.DMARParser()
             return dmarparser.parseDMAR(dmarloc)
 
-        self.assertEqual(test_success(dmarloc)[0],
-                         True,
-                         "parseDMAR function not working")
-        self.assertEqual(test_success(dmarloc)[1],
-                         output,
-                         "parseDMAR function not working")
-        self.assertEqual(test_noiasl(dmarloc),
-                         False,
-                         "parseDMAR function not working")
+        self.assertEqual(test_success(dmarloc)[0], True)
+        self.assertEqual(test_success(dmarloc)[1], output)
+        self.assertEqual(test_noiasl(dmarloc), False)
         self.assertRaises(subprocess.CalledProcessError,
                           test_noinput,
                           dmarloc)
@@ -2207,14 +2137,11 @@ class DMARParserTestCase(unittest.TestCase):
         correctdmarparser.parsedDMAR = loc
 
         self.assertEqual(correctdmarparser.getIommuAddrs(),
-                         ["0xfed91000", "0xfed91100"],
-                         "getIommuAddrs function not working")
+                         ["0xfed91000", "0xfed91100"])
         self.assertEqual(self.dmarparser.getIommuAddrs(emptyloc),
-                         [],
-                         "getIommuAddrs function not working")
+                         [])
         self.assertEqual(self.dmarparser.getIommuAddrs(invalidloc),
-                         [],
-                         "getIommuAddrs function not working")
+                         [])
 
 
 class DMIParserTestCase(unittest.TestCase):

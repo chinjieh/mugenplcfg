@@ -47,7 +47,9 @@ def selectSchema(modulename):
 
 class Element():
 
-    "Class that wraps Pyxb and provides easier use of modification of XML elements"
+    """
+    Class that wraps Pyxb and provides easier use of modification of
+    XML elements"""
 
     # How to use this class:
     #
@@ -59,7 +61,7 @@ class Element():
     #
     #	 e.g. processor = Element("processor", "processorType")
     #
-    # 3. Set attributes by using []. Multiple attributes can be set at once too.
+    # 3. Set attributes by using []. Multiple attributes can be set at once.
     #
     #	 e.g. processor["attribute1"] = value1    OR
     #         processor["attribute1", "attribute2"] = value1, value2
@@ -71,7 +73,7 @@ class Element():
     #	 e.g. processorChild = Element("processorChild", "processorChildType")
     #	      processor.appendChild(processorChild)
     #
-    # 6. When the whole element tree has been created, call toXML('utf version')
+    # 6. When the whole element tree has been created, call toXML('utf-ver')
     #    on the root element. This will convert the entire tree to XML format.
     #	 e.g. xml = processor.toXML('utf-8')
 
@@ -116,15 +118,18 @@ class Element():
             pass
         else:
             if len(keylist) != len(valuelist):
-                errorstr = (("Values %s to be assigned to attributes %s in element %s "
-                             "do not match in length") % (valuelist, keylist, self))
+                errorstr = (("Values %s to be assigned to attributes %s in "
+                             "element %s do not match in length") % (valuelist,
+                                                                     keylist,
+                                                                     self))
                 raise customExceptions.AttributeMismatch(errorstr)
             else:
                 for index in range(0, len(keylist)):
                     key = keylist[index]
                     if key not in dir(pyxbElem):
                         raise customExceptions.InvalidAttribute(
-                            "Element %s does not have attribute: %s" % (self, key))
+                            "Element %s does not have attribute: %s" % (self,
+                                                                        key))
                     else:
                         self.attr[key] = valuelist[index]
 
@@ -155,9 +160,14 @@ class Element():
                     pluralNameList.append(element.name)
 
     def __getSimilarElems(self, elemName):
-        "Creates list of elements with names matching elemName in childElement list"
+
+        """
+        Creates list of elements with names matching elemName in
+        childElement list"""
+
         elemList = [
-            element for element in self.childElements if (element.name == elemName)]
+            element for element in self.childElements if (element.name ==
+                                                          elemName)]
         return elemList
 
     def __setPluralElems(self, pyxbElem, pluralElems):
@@ -196,8 +206,10 @@ class Element():
 
     def isEqual(self, elem2):
         """
-        Compares all attributes and contents of this element including children.
-        Children have to be added in the similar order for it to equate. """
+        Compares all attributes and contents of this element including
+        children. Children have to be added in the similar order for it
+        to equate. """
+
         if self.attr != elem2.attr or self.content != elem2.content:
             return False
         else:
@@ -205,7 +217,8 @@ class Element():
                 return False
             else:
                 for counter in range(len(self.childElements)):
-                    if not self.childElements[counter].isEqual(elem2.childElements[counter]):
+                    compareElem = elem2.childElements[counter]
+                    if not self.childElements[counter].isEqual(compareElem):
                         return False
 
         return True
