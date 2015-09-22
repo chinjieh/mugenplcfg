@@ -90,8 +90,8 @@ def get_cap_msi(fileobj):
 
 
 def get_cap_msix(fileobj):
-    byte = struct.unpack('B', fileobj.read(1))[0]
-    enablebit = util.getBit(byte, 0)  # Last bit
+    byte = struct.unpack('BB', fileobj.read(2))[1]  # Get bits 8:15
+    enablebit = util.getBit(byte, 7)  # Last bit of bits 8:15 (bit 15)
     value = CAP_MSIX_VALUE(enable=enablebit)
     return value
 
@@ -109,7 +109,11 @@ class DevicecapManager():
         self.capabilities = {}  # devicepath, caplist
 
     def extractCapabilities(self, devicepaths):
-        "Checks if device capabilities can be found and creates capability dict"
+
+        """
+        Checks if device capabilities can be found and creates capability
+        dict"""
+
         # Call this function first to attempt to fill dictionary
         for devicepath in devicepaths:
             try:
@@ -132,7 +136,11 @@ class DevicecapManager():
         return result
 
     def getCapValue(self, devicepath, capcode):
-        "Returns CapValue tuple for a device (additional information on capability)"
+
+        """
+        Returns CapValue tuple for a device (additional information on
+        capability)"""
+
         result = None
         caplist = self.capabilities.get(devicepath)
         if caplist is not None:
@@ -169,7 +177,12 @@ class DevicecapManager():
                                                               STOP_ID,
                                                               CAPABILITY_NUM)
 
-    def _readCapFile(self, file, startpos, capsize, nextoffset=1, stopid=0x00, numJumps=-1):
+    def _readCapFile(self, file,
+                     startpos,
+                     capsize,
+                     nextoffset=1,
+                     stopid=0x00,
+                     numJumps=-1):
         """
         Extracts data from the config file that is in linked list format i.e
         reads address from startpos, reads data in address, reads address from
