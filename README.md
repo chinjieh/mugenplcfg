@@ -1,6 +1,11 @@
 Mugenplcfg
 ==========
 
+Latest Version
+--------------
+
+**THIS REPOSITORY IS OUTDATED!** Find the latest version of `mugenplcfg` (which 
+has been renamed to `mugenhwcfg`) in the Muen repositories [here][7].
 
 Overview
 --------
@@ -170,3 +175,4 @@ Big thanks to Adrian and Reto for their unending guidance and advice!
 [4]: https://pci-ids.ucw.cz/ "The pci.ids repository"
 [5]: http://pyxb.sourceforge.net/ "PyXB"
 [6]: https://mock.readthedocs.org/en/latest/ "Mock"
+[7]: https://git.codelabs.ch/?p=muen/mugenhwcfg.git;a=summary "mugenhwcfg"
